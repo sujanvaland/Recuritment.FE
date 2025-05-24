@@ -1,25 +1,25 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { findUserByEmail, verifyToken } from "@/lib/auth"
+import { findUserById, verifyToken } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
-    // Get the authorization header
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Get the token from the cookie
+    const token = request.cookies.get("token")?.value
 
-    // Extract the token
-    const token = authHeader.split(" ")[1]
+    if (!token) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+    }
 
     // Verify the token
     const payload = await verifyToken(token)
-    if (!payload || !payload.email) {
+
+    if (!payload || !payload.sub) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 })
     }
 
-    // Find the user
-    const user = findUserByEmail(payload.email as string)
+    // Find the user by ID
+    const user = findUserById(payload.sub)
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("Auth error:", error)
-    return NextResponse.json({ error: "An error occurred during authentication" }, { status: 500 })
+    console.error("Auth check error:", error)
+    return NextResponse.json({ error: "Authentication failed" }, { status: 401 })
   }
 }

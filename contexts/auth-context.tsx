@@ -11,7 +11,7 @@ interface AuthContextType {
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
   register: (data: RegisterData) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   error: string | null
 }
 
@@ -36,40 +36,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Check if the user is already logged in
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem("token")
-      if (token) {
-        try {
-          const response = await fetch("/api/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+      try {
+        const response = await fetch("/api/auth/me")
 
-          if (response.ok) {
-            const data = await response.json()
-            setUser(data.user)
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
 
-            // Add redirection based on user role if on the homepage
-            if (
-              window.location.pathname === "/" ||
-              window.location.pathname === "/auth/login" ||
-              window.location.pathname === "/auth/register"
-            ) {
-              if (data.user.role === "employer") {
-                router.push("/employers/dashboard")
-              } else {
-                router.push("/dashboard")
-              }
+          // Add redirection based on user role if on the homepage
+          if (
+            window.location.pathname === "/" ||
+            window.location.pathname === "/auth/login" ||
+            window.location.pathname === "/auth/register"
+          ) {
+            if (data.user.role === "employer") {
+              router.push("/employers/dashboard")
+            } else {
+              router.push("/dashboard")
             }
-          } else {
-            // If the token is invalid, clear it
-            localStorage.removeItem("token")
           }
-        } catch (error) {
-          console.error("Auth check error:", error)
         }
+      } catch (error) {
+        console.error("Auth check error:", error)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
 
     checkAuth()
@@ -85,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Important for cookies
       })
 
       const data = await response.json()
@@ -92,9 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) {
         throw new Error(data.error || "Login failed")
       }
-
-      // Save the token to localStorage
-      localStorage.setItem("token", data.token)
 
       // Set the user in state
       setUser(data.user)
@@ -123,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include", // Important for cookies
       })
 
       const responseData = await response.json()
@@ -130,9 +120,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) {
         throw new Error(responseData.error || "Registration failed")
       }
-
-      // Save the token to localStorage
-      localStorage.setItem("token", responseData.token)
 
       // Set the user in state
       setUser(responseData.user)
@@ -151,10 +138,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const logout = () => {
-    localStorage.removeItem("token")
-    setUser(null)
-    router.push("/")
+  const logout = async () => {
+    try {
+      // Call the logout API endpoint to clear the cookie
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // Important for cookies
+      })
+
+      // Clear user state
+      setUser(null)
+
+      // Redirect to home page
+      router.push("/")
+
+      // Force a page refresh to ensure all state is cleared
+      router.refresh()
+    } catch (error) {
+      console.error("Logout error:", error)
+    }
   }
 
   return (

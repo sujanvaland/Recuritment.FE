@@ -68,6 +68,10 @@ export function findUserByEmail(email: string) {
   return users.find((user) => user.email === email)
 }
 
+export function findUserById(id: string) {
+  return users.find((user) => user.id === id)
+}
+
 // Function to add a new user
 export function addUser(user: Omit<User, "id" | "createdAt">) {
   const newUser = {

@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
     // Create a JWT token
     const token = await createToken(newUser)
 
-    // Return the user and token
-    return NextResponse.json({
+    // Create the response
+    const response = NextResponse.json({
       user: {
         id: newUser.id,
         email: newUser.email,
@@ -41,8 +41,20 @@ export async function POST(request: NextRequest) {
         company: newUser.company,
         title: newUser.title,
       },
-      token,
     })
+
+    // Set the token as a cookie
+    response.cookies.set({
+      name: "token",
+      value: token,
+      httpOnly: true,
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 1 day
+    })
+
+    return response
   } catch (error) {
     console.error("Registration error:", error)
     return NextResponse.json({ error: "An error occurred during registration" }, { status: 500 })

@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
         company: user.company,
         title: user.title,
       },
-      token,
     })
 
     // Set the token as a cookie
