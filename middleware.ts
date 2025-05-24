@@ -33,7 +33,9 @@ export async function middleware(request: NextRequest) {
       // If the token is valid and the user is on an auth path, redirect to dashboard
       if (payload && isAuthPath) {
         const role = payload.role as string
+        console.log("Middleware: User role is", role) // Debug log
         const redirectPath = role === "employer" ? "/employers/dashboard" : "/dashboard"
+        console.log("Middleware: Redirecting to", redirectPath) // Debug log
         return NextResponse.redirect(new URL(redirectPath, request.url))
       }
 
@@ -51,6 +53,7 @@ export async function middleware(request: NextRequest) {
         }
       }
     } catch (error) {
+      console.error("Middleware token verification error:", error)
       // If token verification fails, clear the token
       const response = NextResponse.next()
       response.cookies.delete("token")

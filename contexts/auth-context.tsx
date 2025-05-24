@@ -37,21 +37,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/auth/me")
+        const response = await fetch("/api/auth/me", {
+          credentials: "include",
+        })
 
         if (response.ok) {
           const data = await response.json()
           setUser(data.user)
 
-          // Add redirection based on user role if on the homepage
-          if (
-            window.location.pathname === "/" ||
-            window.location.pathname === "/auth/login" ||
-            window.location.pathname === "/auth/register"
-          ) {
+          // Add redirection based on user role if on the homepage or auth pages
+          const currentPath = window.location.pathname
+          if (currentPath === "/" || currentPath === "/auth/login" || currentPath === "/auth/register") {
+            console.log("User role:", data.user.role) // Debug log
             if (data.user.role === "employer") {
               router.push("/employers/dashboard")
-            } else {
+            } else if (data.user.role === "job-seeker") {
               router.push("/dashboard")
             }
           }
@@ -88,11 +88,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Set the user in state
       setUser(data.user)
 
+      console.log("Login successful, user role:", data.user.role) // Debug log
+
       // Redirect based on user role
       if (data.user.role === "employer") {
+        console.log("Redirecting to employer dashboard") // Debug log
         router.push("/employers/dashboard")
-      } else {
+      } else if (data.user.role === "job-seeker") {
+        console.log("Redirecting to job seeker dashboard") // Debug log
         router.push("/dashboard")
+      } else {
+        console.error("Unknown user role:", data.user.role) // Debug log
+        router.push("/")
       }
     } catch (error) {
       setError((error as Error).message)
@@ -127,8 +134,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Redirect based on user role
       if (responseData.user.role === "employer") {
         router.push("/employers/dashboard")
-      } else {
+      } else if (responseData.user.role === "job-seeker") {
         router.push("/dashboard")
+      } else {
+        router.push("/")
       }
     } catch (error) {
       setError((error as Error).message)
