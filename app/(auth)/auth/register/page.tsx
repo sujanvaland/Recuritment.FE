@@ -1,21 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Loader2 } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useAuth } from "@/contexts/auth-context"
-import type { UserRole } from "@/lib/auth"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/auth-context";
+import type { UserRole } from "@/lib/auth";
+import authService from "@/services/authService";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
-  const { register, isLoading, error } = useAuth()
+  const { register, isLoading, error } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -23,17 +25,17 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     role: "job-seeker" as UserRole,
-  })
-  const [formError, setFormError] = useState<string | null>(null)
+  });
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleRoleChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, role: value as UserRole }))
-  }
+    setFormData((prev) => ({ ...prev, role: value as UserRole }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,20 +52,70 @@ export default function RegisterPage() {
       return
     }
 
-    await register({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
+    const userData = {
       email: formData.email,
       password: formData.password,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       role: formData.role,
-    })
-  }
+      company: "",
+      title: "",
+    }
+
+    try {
+      const response = await authService.register(userData)
+      console.log("Registered:", response)
+
+      if(response.status==200)
+
+      // Show success toast
+      {
+       setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        role: "job-seeker" as UserRole,
+      })
+      toast.success("Account created successfully! Welcome to JobConnect!")
+      }
+      else
+      {
+        toast.error(response?.data?.error)
+      }
+      // Clear form data after successful registration
+     
+    } catch (error: any) {
+      console.error("Registration failed:", error)
+
+      // Check for duplicate email error
+      if (
+        error.response?.status === 409 ||
+        error.response?.data?.message?.toLowerCase().includes("email") ||
+        error.response?.data?.error?.toLowerCase().includes("email") ||
+        error.response?.data?.toLowerCase().includes("User with this email already exists")
+      ) {
+        toast.error("An account with that email already exists. Please use a different email or try signing in.")
+      } else if (error.response?.data?.message) {
+        // Show specific error message from backend
+        toast.error(error.response.data.message)
+      } else {
+        // Generic error message
+        toast.error("Registration failed. Please try again.")
+      }
+    }
+  };
 
   return (
     <>
       <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
-        <p className="text-sm text-muted-foreground">Enter your details to create your JobConnect account</p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Create an account
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Enter your details to create your JobConnect account
+        </p>
       </div>
       {(error || formError) && (
         <Alert variant="destructive">
@@ -98,11 +150,23 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="firstName">First name</Label>
-                <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="lastName">Last name</Label>
-                <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
             <div className="grid gap-2">
@@ -157,10 +221,13 @@ export default function RegisterPage() {
       </div>
       <p className="px-8 text-center text-sm text-muted-foreground">
         <span>Already have an account? </span>
-        <Link href="/auth/login" className="underline underline-offset-4 hover:text-primary">
+        <Link
+          href="/auth/login"
+          className="underline underline-offset-4 hover:text-primary"
+        >
           Sign in
         </Link>
       </p>
     </>
-  )
+  );
 }

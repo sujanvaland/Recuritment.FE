@@ -4,6 +4,8 @@ import { Inter } from "next/font/google"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/auth-context"
+import { Toaster } from "sonner"; // or your toast library's provider
+
 
 import "./globals.css"
 
@@ -24,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light">
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>{children}  <Toaster position="top-center" richColors /> {/* Sonner example */}</AuthProvider>
         </ThemeProvider>
       </body>
     </html>
