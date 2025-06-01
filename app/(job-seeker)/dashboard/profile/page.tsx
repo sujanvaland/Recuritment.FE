@@ -84,7 +84,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
      
       try {
-        const userProfile = await getUserProfile(user.id)
+        const userProfile = await getUserProfile(user == null ? "0" : user.id)
         // Only update state if the component is still mounted
         if (isMounted && userProfile) {
           setProfile(userProfile)
