@@ -5,6 +5,7 @@ import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import type { User, UserRole } from "@/lib/auth"
+import { API_BASE_URL } from "@/lib/auth"
 
 interface AuthContextType {
   user: User | null
@@ -67,16 +68,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router])
 
   const login = async (email: string, password: string) => {
+    console.log('logindetails', email, password);
     setError(null)
     setIsLoading(true)
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Important for cookies
+        //  credentials: "include", // Important for cookies
       })
 
       const data = await response.json()
@@ -88,17 +90,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Set the user in state
       setUser(data.user)
 
-      console.log("Login successful, user role:", data.user.role) // Debug log
+      console.log("Login successful, user role:", data.user.roles) // Debug log
 
       // Redirect based on user role
-      if (data.user.role === "employer") {
+      if (data.user.roles === "employer") {
         console.log("Redirecting to employer dashboard") // Debug log
         router.push("/employers/dashboard")
-      } else if (data.user.role === "job-seeker") {
+      } else if (data.user.roles === "job-seeker") {
         console.log("Redirecting to job seeker dashboard") // Debug log
         router.push("/dashboard")
       } else {
-        console.error("Unknown user role:", data.user.role) // Debug log
+        console.error("Unknown user role:", data.user.roles) // Debug log
         router.push("/")
       }
     } catch (error) {
@@ -110,16 +112,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const register = async (data: RegisterData) => {
+    console.log('data', data);
     setError(null)
     setIsLoading(true)
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-        credentials: "include", // Important for cookies
+        //  credentials: "include", // Important for cookies
       })
 
       const responseData = await response.json()

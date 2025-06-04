@@ -5,7 +5,7 @@ import { getItem } from './localStorage';
 
 // eslint-disable-next-line import/no-cycle
 
-const API_ENDPOINT = "https://www.onemysetu.com/api";
+const API_ENDPOINT = "https://www.onemysetu.com/api/";
 const authHeader = () => ({
   Authorization: `Bearer ${getItem('access_token')}`,
 });
@@ -37,7 +37,7 @@ class DataService {
     });
   }
 
- 
+
 
   static patch(path = '', data = {}) {
     return client({
@@ -76,7 +76,7 @@ client.interceptors.request.use(config => {
   // For example tag along the bearer access token to request header or set a cookie
   const requestConfig = config;
   const { headers } = config;
- // requestConfig.headers = { ...headers, Authorization: `Bearer ${getItem('access_token')}` };
+  // requestConfig.headers = { ...headers, Authorization: `Bearer ${getItem('access_token')}` };
 
   return requestConfig;
 });

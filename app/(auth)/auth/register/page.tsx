@@ -41,6 +41,11 @@ export default function RegisterPage() {
     e.preventDefault()
     setFormError(null)
 
+    if (formData.password.length < 6) {
+      setFormError("Password must be at least 6 characters long.");
+      return;
+    }
+
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
       setFormError("Passwords do not match")
@@ -62,30 +67,31 @@ export default function RegisterPage() {
       title: "",
     }
 
+    console.log('userData', userData);
+
     try {
       const response = await authService.register(userData)
       console.log("Registered:", response)
 
-      if(response.status==200)
+      if (response.status == 200)
 
       // Show success toast
       {
-       setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        role: "job-seeker" as UserRole,
-      })
-      toast.success("Account created successfully! Welcome to JobConnect!")
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          role: "job-seeker" as UserRole,
+        })
+        toast.success("Account created successfully! Welcome to JobConnect!")
       }
-      else
-      {
+      else {
         toast.error(response?.data?.error)
       }
       // Clear form data after successful registration
-     
+
     } catch (error: any) {
       console.error("Registration failed:", error)
 
