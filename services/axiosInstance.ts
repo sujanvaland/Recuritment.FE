@@ -7,13 +7,13 @@ import { getItem } from './localStorage';
 
 const API_ENDPOINT = "https://www.onemysetu.com/api/";
 const authHeader = () => ({
-  Authorization: `Bearer ${getItem('access_token')}`,
+  Authorization: `Bearer ${getItem('token')}`,
 });
 
 const client = axios.create({
   baseURL: API_ENDPOINT,
   headers: {
-    Authorization: `Bearer ${getItem('access_token')}`,
+    Authorization: `Bearer ${getItem('token')}`,
     'Content-Type': 'application/json',
   },
 });

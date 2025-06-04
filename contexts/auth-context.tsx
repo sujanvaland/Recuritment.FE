@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from 'next/navigation';
 import type { User, UserRole } from "@/lib/auth"
 import { API_BASE_URL } from "@/lib/auth"
+import { DataService } from "@/services/axiosInstance";
 
 interface AuthContextType {
   user: User | null
@@ -38,25 +39,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/me"`, {
-          credentials: "include",
-        })
+        const response = await DataService.get("/auth/me");
 
         console.log('response', response);
 
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.user)
+        if (response.data) {
+          setUser(response.data.user)
 
           // Add redirection based on user role if on the homepage or auth pages
           const currentPath = window.location.pathname
           if (currentPath === "/" || currentPath === "/auth/login" || currentPath === "/auth/register") {
-            console.log("User role:", data.user.roles) // Debug log
-            if (data.user.roles === "employer") {
+            console.log("User role:", response.data.user.role) // Debug log
+            if (response.data.user.role === "employer") {
               // router.push("/employers/dashboard")
               console.log('employers redirect');
               router.push("/")
-            } else if (data.user.roles === "job-seeker") {
+            } else if (response.data.user.role === "job-seeker") {
               router.push("/dashboard")
               // router.push("/");
               console.log('jobseeker redirect');
@@ -78,40 +76,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null)
     setIsLoading(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        //  credentials: "include", // Important for cookies
-      })
+      const response = await DataService.post("/auth/login", {
+        email: email,
+        password: password
+      });
 
-      const data = await response.json()
+      console.log('login response', response.data);
 
-      console.log('login response', data);
-
-      if (!data?.token) {
-        throw new Error(data.error || "Login failed")
+     
+      if (!response.data?.token) {
+        throw new Error(response.data.error || "Login failed")
       }
 
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", response.data.token);
       // Set the user in state
-      setUser(data.user)
+      setUser(response.data.user)
 
-      console.log("Login successful, user role:", data.user.roles) // Debug log
+      console.log("Login successful, user role:", response.data.user.roles) // Debug log
 
       // Redirect based on user role
-      if (data.user.roles === "employer") {
+      if (response.data.user.roles === "employer") {
         console.log("Redirecting to employer dashboard") // Debug log
-        s router.push("/employers/dashboard")
-        router.push("/");
-      } else if (data.user.roles === "job-seeker") {
+        router.push("/employers/dashboard")
+      } else if (response.data.user.roles === "job-seeker") {
         console.log("Redirecting to job seeker dashboard") // Debug log
         router.push("/job-seeker/dashboard")
       } else {
-        console.error("Unknown user role:", data.user.roles) // Debug log
+        console.error("Unknown user role:", response.data.user.roles) // Debug log
         router.push("/")
       }
     } catch (error) {
@@ -127,32 +119,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null)
     setIsLoading(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        //  credentials: "include", // Important for cookies
-      })
+      const response = await DataService.post("/auth/register", {
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: data.role,
+        company: data.company || "",
+        title: data.title || "",
+      });
 
-      const responseData = await response.json();
+      console.log('regster responseData', response);
 
-      console.log('regster responseData', responseData);
-
-      if (!response.ok) {
-        throw new Error(responseData.error || "Registration failed")
+      if (!response.data.token) {
+        throw new Error(response.data.error || "Registration failed")
       }
 
       // Set the user in state
-      setUser(responseData.user);
-      localStorage.setItem("token", responseData.token);
+      setUser(response.data.user);
+      localStorage.setItem("token", response.data.token);
 
       // Redirect based on user role
-      if (responseData.user.roles === "employer") {
+      if (response.data.user.roles === "employer") {
         router.push("/employers/dashboard")
         console.log('employerdashboard');
-      } else if (responseData.user.roles === "job-seeker") {
+      } else if (response.data.user.roles === "job-seeker") {
         console.log('jobseeker dashboard');
         router.push("/dashboard")
       } else {

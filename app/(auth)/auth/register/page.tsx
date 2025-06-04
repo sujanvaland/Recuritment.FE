@@ -69,15 +69,12 @@ export default function RegisterPage() {
       title: "",
     }
 
-    console.log('userData', userData);
-
+    await register(userData);
     try {
       const response = await authService.register(userData)
       console.log("Registered:", response)
 
       if (response?.token)
-
-      // Show success toast
       {
         setFormData({
           firstName: "",
@@ -92,12 +89,10 @@ export default function RegisterPage() {
         toast.success("Account created successfully! Welcome to JobConnect!")
 
         if (response.user?.roles === "employer") {
-          router.push("/employers/dashboard");
+          router.push("/dashboard");
         } else {
           router.push("/dashboard");
         }
-
-
       }
       else {
         toast.error(response?.data?.error)
