@@ -2,6 +2,7 @@ import { jwtVerify, SignJWT } from "jose"
 
 // Secret key for JWT signing - in a real app, this would be an environment variable
 const JWT_SECRET = new TextEncoder().encode("jobconnect-secret-key")
+export const API_BASE_URL = "https://www.onemysetu.com/api";
 
 export type UserRole = "employer" | "job-seeker"
 
