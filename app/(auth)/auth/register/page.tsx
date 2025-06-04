@@ -15,9 +15,11 @@ import { useAuth } from "@/contexts/auth-context";
 import type { UserRole } from "@/lib/auth";
 import authService from "@/services/authService";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const { register, isLoading, error } = useAuth();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -73,7 +75,7 @@ export default function RegisterPage() {
       const response = await authService.register(userData)
       console.log("Registered:", response)
 
-      if (response.status == 200)
+      if (response?.token)
 
       // Show success toast
       {
@@ -84,8 +86,18 @@ export default function RegisterPage() {
           password: "",
           confirmPassword: "",
           role: "job-seeker" as UserRole,
-        })
+        });
+
+        localStorage.setItem("token", response.token);
         toast.success("Account created successfully! Welcome to JobConnect!")
+
+        if (response.user?.roles === "employer") {
+          router.push("/employers/dashboard");
+        } else {
+          router.push("/dashboard");
+        }
+
+
       }
       else {
         toast.error(response?.data?.error)
