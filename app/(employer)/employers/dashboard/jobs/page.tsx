@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, Clock, MapPin, MoreHorizontal, Plus, Search, SlidersHorizontal, Users } from "lucide-react"
+import { Calendar, Clock, Link, MapPin, MoreHorizontal, Plus, Search, SlidersHorizontal, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -164,10 +164,12 @@ export default function JobsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Jobs</h1>
           <p className="text-muted-foreground">Manage your job postings and applications</p>
         </div>
-        <Button className="w-full sm:w-auto">
-          <Plus className="mr-2 h-4 w-4" />
-          Post New Job
-        </Button>
+        {/* <Button className="w-full sm:w-auto">
+          <Plus className="mr-2 h-4 w-4" /> */}
+          <Link href="/employers/dashboard/jobs/post">
+          Post New Jobb
+          </Link>
+        {/* </Button> */}
       </div>
 
       <div className="flex flex-col gap-4 md:flex-row">
