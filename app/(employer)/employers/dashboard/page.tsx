@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/auth-context"
 
 export default function EmployerDashboardPage() {
   const { user } = useAuth()
-  alert('employer dashboard page')
+  //alert('employer dashboard page')
   return (
     <>
       <div className="mb-8">

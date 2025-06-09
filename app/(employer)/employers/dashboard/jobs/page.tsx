@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Calendar, Clock, Link, MapPin, MoreHorizontal, Plus, Search, SlidersHorizontal, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -10,110 +10,113 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"
+import { useRouter } from 'next/navigation';
 
 // Sample job data
-const jobs = [
-  {
-    id: 1,
-    title: "Senior Frontend Developer",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    applicants: 24,
-    posted: "2 weeks ago",
-    status: "active",
-    expires: "30 days",
-  },
-  {
-    id: 2,
-    title: "UX/UI Designer",
-    location: "Remote",
-    type: "Full-time",
-    applicants: 18,
-    posted: "3 days ago",
-    status: "active",
-    expires: "29 days",
-  },
-  {
-    id: 3,
-    title: "DevOps Engineer",
-    location: "New York, NY",
-    type: "Full-time",
-    applicants: 12,
-    posted: "1 week ago",
-    status: "active",
-    expires: "25 days",
-  },
-  {
-    id: 4,
-    title: "Product Manager",
-    location: "Boston, MA",
-    type: "Full-time",
-    applicants: 31,
-    posted: "3 weeks ago",
-    status: "active",
-    expires: "10 days",
-  },
-  {
-    id: 5,
-    title: "Marketing Specialist",
-    location: "Chicago, IL",
-    type: "Contract",
-    applicants: 8,
-    posted: "5 days ago",
-    status: "active",
-    expires: "25 days",
-  },
-  {
-    id: 6,
-    title: "Backend Developer",
-    location: "Remote",
-    type: "Full-time",
-    applicants: 15,
-    posted: "2 days ago",
-    status: "active",
-    expires: "28 days",
-  },
-  {
-    id: 7,
-    title: "Data Analyst",
-    location: "Seattle, WA",
-    type: "Part-time",
-    applicants: 7,
-    posted: "1 week ago",
-    status: "active",
-    expires: "20 days",
-  },
-  {
-    id: 8,
-    title: "Customer Support Specialist",
-    location: "Austin, TX",
-    type: "Full-time",
-    applicants: 22,
-    posted: "4 days ago",
-    status: "active",
-    expires: "26 days",
-  },
-  {
-    id: 9,
-    title: "Junior Web Developer",
-    location: "San Diego, CA",
-    type: "Internship",
-    applicants: 19,
-    posted: "1 week ago",
-    status: "active",
-    expires: "22 days",
-  },
-  {
-    id: 10,
-    title: "Senior Project Manager",
-    location: "Denver, CO",
-    type: "Full-time",
-    applicants: 14,
-    posted: "2 weeks ago",
-    status: "active",
-    expires: "15 days",
-  },
-]
+// const jobs = [
+//   {
+//     id: 1,
+//     title: "Senior Frontend Developer",
+//     location: "San Francisco, CA",
+//     type: "Full-time",
+//     applicants: 24,
+//     posted: "2 weeks ago",
+//     status: "active",
+//     expires: "30 days",
+//   },
+//   {
+//     id: 2,
+//     title: "UX/UI Designer",
+//     location: "Remote",
+//     type: "Full-time",
+//     applicants: 18,
+//     posted: "3 days ago",
+//     status: "active",
+//     expires: "29 days",
+//   },
+//   {
+//     id: 3,
+//     title: "DevOps Engineer",
+//     location: "New York, NY",
+//     type: "Full-time",
+//     applicants: 12,
+//     posted: "1 week ago",
+//     status: "active",
+//     expires: "25 days",
+//   },
+//   {
+//     id: 4,
+//     title: "Product Manager",
+//     location: "Boston, MA",
+//     type: "Full-time",
+//     applicants: 31,
+//     posted: "3 weeks ago",
+//     status: "active",
+//     expires: "10 days",
+//   },
+//   {
+//     id: 5,
+//     title: "Marketing Specialist",
+//     location: "Chicago, IL",
+//     type: "Contract",
+//     applicants: 8,
+//     posted: "5 days ago",
+//     status: "active",
+//     expires: "25 days",
+//   },
+//   {
+//     id: 6,
+//     title: "Backend Developer",
+//     location: "Remote",
+//     type: "Full-time",
+//     applicants: 15,
+//     posted: "2 days ago",
+//     status: "active",
+//     expires: "28 days",
+//   },
+//   {
+//     id: 7,
+//     title: "Data Analyst",
+//     location: "Seattle, WA",
+//     type: "Part-time",
+//     applicants: 7,
+//     posted: "1 week ago",
+//     status: "active",
+//     expires: "20 days",
+//   },
+//   {
+//     id: 8,
+//     title: "Customer Support Specialist",
+//     location: "Austin, TX",
+//     type: "Full-time",
+//     applicants: 22,
+//     posted: "4 days ago",
+//     status: "active",
+//     expires: "26 days",
+//   },
+//   {
+//     id: 9,
+//     title: "Junior Web Developer",
+//     location: "San Diego, CA",
+//     type: "Internship",
+//     applicants: 19,
+//     posted: "1 week ago",
+//     status: "active",
+//     expires: "22 days",
+//   },
+//   {
+//     id: 10,
+//     title: "Senior Project Manager",
+//     location: "Denver, CO",
+//     type: "Full-time",
+//     applicants: 14,
+//     posted: "2 weeks ago",
+//     status: "active",
+//     expires: "15 days",
+//   },
+// ]
 
 // Sample draft jobs
 const draftJobs = [
@@ -153,10 +156,60 @@ const expiredJobs = [
   },
 ]
 
+type Job = {
+  id: number
+  title: string
+  location: string
+  type: string
+  applicants?: number
+  status?: string
+  createdAt?: string
+  expiresAt?: string
+  posted?: string
+  expires?: string
+}
+
+
+
+
 export default function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("active")
 
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const router = useRouter();
+
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await DataService.get("/jobs", {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            search: "",
+            remote: true,
+            tag: "",
+            page: 1,
+            pageSize: 5,
+          },
+        });
+        setJobs(response.data.jobs || []);
+        console.log('responsejobs', response.data);
+      } catch (err) {
+        setError("Failed to load jobs");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+
+  console.log('jobs', jobs);
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -166,9 +219,9 @@ export default function JobsPage() {
         </div>
         {/* <Button className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" /> */}
-          <Link href="/employers/dashboard/jobs/post">
-          Post New Jobb
-          </Link>
+        <Link href="/employers/dashboard/jobs/post">
+          Post New Job
+        </Link>
         {/* </Button> */}
       </div>
 
@@ -221,9 +274,11 @@ export default function JobsPage() {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
+          {jobs.map((job) => {
+            if (!job.createdAt || !job.expiresAt) return null; // or show error card
+            const { posted, expires } = getJobTimeInfo(job.createdAt, job.expiresAt);
+            return <JobCard key={job.id} job={{ ...job, posted, expires }} />;
+          })}
         </TabsContent>
 
         <TabsContent value="drafts" className="space-y-4">
@@ -330,7 +385,16 @@ export default function JobsPage() {
   )
 }
 
-function JobCard({ job }) {
+function JobCard({ job }: { job: Job }) {
+  console.log('jobcard', job);
+  const router = useRouter();
+  const { createdAt, expiresAt } = job;
+  const { posted, expires } = createdAt && expiresAt
+    ? getJobTimeInfo(createdAt, expiresAt)
+    : { posted: "N/A", expires: "N/A" };
+
+  console.log('posted,expires ', posted, expires);
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -350,7 +414,7 @@ function JobCard({ job }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Edit Job</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/edit?id=${job.id}`)}>Edit Job</DropdownMenuItem>
               <DropdownMenuItem>View Applicants</DropdownMenuItem>
               <DropdownMenuItem>Duplicate</DropdownMenuItem>
               <DropdownMenuItem className="text-destructive">Close Job</DropdownMenuItem>
@@ -367,17 +431,17 @@ function JobCard({ job }) {
           </div>
           <div className="text-sm text-muted-foreground">
             <Clock className="mr-1 inline-block h-3 w-3" />
-            Posted {job.posted}
+            Posted {posted}
           </div>
           <div className="text-sm text-muted-foreground">
             <Calendar className="mr-1 inline-block h-3 w-3" />
-            Expires in {job.expires}
+            Expires in {expires}
           </div>
         </div>
       </CardContent>
       <CardFooter className="border-t pt-4">
         <div className="flex w-full justify-between">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => router.push(`/employers/dashboard/jobs/${job.id}`)}>
             View Details
           </Button>
           <Button variant="outline" size="sm">

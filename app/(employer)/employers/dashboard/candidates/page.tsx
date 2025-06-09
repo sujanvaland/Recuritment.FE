@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Briefcase,
   Calendar,
@@ -26,6 +26,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"
 
 // Sample candidate data
 const candidates = [
@@ -151,9 +153,44 @@ const candidates = [
   },
 ]
 
+
+
+
 export default function CandidatesPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("all")
+  const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+
+
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await DataService.get("/candidates", {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            search: "",
+            JobId: 5,
+            page: 1,
+            pageSize: "5",
+          },
+        });
+        console.log('responsejobs', response.data);
+      } catch (err) {
+        setError("Failed to load jobs");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+
+
 
   // Filter candidates based on selected tab
   const filteredCandidates = candidates.filter((candidate) => {
@@ -257,8 +294,10 @@ export default function CandidatesPage() {
   )
 }
 
-function CandidateCard({ candidate }) {
-  const getStatusBadge = (status) => {
+
+
+function CandidateCard({ candidate }: { candidate: any }) {
+  const getStatusBadge = (status: any) => {
     switch (status) {
       case "active":
         return <Badge className="bg-green-100 text-green-700">Active</Badge>
@@ -279,7 +318,7 @@ function CandidateCard({ candidate }) {
               <AvatarFallback>
                 {candidate.name
                   .split(" ")
-                  .map((n) => n[0])
+                  .map((n: any) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>
@@ -351,7 +390,7 @@ function CandidateCard({ candidate }) {
         <div className="space-y-2">
           <div className="text-sm font-medium">Skills</div>
           <div className="flex flex-wrap gap-2">
-            {candidate.skills.map((skill, index) => (
+            {candidate.skills.map((skill: any, index: any) => (
               <Badge key={index} variant="outline">
                 {skill}
               </Badge>

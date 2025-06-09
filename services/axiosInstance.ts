@@ -20,13 +20,24 @@ const client = axios.create({
 
 
 class DataService {
-  static get(path = '') {
+  // static get(path = '') {
+  //   return client({
+  //     method: 'GET',
+  //     url: path,
+  //     headers: { ...authHeader() },
+  //   });
+  // }
+
+  static get(path = '', config: import('axios').AxiosRequestConfig = {}) {
     return client({
       method: 'GET',
       url: path,
-      headers: { ...authHeader() },
+      headers: { ...authHeader(), ...(config.headers || {}) },
+      params: config.params,
     });
   }
+
+
 
   static post(path = '', data = {}, optionalHeader = {}) {
     return client({
@@ -57,7 +68,7 @@ class DataService {
     });
   }
 
-  static put(path = '', data = {}) {
+  static put(path = '', data = {}, p0: { headers: { Authorization: string; "Content-Type": string; }; }) {
     return client({
       method: 'PUT',
       url: path,

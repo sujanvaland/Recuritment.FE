@@ -9,8 +9,8 @@ export default function MainLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 border-b bg-white">
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <header className="sticky top-0 z-50 border-b bg-white w-full items-center flex justify-center">
         <div className="container flex h-16 items-center px-4 md:px-6">
           <MainNav />
         </div>

@@ -20,7 +20,7 @@ export default function EmployerDashboardLayout({
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && (!user || user.roles !== "employer")) {
+    if (!isLoading && (!user || user.role !== "employer")) {
       router.push("/auth/login")
     }
   }, [user, isLoading, router])
