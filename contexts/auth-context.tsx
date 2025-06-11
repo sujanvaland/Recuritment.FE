@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push("/employers/dashboard")
       } else if (response.data.user.roles === "job-seeker") {
         console.log("Redirecting to job seeker dashboard") // Debug log
-        router.push("/job-seeker/dashboard")
+        router.push("/dashboard")
       } else {
         console.error("Unknown user role:", response.data.user.roles) // Debug log
         router.push("/")

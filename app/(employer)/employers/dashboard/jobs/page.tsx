@@ -14,127 +14,6 @@ import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 
-// Sample job data
-// const jobs = [
-//   {
-//     id: 1,
-//     title: "Senior Frontend Developer",
-//     location: "San Francisco, CA",
-//     type: "Full-time",
-//     applicants: 24,
-//     posted: "2 weeks ago",
-//     status: "active",
-//     expires: "30 days",
-//   },
-//   {
-//     id: 2,
-//     title: "UX/UI Designer",
-//     location: "Remote",
-//     type: "Full-time",
-//     applicants: 18,
-//     posted: "3 days ago",
-//     status: "active",
-//     expires: "29 days",
-//   },
-//   {
-//     id: 3,
-//     title: "DevOps Engineer",
-//     location: "New York, NY",
-//     type: "Full-time",
-//     applicants: 12,
-//     posted: "1 week ago",
-//     status: "active",
-//     expires: "25 days",
-//   },
-//   {
-//     id: 4,
-//     title: "Product Manager",
-//     location: "Boston, MA",
-//     type: "Full-time",
-//     applicants: 31,
-//     posted: "3 weeks ago",
-//     status: "active",
-//     expires: "10 days",
-//   },
-//   {
-//     id: 5,
-//     title: "Marketing Specialist",
-//     location: "Chicago, IL",
-//     type: "Contract",
-//     applicants: 8,
-//     posted: "5 days ago",
-//     status: "active",
-//     expires: "25 days",
-//   },
-//   {
-//     id: 6,
-//     title: "Backend Developer",
-//     location: "Remote",
-//     type: "Full-time",
-//     applicants: 15,
-//     posted: "2 days ago",
-//     status: "active",
-//     expires: "28 days",
-//   },
-//   {
-//     id: 7,
-//     title: "Data Analyst",
-//     location: "Seattle, WA",
-//     type: "Part-time",
-//     applicants: 7,
-//     posted: "1 week ago",
-//     status: "active",
-//     expires: "20 days",
-//   },
-//   {
-//     id: 8,
-//     title: "Customer Support Specialist",
-//     location: "Austin, TX",
-//     type: "Full-time",
-//     applicants: 22,
-//     posted: "4 days ago",
-//     status: "active",
-//     expires: "26 days",
-//   },
-//   {
-//     id: 9,
-//     title: "Junior Web Developer",
-//     location: "San Diego, CA",
-//     type: "Internship",
-//     applicants: 19,
-//     posted: "1 week ago",
-//     status: "active",
-//     expires: "22 days",
-//   },
-//   {
-//     id: 10,
-//     title: "Senior Project Manager",
-//     location: "Denver, CO",
-//     type: "Full-time",
-//     applicants: 14,
-//     posted: "2 weeks ago",
-//     status: "active",
-//     expires: "15 days",
-//   },
-// ]
-
-// Sample draft jobs
-const draftJobs = [
-  {
-    id: 11,
-    title: "Mobile App Developer",
-    location: "Portland, OR",
-    type: "Full-time",
-    lastEdited: "Yesterday",
-  },
-  {
-    id: 12,
-    title: "Technical Writer",
-    location: "Remote",
-    type: "Contract",
-    lastEdited: "3 days ago",
-  },
-]
 
 // Sample expired jobs
 const expiredJobs = [
@@ -172,44 +51,150 @@ type Job = {
 
 
 
+
+
 export default function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("active")
 
   const [jobs, setJobs] = useState<Job[]>([])
+  const [allJobs, setAllJobs] = useState<Job[]>([]);
+  const [displayJobs, setDisplayJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [totalData, setTotalData] = useState(0);
+  const [draftJobs, setDraftjob] = useState<Job[]>([]);
+  const [activejob, setActivejob] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const router = useRouter();
+  const pageSize = 5;
+  const totalPages = Math.ceil(totalData / pageSize);
+
+  // useEffect(() => {
+  //   const fetchJobs = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const response = await DataService.get("/jobs", {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //         params: {
+  //           search: "",
+  //           remote: true,
+  //           tag: "",
+  //           page: page,
+  //           pageSize: pageSize,
+  //         },
+  //       });
+  //       if (response?.status == 200) {
+  //         setJobs(response.data.jobs || []);
+  //         setTotalData(response.data.total);
+  //       }
+
+
+  //       console.log('responsejobs', response);
+  //     } catch (err) {
+  //       setError("Failed to load jobs");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchJobs();
+  // }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = allJobs.filter((job) =>
+        job.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setDisplayJobs(filtered);
+    } else {
+      setDisplayJobs(allJobs); // Reset to all jobs when search is cleared
+    }
+  }, [searchQuery, allJobs]);
+
+
+
+
+  const fetchJobs = async (page = 1, dynamicPageSize: any = null) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await DataService.get("/jobs", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          search: "",
+          remote: true,
+          tag: "",
+          status: "",
+          page: page,
+          pageSize: dynamicPageSize,
+        },
+      });
+
+      if (response?.status === 200) {
+        setJobs(response.data.jobs || []);
+        // setAllJobs(response.data.jobs || []);
+        setTotalData(response.data.total);
+        const jobsdata = response.data.jobs || [];
+
+
+        if (dynamicPageSize == null && page === 1) {
+          setDraftjob(jobsdata.filter((job: any) => job.status === "draft"));
+          const activeJobs = jobsdata?.filter((job: any) => job.status === 'active');
+          console.log('draftJobs', draftJobs);
+          //setDraftjob(draftJobs);
+          setActivejob(activeJobs);
+          setDisplayJobs(jobsdata.slice(0, pageSize));
+          setAllJobs(jobsdata.slice(0, pageSize));
+        } else {
+          setDisplayJobs(jobsdata); // Direct API result when paginated
+        }
+
+      }
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await DataService.get("/jobs", {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            search: "",
-            remote: true,
-            tag: "",
-            page: 1,
-            pageSize: 5,
-          },
-        });
-        setJobs(response.data.jobs || []);
-        console.log('responsejobs', response.data);
-      } catch (err) {
-        setError("Failed to load jobs");
-      } finally {
-        setLoading(false);
+    if (currentPage === 1) {
+      fetchJobs(1, null); // initial full fetch
+    } else {
+      fetchJobs(currentPage, pageSize); // paginated fetch after page 1
+    }
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+
+      // If already have all jobs (from page 1), just slice
+      if (page === 1 && jobs.length > 0) {
+        setDisplayJobs(jobs.slice(0, pageSize));
+      } else if (page !== 1) {
+        // Fetch new page
+        fetchJobs(page, pageSize);
       }
-    };
-    fetchJobs();
-  }, []);
+    }
+  };
 
 
-  console.log('jobs', jobs);
+  // useEffect(() => {
+  //   fetchJobs(currentPage);
+  // }, [currentPage]);
+
+  // const handlePageChange = (page: any) => {
+  //   if (page >= 1 && page <= totalPages) {
+  //     setCurrentPage(page);
+  //   }
+  // };
+
+
+  console.log('jobs', displayJobs);
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -261,7 +246,7 @@ export default function JobsPage() {
         <TabsList>
           <TabsTrigger value="active" className="relative">
             Active
-            <Badge className="ml-2 bg-primary/10 text-primary">{jobs.length}</Badge>
+            <Badge className="ml-2 bg-primary/10 text-primary">{activejob.length}</Badge>
           </TabsTrigger>
           <TabsTrigger value="drafts" className="relative">
             Drafts
@@ -274,23 +259,55 @@ export default function JobsPage() {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          {jobs.map((job) => {
+          {displayJobs.map((job) => {
             if (!job.createdAt || !job.expiresAt) return null; // or show error card
             const { posted, expires } = getJobTimeInfo(job.createdAt, job.expiresAt);
             return <JobCard key={job.id} job={{ ...job, posted, expires }} />;
           })}
+
+          <div className="flex justify-center mt-6 space-x-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i + 1)}
+                className={`px-3 py-1 rounded ${currentPage === i + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200"
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+
         </TabsContent>
 
         <TabsContent value="drafts" className="space-y-4">
           {draftJobs.map((job) => (
-            <Card key={job.id}>
+            <Card key={job?.id}>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle>{job.title}</CardTitle>
+                    <CardTitle>{job?.title}</CardTitle>
                     <CardDescription className="flex items-center mt-1">
                       <MapPin className="mr-1 h-3 w-3" />
-                      {job.location}
+                      {job?.location}
                     </CardDescription>
                   </div>
                   <DropdownMenu>
@@ -313,7 +330,7 @@ export default function JobsPage() {
                   <Badge variant="outline">{job.type}</Badge>
                   <div className="text-sm text-muted-foreground">
                     <Clock className="mr-1 inline-block h-3 w-3" />
-                    Last edited {job.lastEdited}
+                    Last edited
                   </div>
                 </div>
               </CardContent>
@@ -380,20 +397,21 @@ export default function JobsPage() {
             </Card>
           ))}
         </TabsContent>
+
       </Tabs>
     </div>
   )
 }
 
 function JobCard({ job }: { job: Job }) {
-  console.log('jobcard', job);
+  //console.log('jobcard', job);
   const router = useRouter();
   const { createdAt, expiresAt } = job;
   const { posted, expires } = createdAt && expiresAt
     ? getJobTimeInfo(createdAt, expiresAt)
     : { posted: "N/A", expires: "N/A" };
 
-  console.log('posted,expires ', posted, expires);
+  // console.log('posted,expires ', posted, expires);
 
   return (
     <Card>

@@ -54,7 +54,7 @@ export default function EmployerDashboardLayout({
             </div>
             <div className="ml-auto flex items-center gap-4">
               <Button asChild variant="default" size="sm" className="hidden md:flex">
-                <Link href="/jobs/post">Post a Job</Link>
+                <Link href="/employers/dashboard/jobs/post">Post a Job</Link>
               </Button>
               <div className="flex items-center gap-2">
                 <span className="hidden text-sm font-medium md:block">
