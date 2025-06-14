@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import type { User, UserRole } from "@/lib/auth"
 import { API_BASE_URL } from "@/lib/auth"
 import { DataService } from "@/services/axiosInstance";
+import { set } from "date-fns";
 
 interface AuthContextType {
   user: User | null
@@ -45,16 +46,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('response auth', response);
 
         if (response.data) {
-          setUser(response.data.user)
-
           // Add redirection based on user role if on the homepage or auth pages
           const currentPath = window.location.pathname
           if (currentPath === "/" || currentPath === "/auth/login" || currentPath === "/auth/register") {
             console.log("User role:", response.data.user.role) // Debug log
             if (response.data.user.role === "employer") {
-              // router.push("/employers/dashboard")
               console.log('employers redirect');
-              router.push("/")
+              router.push("/employers/dashboard")
             } else if (response.data.user.role === "job-seeker") {
               router.push("/dashboard")
               // router.push("/");
@@ -70,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     checkAuth()
-  }, [router])
+  }, [router,user])
 
   const login = async (email: string, password: string) => {
     console.log('logindetails', email, password);
@@ -89,23 +87,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(response.data.error || "Login failed")
       }
 
-
+      setUser(response.data.user);
       localStorage.setItem("user", response.data.user);
       localStorage.setItem("token", response.data.token);
 
       console.log("Login successful, user role:", response.data.user.roles) // Debug log
 
-      // Redirect based on user role
-      if (response.data.user.roles === "employer") {
-        console.log("Redirecting to employer dashboard") // Debug log
-        router.push("/employers/dashboard")
-      } else if (response.data.user.roles === "job-seeker") {
-        console.log("Redirecting to job seeker dashboard") // Debug log
-        router.push("/dashboard")
-      } else {
-        console.error("Unknown user role:", response.data.user.roles) // Debug log
-        router.push("/")
-      }
+      
     } catch (error) {
       setError((error as Error).message)
       console.error("Login error:", error)

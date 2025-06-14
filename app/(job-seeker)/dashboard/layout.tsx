@@ -21,7 +21,8 @@ export default function JobSeekerDashboardLayout({
   const pathname = usePathname()
 
   useEffect(() => {
-    if (!isLoading && (!user || user.role !== "job-seeker")) {
+    console.log("JobSeekerDashboardLayout mounted", { user, isLoading, pathname })
+    if (!isLoading && (!user || user.roles !== "job-seeker")) {
       router.push("/auth/login")
     }
   }, [user, isLoading, router])

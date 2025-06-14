@@ -10,7 +10,8 @@ export interface User {
   id: string
   email: string
   firstName: string
-  lastName: string
+  lastName: string,
+  roles?:  string,
   role: UserRole
   company?: string
   title?: string
