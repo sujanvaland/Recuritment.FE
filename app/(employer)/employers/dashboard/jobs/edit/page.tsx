@@ -30,6 +30,7 @@ interface JobFormData {
   description: string
   requirements: string
   benefits: string[]
+  employerId: string,
   tags: string[]
   remote: boolean
   status: string
@@ -46,7 +47,7 @@ export default function EditJobPage() {
   const jobid = searchParams.get('id');
   const [jobDataFromAPI, setJobDataFromAPI] = useState<Partial<JobFormData> | null>(null);
 
-  console.log('jobid', jobid);
+  console.log('putjobid', jobid);
 
   const [formData, setFormData] = useState<JobFormData>({
     id: jobid ? Number(jobid) : null,
@@ -57,11 +58,14 @@ export default function EditJobPage() {
     salary: "",
     description: "",
     requirements: "",
+    employerId: "",
     benefits: [],
     tags: [],
     remote: false,
     status: "active",
   })
+
+
 
   const [errors, setErrors] = useState<Partial<JobFormData>>({})
 
@@ -160,6 +164,7 @@ export default function EditJobPage() {
         description: jobDataFromAPI.description ?? "",
         requirements: jobDataFromAPI.requirements ?? "",
         benefits: jobDataFromAPI.benefits ?? [],
+        employerId: user?.id.toString() ?? "",
         tags: jobDataFromAPI.tags ?? [],
         remote: jobDataFromAPI.remote ?? false,
         status: jobDataFromAPI.status ?? "active",
@@ -185,8 +190,7 @@ export default function EditJobPage() {
       })
       return
     }
-    console.log('Form is valid, proceeding...');
-    console.log('formData', formData);
+
 
     setIsSubmitting(true);
 
@@ -200,18 +204,21 @@ export default function EditJobPage() {
     try {
       //  const response = await fetch("/api/jobs", {
       const token = localStorage.getItem("token")
-      const response = await DataService.put(`/jobs/${formData.id}`, jobData, {
+      console.log('jobData1234', jobData);
+      const response = await DataService.post(`/jobs/UpdateJob`, jobData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       })
         .then((response) => {
-          if (response.status === 201) {
+          console.log('response', response);
+          if (response.status === 200) {
             toast({
               title: "Success!",
               description: isDraft ? "Job saved as draft" : "Job posted successfully",
-            })
+            });
+            router.push("/employers/dashboard/jobs")
           } else {
             console.warn("Unexpected status code:", response.status);
           }
@@ -227,7 +234,7 @@ export default function EditJobPage() {
       //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
       // })
 
-      router.push("/employers/dashboard/jobs")
+
     } catch (error) {
       console.error("Error posting job:", error)
       toast({

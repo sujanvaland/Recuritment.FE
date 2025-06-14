@@ -70,54 +70,7 @@ export default function RegisterPage() {
     }
 
     await register(userData);
-    try {
-      const response = await authService.register(userData)
-      console.log("Registered:", response)
 
-      if (response?.token)
-      {
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          role: "job-seeker" as UserRole,
-        });
-
-        localStorage.setItem("token", response.token);
-        toast.success("Account created successfully! Welcome to JobConnect!")
-
-        if (response.user?.roles === "employer") {
-          router.push("/dashboard");
-        } else {
-          router.push("/dashboard");
-        }
-      }
-      else {
-        toast.error(response?.data?.error)
-      }
-      // Clear form data after successful registration
-
-    } catch (error: any) {
-      console.error("Registration failed:", error)
-
-      // Check for duplicate email error
-      if (
-        error.response?.status === 409 ||
-        error.response?.data?.message?.toLowerCase().includes("email") ||
-        error.response?.data?.error?.toLowerCase().includes("email") ||
-        error.response?.data?.toLowerCase().includes("User with this email already exists")
-      ) {
-        toast.error("An account with that email already exists. Please use a different email or try signing in.")
-      } else if (error.response?.data?.message) {
-        // Show specific error message from backend
-        toast.error(error.response.data.message)
-      } else {
-        // Generic error message
-        toast.error("Registration failed. Please try again.")
-      }
-    }
   };
 
   return (

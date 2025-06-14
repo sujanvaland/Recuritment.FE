@@ -35,28 +35,19 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <Home className="mr-3 h-5 w-5" />
             Dashboard
           </Link>
-          <Link
-            href="/employers/dashboard/jobs/post"
-            className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/jobs"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-          >
-            <Briefcase className="mr-3 h-5 w-5" />
-            Post Job
-          </Link>
+
           <Link
             href="/employers/dashboard/jobs"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/jobs"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <Briefcase className="mr-3 h-5 w-5" />
@@ -65,8 +56,8 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard/applications"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/applications"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <FileText className="mr-3 h-5 w-5" />
@@ -75,8 +66,8 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard/candidates"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/candidates"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <Users className="mr-3 h-5 w-5" />
@@ -85,8 +76,8 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard/messages"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/messages"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <MessageSquare className="mr-3 h-5 w-5" />
@@ -95,8 +86,8 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard/interviews"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/interviews"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <Calendar className="mr-3 h-5 w-5" />
@@ -105,8 +96,8 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard/analytics"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/analytics"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <BarChart className="mr-3 h-5 w-5" />
@@ -115,8 +106,8 @@ export function EmployerSidebar() {
           <Link
             href="/employers/dashboard/settings"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/settings"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-slate-100 text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
           >
             <Settings className="mr-3 h-5 w-5" />

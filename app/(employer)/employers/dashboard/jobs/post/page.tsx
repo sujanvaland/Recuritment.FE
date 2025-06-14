@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Plus, X } from "lucide-react"
 import Link from "next/link"
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import { DataService } from "@/services/axiosInstance";
+import { useSearchParams } from 'next/navigation';
 
 interface JobFormData {
   title: string
@@ -40,6 +41,9 @@ export default function PostJobPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [newBenefit, setNewBenefit] = useState("")
   const [newTag, setNewTag] = useState("")
+  const searchParams = useSearchParams();
+  const jobid = searchParams.get('id');
+  const [jobDataFromAPI, setJobDataFromAPI] = useState<Partial<JobFormData> | null>(null);
 
   const [formData, setFormData] = useState<JobFormData>({
     title: "",
@@ -55,7 +59,57 @@ export default function PostJobPage() {
     status: "active",
   })
 
+  useEffect(() => {
+    if (jobDataFromAPI) {
+      console.log('jobDataFromAPI', jobDataFromAPI);
+      setFormData({
+        title: jobDataFromAPI.title ?? "",
+        company: jobDataFromAPI.company ?? "",
+        location: jobDataFromAPI.location ?? "",
+        type: jobDataFromAPI.type ?? "",
+        salary: jobDataFromAPI.salary ?? "",
+        description: jobDataFromAPI.description ?? "",
+        requirements: jobDataFromAPI.requirements ?? "",
+        benefits: jobDataFromAPI.benefits ?? [],
+        tags: jobDataFromAPI.tags ?? [],
+        remote: jobDataFromAPI.remote ?? false,
+        status: jobDataFromAPI.status ?? "active",
+      });
+    }
+  }, [jobDataFromAPI]);
+
+
   const [errors, setErrors] = useState<Partial<JobFormData>>({})
+
+  useEffect(() => {
+    console.log('useEffect triggered with jobid:', jobid);
+    if (!jobid) {
+      console.warn('No jobid available yest');
+      return; // Don't run fetch if no id
+    }
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await DataService.get(`/jobs/${jobid}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('editresponsejobs', response.data);
+        setJobDataFromAPI(response.data);
+
+        // Update form data with fetched job info here:
+        setFormData((prev) => ({
+          ...prev,
+          ...response.data.job, // or adjust according to your API response shape
+        }));
+      } catch (err) {
+        console.error("Failed to fetch job:", err);
+      }
+    };
+    fetchJobs();
+  }, [jobid]);
+
+
+
 
   const validateForm = () => {
     const newErrors: Partial<JobFormData> = {}

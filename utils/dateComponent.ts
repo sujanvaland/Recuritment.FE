@@ -10,8 +10,6 @@ export const getJobTimeInfo = (createdAt: string, expiresAt: string) => {
     const created = sanitizeDate(createdAt);
     const expires = sanitizeDate(expiresAt);
 
-    //  console.log('created', created, 'expires', expires);
-
     const posted = formatDistanceToNowStrict(created, {
         addSuffix: true,
     });

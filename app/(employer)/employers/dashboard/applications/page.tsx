@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Calendar,
   Check,
@@ -14,7 +14,7 @@ import {
   Star,
   X,
 } from "lucide-react"
-
+import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -23,6 +23,10 @@ import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"
+import { useRouter } from 'next/navigation';
+import { useAuth } from "@/contexts/auth-context"
 
 // Sample application data
 const applications = [
@@ -132,9 +136,17 @@ const applications = [
   },
 ]
 
+
+
+
 export default function ApplicationsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("all")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth()
+  const { toast } = useToast()
+  const [totalData, setTotalData] = useState(0);
 
   // Filter applications based on selected tab
   const filteredApplications = applications.filter((app) => {
@@ -145,6 +157,36 @@ export default function ApplicationsPage() {
     if (selectedTab === "rejected" && app.status === "rejected") return true
     return false
   })
+
+
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
+
+  const pageSize = 5;
+  const totalPages = Math.ceil(totalData / pageSize);
+
+  const fetchApplications = async () => {
+    setLoading(true);
+    console.log('call applicaiton api');
+    try {
+      const token = localStorage.getItem("token");
+      const response = await DataService.get("/applications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log('applications response', response);
+      if (response?.status === 200) {
+        console.log('applications response');
+      }
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="space-y-6">
@@ -341,9 +383,8 @@ function ApplicationCard({ application }) {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${
-                      i < application.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                    }`}
+                    className={`h-4 w-4 ${i < application.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                      }`}
                   />
                 ))}
               </div>

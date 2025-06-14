@@ -39,9 +39,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        
         const response = await DataService.get("/auth/me");
 
-        console.log('response', response);
+        console.log('response auth', response);
 
         if (response.data) {
           setUser(response.data.user)
@@ -89,9 +90,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
 
+      localStorage.setItem("user", response.data.user);
       localStorage.setItem("token", response.data.token);
-      // Set the user in state
-      setUser(response.data.user)
 
       console.log("Login successful, user role:", response.data.user.roles) // Debug log
 
@@ -133,22 +133,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!response.data.token) {
         throw new Error(response.data.error || "Registration failed")
+      } else {
+        // Set the user in state
+        localStorage.setItem("user", response.data.user);
+        localStorage.setItem("token", response.data.token);
+
+        router.push("/auth/login")
       }
 
-      // Set the user in state
-      setUser(response.data.user);
-      localStorage.setItem("token", response.data.token);
 
       // Redirect based on user role
-      if (response.data.user.roles === "employer") {
-        router.push("/employers/dashboard")
-        console.log('employerdashboard');
-      } else if (response.data.user.roles === "job-seeker") {
-        console.log('jobseeker dashboard');
-        router.push("/dashboard")
-      } else {
-        router.push("/")
-      }
+      // if (response.data.user.roles === "employer") {
+      //   router.push("/employers/dashboard")
+      //   console.log('employerdashboard');
+      // } else if (response.data.user.roles === "job-seeker") {
+      //   console.log('jobseeker dashboard');
+      //   router.push("/dashboard")
+      // } else {
+      //}
     } catch (error) {
       setError((error as Error).message)
       console.error("Registration error:", error)
@@ -167,7 +169,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Clear user state
       setUser(null)
-
+      localStorage.clear();
       // Redirect to home page
       router.push("/")
 

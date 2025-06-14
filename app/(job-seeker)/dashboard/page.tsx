@@ -6,13 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/contexts/auth-context"
 
 export default function JobSeekerDashboardPage() {
-  const { user } = useAuth()
-
+  //const { user } = useAuth()
+  console.log("In job seeker dashboard")
   return (
     <>
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {user?.firstName}! Here's an overview of your job search.</p>
+        <p className="text-muted-foreground">Welcome back, ! Here's an overview of your job search.</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

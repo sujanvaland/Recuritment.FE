@@ -28,6 +28,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
+import { useRouter } from 'next/navigation';
+import { useAuth } from "@/contexts/auth-context"
 
 // Sample candidate data
 const candidates = [
@@ -167,28 +169,28 @@ export default function CandidatesPage() {
 
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await DataService.get("/candidates", {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            search: "",
-            JobId: 5,
-            page: 1,
-            pageSize: "5",
-          },
-        });
-        console.log('responsejobs', response.data);
-      } catch (err) {
-        setError("Failed to load jobs");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJobs();
+    fetchCandidates();
   }, []);
 
+  const fetchCandidates = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await DataService.get("/candidates", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          search: "",
+          JobId: 5,
+          page: 1,
+          pageSize: "5",
+        },
+      });
+      console.log('responsejobs', response.data);
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
