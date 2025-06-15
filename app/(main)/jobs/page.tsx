@@ -11,6 +11,29 @@ import { Separator } from "@/components/ui/separator"
 import { JobFilters, type FilterState } from "@/components/job-filters"
 import { JobCard } from "@/components/job-card"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"
+import { useRouter } from 'next/navigation';
+import { useAuth } from "@/contexts/auth-context"
+
+type Job = {
+  id: number
+  title: string
+  location: string
+  type: string
+  tags: string[]
+  applicants?: number
+  status?: string
+  createdAt?: string
+  expiresAt?: string,
+  modifiedDate?: string,
+  posted?: string
+  expires?: string
+  salary: string
+  logo: string
+  company: string
+}
+
 
 // Mock job data
 const allJobs = [
@@ -141,103 +164,198 @@ export default function JobsPage() {
   const [locationTerm, setLocationTerm] = useState("")
   const [filters, setFilters] = useState<FilterState>({
     jobType: [],
-    experienceLevel: [],
     salaryRange: [0, 300000],
     location: [],
     skills: [],
-    education: [],
   })
   const [sortBy, setSortBy] = useState("relevance")
-  const [filteredJobs, setFilteredJobs] = useState(allJobs)
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [filteredJobs, setFilteredJobs] = useState(jobs)
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [totalData, setTotalData] = useState(0);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const router = useRouter();
+  const pageSize = 5;
+  const totalPages = Math.ceil(totalData / pageSize);
+
+
+
+
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+
+  const fetchJobs = async (page = 1) => {
+    setLoading(true);
+
+    const userdetails = JSON.parse(localStorage.getItem("user") || "{}");
+    console.log('userdetails', userdetails);
+    let token = "";
+    if (userdetails?.roles !== 'job-seeker') {
+      token = localStorage.getItem("token") || "";
+    } else {
+      token = "";
+    }
+    try {
+
+      const response = await DataService.get("/jobs", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          search: "",
+          remote: null,
+          tag: "",
+          status: "",
+          page: page,
+          pageSize: pageSize,
+        },
+      });
+
+      console.log('jobData', response);
+
+      if (response?.status === 200) {
+        setJobs(response.data.jobs || []);
+        setFilteredJobs(response.data.jobs || []);
+        // setAllJobs(response.data.jobs || []);
+        setTotalData(response.data.total);
+      }
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log('filteredJobs', filteredJobs);
+
+  useEffect(() => {
+    const jobTypeSet = new Set<string>();
+    const locationSet = new Set<string>();
+    const skillSet = new Set<string>();
+
+    if (jobs?.length > 0) {
+      jobs.forEach((job) => {
+        if (job.type) jobTypeSet.add(job.type);
+        if (job.location) locationSet.add(job.location);
+        (job.tags || []).forEach((tag) => skillSet.add(tag));
+      });
+
+      const jobTypes = Array.from(jobTypeSet);
+      const locations = Array.from(locationSet);
+      const skills = Array.from(skillSet);
+
+      console.log('jobTypes', jobTypes);
+      console.log('locations', locations);
+      console.log('skills', skills);
+
+      // Set as default filters (select all initially)
+      setFilters({
+        jobType: jobTypes,
+        location: locations,
+        skills: skills,
+        salaryRange: [0, 300000],
+      });
+    }
+
+
+  }, [jobs]);
+
+
 
   // Apply filters and search
-  useEffect(() => {
-    let result = [...allJobs]
+  //useEffect(() => {
+  // let result = [...jobs]
 
-    // Apply search term
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase()
-      result = result.filter(
-        (job) =>
-          job.title.toLowerCase().includes(searchLower) ||
-          job.company.toLowerCase().includes(searchLower) ||
-          job.skills.some((skill) => skill.toLowerCase().includes(searchLower)),
-      )
-    }
+  //   // Apply search term
+  //   if (searchTerm) {
+  //     const searchLower = searchTerm.toLowerCase()
+  //     result = result.filter(
+  //       (job) =>
+  //         job.title.toLowerCase().includes(searchLower) ||
+  //         job.company.toLowerCase().includes(searchLower) ||
+  //         job.skills.some((skill) => skill.toLowerCase().includes(searchLower)),
+  //     )
+  //   }
 
-    // Apply location search
-    if (locationTerm) {
-      const locationLower = locationTerm.toLowerCase()
-      result = result.filter((job) => job.location.toLowerCase().includes(locationLower))
-    }
+  //   // Apply location search
+  //   if (locationTerm) {
+  //     const locationLower = locationTerm.toLowerCase()
+  //     result = result.filter((job) => job.location.toLowerCase().includes(locationLower))
+  //   }
 
-    // Apply job type filter
-    if (filters.jobType.length > 0) {
-      result = result.filter((job) => {
-        const jobTypeLower = job.type.toLowerCase()
-        return filters.jobType.some((type) => jobTypeLower.includes(type.toLowerCase()))
-      })
-    }
+  //   // Apply job type filter
+  //   if (filters.jobType.length > 0) {
+  //     result = result.filter((job) => {
+  //       const jobTypeLower = job.type.toLowerCase()
+  //       return filters.jobType.some((type) => jobTypeLower.includes(type.toLowerCase()))
+  //     })
+  //   }
 
-    // Apply experience level filter
-    if (filters.experienceLevel.length > 0) {
-      result = result.filter((job) => filters.experienceLevel.includes(job.experienceLevel))
-    }
+  //   // Apply experience level filter
+  //   if (filters.experienceLevel.length > 0) {
+  //     result = result.filter((job) => filters.experienceLevel.includes(job.experienceLevel))
+  //   }
 
-    // Apply salary range filter
-    result = result.filter((job) => {
-      // Use the lower end of the job's salary range for comparison
-      return job.salaryRange[0] >= filters.salaryRange[0] && job.salaryRange[1] <= filters.salaryRange[1]
-    })
+  //   // Apply salary range filter
+  //   result = result.filter((job) => {
+  //     // Use the lower end of the job's salary range for comparison
+  //     return job.salaryRange[0] >= filters.salaryRange[0] && job.salaryRange[1] <= filters.salaryRange[1]
+  //   })
 
-    // Apply location type filter
-    if (filters.location.length > 0) {
-      result = result.filter((job) => filters.location.includes(job.workLocation))
-    }
+  //   // Apply location type filter
+  //   if (filters.location.length > 0) {
+  //     result = result.filter((job) => filters.location.includes(job.workLocation))
+  //   }
 
-    // Apply skills filter
-    if (filters.skills.length > 0) {
-      result = result.filter((job) => {
-        const jobSkills = job.skills.map((skill) => skill.toLowerCase())
-        return filters.skills.some((skill) => jobSkills.includes(skill.toLowerCase()))
-      })
-    }
+  //   // Apply skills filter
+  //   if (filters.skills.length > 0) {
+  //     result = result.filter((job) => {
+  //       const jobSkills = job.skills.map((skill) => skill.toLowerCase())
+  //       return filters.skills.some((skill) => jobSkills.includes(skill.toLowerCase()))
+  //     })
+  //   }
 
-    // Apply education filter
-    if (filters.education.length > 0) {
-      result = result.filter((job) => filters.education.includes(job.education))
-    }
+  //   // Apply education filter
+  //   if (filters.education.length > 0) {
+  //     result = result.filter((job) => filters.education.includes(job.education))
+  //   }
 
-    // Apply sorting
-    switch (sortBy) {
-      case "newest":
-        // For demo purposes, we'll sort by the "posted" field
-        result.sort((a, b) => {
-          if (a.posted.includes("day") && b.posted.includes("day")) {
-            return Number.parseInt(a.posted) - Number.parseInt(b.posted)
-          }
-          if (a.posted.includes("day")) return -1
-          if (b.posted.includes("day")) return 1
-          return 0
-        })
-        break
-      case "salary":
-        result.sort((a, b) => b.salaryRange[1] - a.salaryRange[1])
-        break
-      // "relevance" is default, no need to sort
-    }
+  //   // Apply sorting
+  //   switch (sortBy) {
+  //     case "newest":
+  //       // For demo purposes, we'll sort by the "posted" field
+  //       result.sort((a, b) => {
+  //         if (a.posted.includes("day") && b.posted.includes("day")) {
+  //           return Number.parseInt(a.posted) - Number.parseInt(b.posted)
+  //         }
+  //         if (a.posted.includes("day")) return -1
+  //         if (b.posted.includes("day")) return 1
+  //         return 0
+  //       })
+  //       break
+  //     case "salary":
+  //       result.sort((a, b) => b.salaryRange[1] - a.salaryRange[1])
+  //       break
+  //     // "relevance" is default, no need to sort
+  //   }
 
-    setFilteredJobs(result)
-  }, [searchTerm, locationTerm, filters, sortBy])
+  //   setFilteredJobs(result)
+  // }, [searchTerm, locationTerm, filters, sortBy])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     // Search is already applied via useEffect
   }
 
+
+  console.log('filters', filters);
   return (
-    <div className="container px-4 py-8 md:px-6 md:py-12">
+    <div className="w-full max-w-[1200px] mx-auto px-4 py-8 md:px-6 md:py-12 containerwidth">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Find Jobs</h1>
         <p className="mt-2 text-muted-foreground">Browse through thousands of full-time and part-time jobs near you</p>
@@ -281,6 +399,7 @@ export default function JobsPage() {
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <div className="py-6">
                 <JobFilters onFilterChange={setFilters} initialFilters={filters} />
+
               </div>
             </SheetContent>
           </Sheet>
@@ -315,9 +434,17 @@ export default function JobsPage() {
 
           {filteredJobs.length > 0 ? (
             <div className="grid gap-6">
-              {filteredJobs.map((job) => (
-                <JobCard key={job.id} job={job} />
-              ))}
+              {filteredJobs.map((job) => {
+                return (
+                  <JobCard
+                    key={job.id}
+                    job={{
+                      ...job,
+                      posted: job.posted ?? "N/A", // Fallback if missing
+                    }}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="flex h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">

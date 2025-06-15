@@ -17,7 +17,7 @@ interface JobCardProps {
     location: string
     type: string
     salary: string
-    skills: string[]
+    tags: string[]
     posted: string
     logo: string
   }
@@ -29,6 +29,8 @@ export function JobCard({ job }: JobCardProps) {
   const toggleSave = () => {
     setIsSaved(!isSaved)
   }
+
+  console.log('jobcard', job);
 
   return (
     <Card>
@@ -66,12 +68,12 @@ export function JobCard({ job }: JobCardProps) {
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline">{job.type}</Badge>
             <Badge variant="outline">{job.salary}</Badge>
-            {job.skills.slice(0, 3).map((skill) => (
-              <Badge variant="secondary" key={skill}>
-                {skill}
+            {job.tags.slice(0, 3).map((tags) => (
+              <Badge variant="secondary" key={tags}>
+                {tags}
               </Badge>
             ))}
-            {job.skills.length > 3 && <Badge variant="secondary">+{job.skills.length - 3} more</Badge>}
+            {job?.tags?.length > 3 && <Badge variant="secondary">+{job?.tags?.length - 3} more</Badge>}
           </div>
         </div>
       </CardContent>

@@ -325,7 +325,7 @@ export default function JobsPage() {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: "",
-          remote: true,
+          remote: null,
           tag: "",
           status: "active",
           page: page,
@@ -465,8 +465,18 @@ export default function JobsPage() {
 
                 {displayJobs.map((job) => {
                   if (!job.createdAt || !job.expiresAt) return null; // or show error card
+
+                  console.log('job.createdAt', job.createdAt, 'job.expiresAt', job.expiresAt);
                   const { posted, expires } = getJobTimeInfo(job.createdAt, job.expiresAt);
-                  return <JobCard key={job.id} job={{ ...job, posted, expires }} fnexpiredJob={fnexpiredJob} fneDeleteJob={fneDeleteJob} />;
+
+                  return <JobCard
+                    key={job.id}
+                    job={job}
+                    posted={posted}
+                    expires={expires}
+                    fnexpiredJob={fnexpiredJob}
+                    fneDeleteJob={fneDeleteJob}
+                  />
                 })}
                 <div className="flex justify-center mt-6 space-x-2">
                   <button
@@ -633,19 +643,19 @@ function JobCard({
   job,
   fnexpiredJob,
   fneDeleteJob,
+  posted,
+  expires
 }: {
-  job: Job
-  fnexpiredJob: (job: Job) => void,
+  job: Job;
+  posted: string;
+  expires: string;
+  fnexpiredJob: (job: Job) => void;
   fneDeleteJob: (job: Job) => void;
 }) {
-  //console.log('jobcard', job);
-  const router = useRouter();
-  const { createdAt, expiresAt } = job;
-  const { posted, expires } = createdAt && expiresAt
-    ? getJobTimeInfo(createdAt, expiresAt)
-    : { posted: "N/A", expires: "N/A" };
+  console.log('posted', posted, 'expires', expires);
 
-  // console.log('posted,expires ', posted, expires);
+  const router = useRouter();
+
 
   return (
     <Card>

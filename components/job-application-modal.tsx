@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast"
 import { submitJobApplication } from "@/lib/actions"
 import { getUserProfile } from "@/lib/profile"
 import { useAuth } from "@/contexts/auth-context"
+import { DataService } from "@/services/axiosInstance";
 
 interface JobApplicationModalProps {
   isOpen: boolean
@@ -50,6 +51,8 @@ export function JobApplicationModal({
   const { toast } = useToast()
   const router = useRouter()
   const { user } = useAuth()
+
+
 
   // Fetch user profile data including resume
   useEffect(() => {
@@ -84,58 +87,105 @@ export function JobApplicationModal({
     e.preventDefault()
     setIsSubmitting(true)
 
+    console.log('jobId', jobId);
+
     try {
-      let resumeUrl = ""
+      const token = localStorage.getItem("token") || "";
+      const resumeUrl = "https://docs.google.com/document/d/1wj7prpQ2Meq-InRl7zsD7eWl0YQZnkEbHWi58ex8x48/edit?tab=t.0";
 
-      // If using existing resume
-      if (resumeOption === "existing" && userProfile?.resumeUrl) {
-        resumeUrl = userProfile.resumeUrl
+      const submitdata = {
+        jobId: jobId,         // Set a valid jobId if needed
+        resumeUrl: resumeUrl,
+        coverLetter: coverLetter,   // Use empty string or remove if not required
       }
-      // If uploading a new resume
-      else if (resumeOption === "new" && resumeFile) {
-        // In a real app, you would upload the resume file to a storage service
-        // and get a URL to store in the database
-        resumeUrl = URL.createObjectURL(resumeFile)
-      } else {
+
+      const response = await DataService.post("/applications", submitdata, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response?.status === 200) {
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          toast({
+            title: "Application submitted!",
+            description: `Your application for ${jobTitle} at ${companyName} has been submitted successfully.`,
+          });
+          setIsSubmitting(false);
+
+          // Close the modal and redirect to the applications page
+          onClose()
+          router.push("/dashboard/applications")
+          router.refresh()
+        }
+      } else if (response?.status === 409) {
         toast({
-          title: "Resume required",
-          description: "Please upload a resume or select your existing resume",
-          variant: "destructive",
-        })
-        setIsSubmitting(false)
-        return
+          title: "Application error!",
+          description: `${response?.data?.error}`,
+        });
+        setIsSubmitting(false);
+        onClose();
       }
 
-      await submitJobApplication({
-        jobId,
-        coverLetter,
-        resumeUrl,
-      })
-
-      // Call the success callback if provided
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        toast({
-          title: "Application submitted!",
-          description: `Your application for ${jobTitle} at ${companyName} has been submitted successfully.`,
-        })
-
-        // Close the modal and redirect to the applications page
-        onClose()
-        router.push("/dashboard/applications")
-        router.refresh()
-      }
+      console.log("job submit Response:", response);
     } catch (error) {
-      console.error("Error submitting application:", error)
-      toast({
-        title: "Error",
-        description: "There was an error submitting your application. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
+      console.error("Error fetching jobs:", error);
     }
+
+    // try {
+    //   let resumeUrl = ""
+
+    //   // If using existing resume
+    //   if (resumeOption === "existing" && userProfile?.resumeUrl) {
+    //     resumeUrl = userProfile.resumeUrl
+    //   }
+    //   // If uploading a new resume
+    //   else if (resumeOption === "new" && resumeFile) {
+    //     // In a real app, you would upload the resume file to a storage service
+    //     // and get a URL to store in the database
+    //     resumeUrl = URL.createObjectURL(resumeFile)
+    //   } else {
+    //     toast({
+    //       title: "Resume required",
+    //       description: "Please upload a resume or select your existing resume",
+    //       variant: "destructive",
+    //     })
+    //     setIsSubmitting(false)
+    //     return
+    //   }
+
+    //   await submitJobApplication({
+    //     jobId,
+    //     coverLetter,
+    //     resumeUrl,
+    //   })
+
+    //   // Call the success callback if provided
+    //   if (onSuccess) {
+    //     onSuccess()
+    //   } else {
+    //     toast({
+    //       title: "Application submitted!",
+    //       description: `Your application for ${jobTitle} at ${companyName} has been submitted successfully.`,
+    //     })
+
+    //     // Close the modal and redirect to the applications page
+    //     onClose()
+    //     router.push("/dashboard/applications")
+    //     router.refresh()
+    //   }
+    // } catch (error) {
+    //   console.error("Error submitting application:", error)
+    //   toast({
+    //     title: "Error",
+    //     description: "There was an error submitting your application. Please try again.",
+    //     variant: "destructive",
+    //   })
+    // } finally {
+    //   setIsSubmitting(false)
+    // }
   }
 
   return (

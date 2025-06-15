@@ -71,7 +71,7 @@ export function ApplyJobButton({
     }
 
     // Check if user is a job seeker
-    if (user.role !== "job-seeker") {
+    if (user.roles !== "job-seeker") {
       toast({
         title: "Not available",
         description: "Only job seekers can apply for jobs",
@@ -109,6 +109,9 @@ export function ApplyJobButton({
     } finally {
       setIsChecking(false)
     }
+
+
+
   }
 
   const handleApplicationSuccess = () => {

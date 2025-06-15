@@ -1,23 +1,29 @@
-import { formatDistanceToNowStrict, differenceInDays } from "date-fns"
+import { formatDistanceToNowStrict, differenceInDays, parseISO } from "date-fns";
 
-// Helper to trim microseconds to milliseconds
+// Helper to trim microseconds and parse as UTC ISO
 const sanitizeDate = (dateStr: string) => {
-    // Only keep up to 3 digits in the fractional seconds
-    return new Date(dateStr.replace(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})\d*$/, "$1"));
+    const trimmed = dateStr.slice(0, 23); // trims microseconds to milliseconds
+    const utcDate = parseISO(trimmed);   // parses in UTC
+    return new Date(utcDate.getTime() + new Date().getTimezoneOffset() * -60000); // convert to local
 };
 
 export const getJobTimeInfo = (createdAt: string, expiresAt: string) => {
-    const created = sanitizeDate(createdAt);
-    const expires = sanitizeDate(expiresAt);
+    const created = sanitizeDate(createdAt); // UTC → local
+    const expires = sanitizeDate(expiresAt); // UTC → local
 
-    const posted = formatDistanceToNowStrict(created, {
-        addSuffix: true,
-    });
+    const posted = formatDistanceToNowStrict(created, { addSuffix: true });
 
-    const daysToExpire = differenceInDays(expires, created);
+    const daysLeft = differenceInDays(expires, new Date());
+
+    const expiresText =
+        daysLeft > 0
+            ? `in ${daysLeft} days`
+            : daysLeft === 0
+                ? "today"
+                : `expired ${Math.abs(daysLeft)} days ago`;
 
     return {
         posted,
-        expires: `${daysToExpire} days`,
+        expires: expiresText,
     };
 };

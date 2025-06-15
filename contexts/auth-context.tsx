@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        
+
         const response = await DataService.get("/auth/me");
 
         console.log('response auth', response);
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     checkAuth()
-  }, [router,user])
+  }, [router, user])
 
   const login = async (email: string, password: string) => {
     console.log('logindetails', email, password);
@@ -88,12 +88,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(response.data.user);
-      localStorage.setItem("user", response.data.user);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", response.data.token);
 
       console.log("Login successful, user role:", response.data.user.roles) // Debug log
 
-      
+
     } catch (error) {
       setError((error as Error).message)
       console.error("Login error:", error)
@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(response.data.error || "Registration failed")
       } else {
         // Set the user in state
-        localStorage.setItem("user", response.data.user);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         localStorage.setItem("token", response.data.token);
 
         router.push("/auth/login")

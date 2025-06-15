@@ -8,11 +8,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export type FilterState = {
   jobType: string[]
-  experienceLevel: string[]
+
   salaryRange: [number, number]
   location: string[]
   skills: string[]
-  education: string[]
+
 }
 
 interface JobFiltersProps {
@@ -25,13 +25,14 @@ export function JobFilters({ onFilterChange, initialFilters }: JobFiltersProps) 
     () =>
       initialFilters || {
         jobType: [],
-        experienceLevel: [],
         salaryRange: [50000, 150000],
         location: [],
         skills: [],
-        education: [],
+
       },
   )
+  console.log('initialFilters', initialFilters);
+
 
   // Update parent component when filters change
   useEffect(() => {
@@ -63,65 +64,33 @@ export function JobFilters({ onFilterChange, initialFilters }: JobFiltersProps) 
     <div className="space-y-6">
       <div>
         <h3 className="mb-4 text-lg font-medium">Filters</h3>
-        <Accordion type="multiple" defaultValue={["job-type", "experience", "salary"]}>
+        <Accordion type="multiple" defaultValue={["job-type", "salary", "location", "skills"]}>
+          {/* Job Type */}
           <AccordionItem value="job-type">
             <AccordionTrigger>Job Type</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {[
-                  { id: "full-time", label: "Full-time" },
-                  { id: "part-time", label: "Part-time" },
-                  { id: "contract", label: "Contract" },
-                  { id: "internship", label: "Internship" },
-                  { id: "temporary", label: "Temporary" },
-                ].map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
+                {initialFilters?.jobType.map((type) => (
+                  <div key={type} className="flex items-center space-x-2">
                     <Checkbox
-                      id={item.id}
-                      checked={filters.jobType.includes(item.id)}
+                      id={`job-type-${type}`}
+                      checked={filters.jobType.includes(type)}
                       onCheckedChange={(checked) => {
                         if (checked !== "indeterminate") {
-                          handleCheckboxChange("jobType", item.id)
+                          handleCheckboxChange("jobType", type);
                         }
                       }}
                     />
-                    <Label htmlFor={item.id} className="font-normal">
-                      {item.label}
+                    <Label htmlFor={`job-type-${type}`} className="font-normal">
+                      {type}
                     </Label>
                   </div>
                 ))}
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="experience">
-            <AccordionTrigger>Experience Level</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2">
-                {[
-                  { id: "entry-level", label: "Entry Level" },
-                  { id: "mid-level", label: "Mid Level" },
-                  { id: "senior-level", label: "Senior Level" },
-                  { id: "director", label: "Director" },
-                  { id: "executive", label: "Executive" },
-                ].map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={item.id}
-                      checked={filters.experienceLevel.includes(item.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked !== "indeterminate") {
-                          handleCheckboxChange("experienceLevel", item.id)
-                        }
-                      }}
-                    />
-                    <Label htmlFor={item.id} className="font-normal">
-                      {item.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+
+          {/* Salary */}
           <AccordionItem value="salary">
             <AccordionTrigger>Salary Range</AccordionTrigger>
             <AccordionContent>
@@ -129,7 +98,7 @@ export function JobFilters({ onFilterChange, initialFilters }: JobFiltersProps) 
                 <Slider
                   value={[filters.salaryRange[0], filters.salaryRange[1]]}
                   min={0}
-                  max={300000}
+                  max={initialFilters?.salaryRange[1]}
                   step={5000}
                   onValueChange={handleSalaryChange}
                 />
@@ -140,86 +109,50 @@ export function JobFilters({ onFilterChange, initialFilters }: JobFiltersProps) 
               </div>
             </AccordionContent>
           </AccordionItem>
+
+          {/* Location */}
           <AccordionItem value="location">
             <AccordionTrigger>Location</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {[
-                  { id: "remote", label: "Remote" },
-                  { id: "hybrid", label: "Hybrid" },
-                  { id: "on-site", label: "On-site" },
-                ].map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
+                {initialFilters?.location.map((loc) => (
+                  <div key={loc} className="flex items-center space-x-2">
                     <Checkbox
-                      id={item.id}
-                      checked={filters.location.includes(item.id)}
+                      id={`location-${loc}`}
+                      checked={filters.location.includes(loc)}
                       onCheckedChange={(checked) => {
                         if (checked !== "indeterminate") {
-                          handleCheckboxChange("location", item.id)
+                          handleCheckboxChange("location", loc);
                         }
                       }}
                     />
-                    <Label htmlFor={item.id} className="font-normal">
-                      {item.label}
+                    <Label htmlFor={`location-${loc}`} className="font-normal">
+                      {loc}
                     </Label>
                   </div>
                 ))}
               </div>
             </AccordionContent>
           </AccordionItem>
+
+          {/* Skills */}
           <AccordionItem value="skills">
             <AccordionTrigger>Skills</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {[
-                  { id: "javascript", label: "JavaScript" },
-                  { id: "react", label: "React" },
-                  { id: "python", label: "Python" },
-                  { id: "java", label: "Java" },
-                  { id: "sql", label: "SQL" },
-                  { id: "aws", label: "AWS" },
-                ].map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
+                {initialFilters?.skills.map((skill) => (
+                  <div key={skill} className="flex items-center space-x-2">
                     <Checkbox
-                      id={item.id}
-                      checked={filters.skills.includes(item.id)}
+                      id={`skill-${skill}`}
+                      checked={filters.skills.includes(skill)}
                       onCheckedChange={(checked) => {
                         if (checked !== "indeterminate") {
-                          handleCheckboxChange("skills", item.id)
+                          handleCheckboxChange("skills", skill);
                         }
                       }}
                     />
-                    <Label htmlFor={item.id} className="font-normal">
-                      {item.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="education">
-            <AccordionTrigger>Education</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2">
-                {[
-                  { id: "high-school", label: "High School" },
-                  { id: "associate", label: "Associate Degree" },
-                  { id: "bachelor", label: "Bachelor's Degree" },
-                  { id: "master", label: "Master's Degree" },
-                  { id: "doctorate", label: "Doctorate" },
-                ].map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={item.id}
-                      checked={filters.education.includes(item.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked !== "indeterminate") {
-                          handleCheckboxChange("education", item.id)
-                        }
-                      }}
-                    />
-                    <Label htmlFor={item.id} className="font-normal">
-                      {item.label}
+                    <Label htmlFor={`skill-${skill}`} className="font-normal">
+                      {skill}
                     </Label>
                   </div>
                 ))}
