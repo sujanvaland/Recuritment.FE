@@ -28,120 +28,39 @@ import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
 
-// Sample application data
-const applications = [
-  {
-    id: 1,
-    candidate: {
-      name: "Emily Johnson",
-      email: "emily.johnson@example.com",
-      avatar: "/abstract-geometric-shapes.png",
-    },
-    job: "Senior Frontend Developer",
-    location: "San Francisco, CA",
-    appliedDate: "May 15, 2023",
-    status: "review",
-    rating: 4,
-  },
-  {
-    id: 2,
-    candidate: {
-      name: "Michael Chen",
-      email: "michael.chen@example.com",
-      avatar: "/number-two-graphic.png",
-    },
-    job: "UX/UI Designer",
-    location: "Remote",
-    appliedDate: "May 18, 2023",
-    status: "interview",
-    rating: 5,
-  },
-  {
-    id: 3,
-    candidate: {
-      name: "Sarah Williams",
-      email: "sarah.williams@example.com",
-      avatar: "/abstract-geometric-shapes.png",
-    },
-    job: "DevOps Engineer",
-    location: "New York, NY",
-    appliedDate: "May 20, 2023",
-    status: "review",
-    rating: 3,
-  },
-  {
-    id: 4,
-    candidate: {
-      name: "David Rodriguez",
-      email: "david.rodriguez@example.com",
-      avatar: "/abstract-geometric-shapes.png",
-    },
-    job: "Product Manager",
-    location: "Boston, MA",
-    appliedDate: "May 22, 2023",
-    status: "interview",
-    rating: 4,
-  },
-  {
-    id: 5,
-    candidate: {
-      name: "Jessica Lee",
-      email: "jessica.lee@example.com",
-      avatar: "/abstract-geometric-composition-5.png",
-    },
-    job: "Marketing Specialist",
-    location: "Chicago, IL",
-    appliedDate: "May 25, 2023",
-    status: "review",
-    rating: 4,
-  },
-  {
-    id: 6,
-    candidate: {
-      name: "Robert Kim",
-      email: "robert.kim@example.com",
-      avatar: "/abstract-geometric-shapes.png",
-    },
-    job: "Backend Developer",
-    location: "Remote",
-    appliedDate: "May 27, 2023",
-    status: "offer",
-    rating: 5,
-  },
-  {
-    id: 7,
-    candidate: {
-      name: "Amanda Martinez",
-      email: "amanda.martinez@example.com",
-      avatar: "/abstract-geometric-seven.png",
-    },
-    job: "Data Analyst",
-    location: "Seattle, WA",
-    appliedDate: "May 28, 2023",
-    status: "review",
-    rating: 3,
-  },
-  {
-    id: 8,
-    candidate: {
-      name: "Thomas Wilson",
-      email: "thomas.wilson@example.com",
-      avatar: "/abstract-geometric-sculpture.png",
-    },
-    job: "Customer Support Specialist",
-    location: "Austin, TX",
-    appliedDate: "May 30, 2023",
-    status: "rejected",
-    rating: 2,
-  },
-]
-
+type application = {
+  id: number
+  title?: string
+  location?: string
+  type?: string
+  applicants?: number
+  status?: string
+  createdAt?: string
+  expiresAt?: string
+  modifiedDate?: string
+  posted?: string
+  expires?: string
+  resumeUrl?: string
+  user?: {
+    firstName: string
+    lastName: string
+    email: string
+    avatar: string
+  }
+  job?: {
+    title: string
+    location: string
+  }
+  appliedDate?: string | undefined
+  rating?: number
+}
 
 
 
 export default function ApplicationsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("all")
+  const [applicationData, setApplicationData] = useState<application[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
@@ -149,9 +68,9 @@ export default function ApplicationsPage() {
   const [totalData, setTotalData] = useState(0);
 
   // Filter applications based on selected tab
-  const filteredApplications = applications.filter((app) => {
+  const filteredApplications = applicationData.filter((app) => {
     if (selectedTab === "all") return true
-    if (selectedTab === "review" && app.status === "review") return true
+    if (selectedTab === "review" && app?.status === "review") return true
     if (selectedTab === "interview" && app.status === "interview") return true
     if (selectedTab === "offer" && app.status === "offer") return true
     if (selectedTab === "rejected" && app.status === "rejected") return true
@@ -162,6 +81,8 @@ export default function ApplicationsPage() {
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  console.log('filteredApplications', filteredApplications);
 
 
   const pageSize = 5;
@@ -175,9 +96,12 @@ export default function ApplicationsPage() {
       const response = await DataService.get("/applications", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('applications response', response);
+
       if (response?.status === 200) {
         console.log('applications response');
+        let applicationData = response?.data;
+        setApplicationData(applicationData);
+
       }
     } catch (err) {
       setError("Failed to load jobs");
@@ -185,6 +109,8 @@ export default function ApplicationsPage() {
       setLoading(false);
     }
   };
+
+
 
 
 
@@ -243,83 +169,165 @@ export default function ApplicationsPage() {
         <TabsList>
           <TabsTrigger value="all" className="relative">
             All
-            <Badge className="ml-2 bg-primary/10 text-primary">{applications.length}</Badge>
+            <Badge className="ml-2 bg-primary/10 text-primary">{applicationData?.length}</Badge>
           </TabsTrigger>
           <TabsTrigger value="review" className="relative">
             Review
             <Badge className="ml-2 bg-amber-100 text-amber-700">
-              {applications.filter((app) => app.status === "review").length}
+              {applicationData.filter((app) => app.status === "review").length}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="interview" className="relative">
             Interview
             <Badge className="ml-2 bg-blue-100 text-blue-700">
-              {applications.filter((app) => app.status === "interview").length}
+              {applicationData.filter((app) => app.status === "interview").length}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="offer" className="relative">
             Offer
             <Badge className="ml-2 bg-green-100 text-green-700">
-              {applications.filter((app) => app.status === "offer").length}
+              {applicationData.filter((app) => app.status === "offer").length}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="rejected" className="relative">
             Rejected
             <Badge className="ml-2 bg-red-100 text-red-700">
-              {applications.filter((app) => app.status === "rejected").length}
+              {applicationData.filter((app) => app.status === "rejected").length}
             </Badge>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
-          {filteredApplications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
-          ))}
+          {filteredApplications.map((application) => {
+            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
+            console.log('posted', posted);
+            return (
+              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+            );
+          })}
         </TabsContent>
 
         <TabsContent value="review" className="space-y-4">
-          {filteredApplications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
-          ))}
+          {filteredApplications.map((application) => {
+            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
+            console.log('posted', posted);
+            return (
+              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+            );
+          })}
+
         </TabsContent>
 
         <TabsContent value="interview" className="space-y-4">
-          {filteredApplications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
-          ))}
+          {filteredApplications.map((application) => {
+            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
+            console.log('posted', posted);
+            return (
+              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+            );
+          })}
         </TabsContent>
 
         <TabsContent value="offer" className="space-y-4">
-          {filteredApplications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
-          ))}
+          {filteredApplications.map((application) => {
+            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
+            console.log('posted', posted);
+            return (
+              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+            );
+          })}
         </TabsContent>
 
         <TabsContent value="rejected" className="space-y-4">
-          {filteredApplications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
-          ))}
+          {filteredApplications.map((application) => {
+            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
+            console.log('posted', posted);
+            return (
+              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+            );
+          })}
         </TabsContent>
       </Tabs>
     </div>
   )
 }
 
-function ApplicationCard({ application }) {
-  const getStatusBadge = (status) => {
+
+
+function ApplicationCard({
+  application,
+  applied,
+  changeStatus
+}: {
+  application: application;
+  applied: string;
+  changeStatus: () => void;
+}) {
+  const getStatusBadge = (status: any) => {
     switch (status) {
-      case "review":
-        return <Badge className="bg-amber-100 text-amber-700">Review</Badge>
+      case "reviewed":
+        return <Badge className="bg-amber-100 text-amber-700">Reviewed</Badge>
       case "interview":
         return <Badge className="bg-blue-100 text-blue-700">Interview</Badge>
-      case "offer":
-        return <Badge className="bg-green-100 text-green-700">Offer</Badge>
+      case "hired":
+        return <Badge className="bg-green-100 text-green-700">Hired</Badge>
       case "rejected":
         return <Badge className="bg-red-100 text-red-700">Rejected</Badge>
+      case "applied":
+        return <Badge className="bg-red-100 text-red-700">Applied</Badge>
       default:
         return <Badge>Unknown</Badge>
     }
   }
+
+  const { toast } = useToast();
+
+  const handleChangeStatus = async (appid: any, status: any) => {
+    const expjobdata = {
+      id: appid ?? null,
+      status: status
+    }
+
+    console.log('expjobdata', expjobdata);
+
+    try {
+      //  const response = await fetch("/api/jobs", {
+      const token = localStorage.getItem("token")
+      console.log('jobData1234', expjobdata);
+      const response = await DataService.post(`/applications/status`, expjobdata, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          console.log('status response', response);
+          if (response.status === 200) {
+            toast({
+              title: "Success!",
+              description: `Appliation moved to ${response?.data?.status}`,
+            });
+            //  router.push("/employers/dashboard/jobs")
+            changeStatus();
+          } else {
+            console.warn("Unexpected status code:", response);
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating job:", error);
+        });
+
+    } catch (error) {
+      console.error("Error posting job:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to post job",
+        variant: "destructive",
+      })
+    }
+
+  }
+
 
   return (
     <Card>
@@ -327,21 +335,21 @@ function ApplicationCard({ application }) {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <Avatar>
-              <AvatarImage src={application.candidate.avatar || "/placeholder.svg"} alt={application.candidate.name} />
+              <AvatarImage src={application?.user?.avatar || "/placeholder.svg"} alt={application?.user?.firstName} />
               <AvatarFallback>
-                {application.candidate.name
+                {application?.user?.firstName
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle>{application.candidate.name}</CardTitle>
-              <CardDescription>{application.candidate.email}</CardDescription>
+              <CardTitle>{application?.user?.firstName} {application?.user?.lastName}</CardTitle>
+              <CardDescription>{application?.user?.email}</CardDescription>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {getStatusBadge(application.status)}
+            {getStatusBadge(application?.status)}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -354,7 +362,9 @@ function ApplicationCard({ application }) {
                 <DropdownMenuItem>View Resume</DropdownMenuItem>
                 <DropdownMenuItem>Schedule Interview</DropdownMenuItem>
                 <DropdownMenuItem>Send Message</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">Reject Application</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive" onClick={() => {
+                  handleChangeStatus(application?.id, "rejected");
+                }}>Reject Application</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -365,10 +375,10 @@ function ApplicationCard({ application }) {
           <div className="space-y-2">
             <div className="text-sm font-medium">Applied For</div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">{application.job}</Badge>
+              <Badge variant="outline">{application?.job?.title}</Badge>
               <div className="text-xs text-muted-foreground">
                 <MapPin className="mr-1 inline-block h-3 w-3" />
-                {application.location}
+                {application?.job?.location}
               </div>
             </div>
           </div>
@@ -377,13 +387,13 @@ function ApplicationCard({ application }) {
             <div className="flex items-center gap-4">
               <div className="text-xs text-muted-foreground">
                 <Calendar className="mr-1 inline-block h-3 w-3" />
-                Applied on {application.appliedDate}
+                Applied on {applied}
               </div>
               <div className="flex items-center">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${i < application.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                    className={`h-4 w-4 ${i < (application?.rating ?? 0) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
                       }`}
                   />
                 ))}
@@ -399,17 +409,23 @@ function ApplicationCard({ application }) {
               <Eye className="mr-2 h-3 w-3" />
               View Application
             </Button>
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-3 w-3" />
-              Download Resume
-            </Button>
+            <a href={application?.resumeUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-3 w-3" />
+                Download Resume
+              </Button>
+            </a>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600">
+            <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600" onClick={() => {
+              handleChangeStatus(application?.id, "rejected");
+            }}>
               <X className="mr-2 h-3 w-3" />
               Reject
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={() => {
+              handleChangeStatus(application?.id, "interview");
+            }}>
               <Check className="mr-2 h-3 w-3" />
               Move to Interview
             </Button>
