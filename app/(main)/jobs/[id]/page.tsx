@@ -177,11 +177,11 @@ export default function JobDetailsPage() {
 
     } catch (error) {
       console.error("Error posting job:", error)
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to post job",
-        variant: "destructive",
-      })
+      // toast({
+      //   title: "Error",
+      //   description: error instanceof Error ? error.message : "Failed to post job",
+      //   variant: "destructive",
+      // })
     }
 
   }
@@ -233,7 +233,7 @@ export default function JobDetailsPage() {
           </div>
 
           <div className="mb-6 flex flex-wrap gap-2">
-            <ApplyJobButton jobId={job?.id} jobTitle={job?.title} companyName={job?.company} size="lg" />
+            <ApplyJobButton jobId={job!.id} jobTitle={job?.title ?? ""} companyName={job?.company ?? ""} size="lg" />
             <Button variant="outline" size="icon" onClick={() => savedjobs()}>
               <Bookmark className="h-5 w-5" />
               <span className="sr-only">Save job</span>
@@ -258,7 +258,7 @@ export default function JobDetailsPage() {
                 <h2 className="mb-4 text-xl font-semibold">Job Description</h2>
                 <div
                   className="prose max-w-none text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: job?.description }}
+                  dangerouslySetInnerHTML={{ __html: job?.description ?? "" }}
                 />
               </div>
 
@@ -372,7 +372,7 @@ export default function JobDetailsPage() {
                 <p className="text-sm text-muted-foreground">{job?.deadline}</p>
               </div>
             </div>
-            <ApplyJobButton jobId={job?.id} jobTitle={job?.title} companyName={job?.company} className="mt-6 w-full" />
+            <ApplyJobButton jobId={job!.id} jobTitle={job?.title ?? ""} companyName={job?.company ?? ""} className="mt-6 w-full" />
           </div>
 
           <div className="mt-6 rounded-lg border bg-card p-6 shadow-sm">

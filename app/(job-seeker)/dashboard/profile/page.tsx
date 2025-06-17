@@ -1045,7 +1045,16 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => window.open(profile.resumeUrl, "_blank")}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (profile.resumeUrl) {
+                            window.open(profile.resumeUrl, "_blank")
+                          }
+                        }}
+                        disabled={!profile.resumeUrl}
+                      >
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </Button>

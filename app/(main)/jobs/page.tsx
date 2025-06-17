@@ -464,11 +464,9 @@ export default function JobsPage() {
                   setLocationTerm("")
                   setFilters({
                     jobType: [],
-                    experienceLevel: [],
                     salaryRange: [0, 300000],
                     location: [],
                     skills: [],
-                    education: [],
                   })
                 }}
               >
