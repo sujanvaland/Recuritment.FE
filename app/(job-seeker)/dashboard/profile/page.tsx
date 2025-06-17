@@ -29,6 +29,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import { getUserProfile, updateUserProfile, uploadResume } from "@/lib/profile"
 import { Switch } from "@/components/ui/switch"
+import { DataService } from "@/services/axiosInstance";
 
 // Types for our profile data
 interface UserProfile {
@@ -75,34 +76,83 @@ export default function ProfilePage() {
   const [editingExperience, setEditingExperience] = useState<string | null>(null)
   const [editingEducation, setEditingEducation] = useState<string | null>(null)
   const [isUploadingResume, setIsUploadingResume] = useState(false)
+
   const { toast } = useToast()
+
+  let token = localStorage.getItem("token") || "";
+
+  console.log('token21321', token);
 
   // Fetch user profile
   useEffect(() => {
     let isMounted = true
 
     const fetchProfile = async () => {
-     
       try {
-        const userProfile = await getUserProfile(user == null ? "0" : user.id)
-        // Only update state if the component is still mounted
-        if (isMounted && userProfile) {
-          setProfile(userProfile)
-          setEditedProfile(userProfile)
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error)
-        if (isMounted) {
-          toast({
-            title: "Error",
-            description: "Failed to load your profile. Please try again.",
-            variant: "destructive",
+        //  const response = await fetch("/api/jobs", {
+        const userid = user?.id;
+        const token = localStorage.getItem("token")
+        const response = await DataService.get(`/profile/${userid}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            console.log('deletejobresponse', response);
+            if (response.status === 200) {
+              let userProfile = response?.data;
+              setProfile(userProfile)
+              setEditedProfile(userProfile)
+              console.log('profileresponse', response);
+              setIsLoading(false);
+
+            } else {
+              console.warn("Unexpected status code:", response.status);
+            }
           })
-        }
-      } finally {
-        // Always set loading to false if the component is still mounted
-        if (isMounted) setIsLoading(false)
+          .catch((error) => {
+            console.error("Error creating job:", error);
+          });
+
+        //  const result = await response.json()
+
+        // toast({
+        //   title: "Success!",
+        //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
+        // })
+
+
+      } catch (error) {
+        console.error("Error posting job:", error)
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to post job",
+          variant: "destructive",
+        })
       }
+
+      // try {
+      //   const userProfile = await getUserProfile(user == null ? "0" : user.id)
+
+      //   // Only update state if the component is still mounted
+      //   if (isMounted && userProfile) {
+      //     setProfile(userProfile)
+      //     setEditedProfile(userProfile)
+      //   }
+      // } catch (error) {
+      //   console.error("Error fetching profile:", error)
+      //   if (isMounted) {
+      //     toast({
+      //       title: "Error",
+      //       description: "Failed to load your profile. Please try again.",
+      //       variant: "destructive",
+      //     })
+      //   }
+      // } finally {
+      //   // Always set loading to false if the component is still mounted
+      //   if (isMounted) setIsLoading(false)
+      // }
     }
 
     fetchProfile()
@@ -111,7 +161,7 @@ export default function ProfilePage() {
     return () => {
       isMounted = false
     }
-  }, [user, toast])
+  }, [])
 
   // Handle saving profile changes
   const handleSaveProfile = async () => {
@@ -289,6 +339,8 @@ export default function ProfilePage() {
   }
 
   if (isLoading) {
+
+
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -525,12 +577,12 @@ export default function ProfilePage() {
                         setEditedProfile((prev) =>
                           prev
                             ? {
-                                ...prev,
-                                skills: e.target.value
-                                  .split(",")
-                                  .map((skill) => skill.trim())
-                                  .filter(Boolean),
-                              }
+                              ...prev,
+                              skills: e.target.value
+                                .split(",")
+                                .map((skill) => skill.trim())
+                                .filter(Boolean),
+                            }
                             : null,
                         )
                       }
@@ -642,10 +694,10 @@ export default function ProfilePage() {
                                       experience: prev.experience.map((item) =>
                                         item.id === exp.id
                                           ? {
-                                              ...item,
-                                              current: e.target.checked,
-                                              endDate: e.target.checked ? null : item.endDate,
-                                            }
+                                            ...item,
+                                            current: e.target.checked,
+                                            endDate: e.target.checked ? null : item.endDate,
+                                          }
                                           : item,
                                       ),
                                     }
@@ -851,10 +903,10 @@ export default function ProfilePage() {
                                       education: prev.education.map((item) =>
                                         item.id === edu.id
                                           ? {
-                                              ...item,
-                                              current: e.target.checked,
-                                              endDate: e.target.checked ? null : item.endDate,
-                                            }
+                                            ...item,
+                                            current: e.target.checked,
+                                            endDate: e.target.checked ? null : item.endDate,
+                                          }
                                           : item,
                                       ),
                                     }

@@ -15,6 +15,7 @@ import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
 
 type Job = {
   id: number
@@ -175,9 +176,9 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [totalData, setTotalData] = useState(0);
-
   const [currentPage, setCurrentPage] = useState(1);
-
+  const { user } = useAuth()
+  const { toast } = useToast()
   const router = useRouter();
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
@@ -230,6 +231,9 @@ export default function JobsPage() {
       setLoading(false);
     }
   };
+
+
+
 
   console.log('filteredJobs', filteredJobs);
 

@@ -8,6 +8,10 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/auth-context"
+import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"
+import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast"
 
 // Types for our saved job data
 interface SavedJob {
@@ -21,6 +25,7 @@ interface SavedJob {
   logo: string
   skills: string[]
   saved: string
+  jobId: number
 }
 
 export default function SavedJobsPage() {
@@ -28,107 +33,81 @@ export default function SavedJobsPage() {
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [totalData, setTotalData] = useState(0);
+  const pageSize = 5;
+  const totalPages = Math.ceil(totalData / pageSize);
 
-  // Simulate API call to fetch saved jobs
+
   useEffect(() => {
-    const fetchSavedJobs = async () => {
-      setIsLoading(true)
-      try {
-        // In a real app, this would be an API call
-        // await fetch('/api/saved-jobs')
+    fetchSavedJobs();
+  }, []);
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 500))
+  const fetchSavedJobs = async () => {
 
-        // Dummy data
-        const dummySavedJobs: SavedJob[] = [
-          {
-            id: "1",
-            title: "Senior Frontend Developer",
-            company: "TechCorp",
-            location: "San Francisco, CA",
-            type: "Full-time",
-            salary: "$120K - $150K",
-            posted: "2 days ago",
-            logo: "/abstract-tc.png",
-            skills: ["React", "TypeScript", "Next.js"],
-            saved: "2023-04-15",
-          },
-          {
-            id: "2",
-            title: "UX Designer",
-            company: "CreativeMinds",
-            location: "Remote",
-            type: "Contract",
-            salary: "$80K - $100K",
-            posted: "3 days ago",
-            logo: "/abstract-geometric-cm.png",
-            skills: ["Figma", "Adobe XD", "Sketch"],
-            saved: "2023-04-14",
-          },
-          {
-            id: "3",
-            title: "Full Stack Developer",
-            company: "WebSolutions",
-            location: "New York, NY",
-            type: "Full-time",
-            salary: "$110K - $140K",
-            posted: "1 week ago",
-            logo: "/abstract-geometric-ws.png",
-            skills: ["JavaScript", "Node.js", "MongoDB"],
-            saved: "2023-04-10",
-          },
-          {
-            id: "4",
-            title: "Product Manager",
-            company: "InnovateCo",
-            location: "Seattle, WA",
-            type: "Full-time",
-            salary: "$130K - $170K",
-            posted: "5 days ago",
-            logo: "/circuit-cityscape.png",
-            skills: ["Agile", "Product Strategy", "User Research"],
-            saved: "2023-04-08",
-          },
-          {
-            id: "5",
-            title: "DevOps Engineer",
-            company: "CloudTech",
-            location: "Austin, TX",
-            type: "Full-time",
-            salary: "$110K - $140K",
-            posted: "1 week ago",
-            logo: "/computed-tomography-scan.png",
-            skills: ["Docker", "Kubernetes", "CI/CD"],
-            saved: "2023-04-05",
-          },
-        ]
+    const userdetails = JSON.parse(localStorage.getItem("user") || "{}");
 
-        setSavedJobs(dummySavedJobs)
-      } catch (error) {
-        console.error("Error fetching saved jobs:", error)
-      } finally {
-        setIsLoading(false)
+    console.log('userdetails', userdetails);
+    let token = localStorage.getItem("token") || "";
+
+    try {
+
+      const response = await DataService.get("/SavedJobs", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log('saved jobData', response?.data);
+
+      if (response?.status === 200) {
+        setSavedJobs(response?.data || []);
+        // setAllJobs(response.data.jobs || []); 
+        setLoading(false);
       }
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
     }
-
-    fetchSavedJobs()
-  }, [])
+  };
 
   // Filter saved jobs based on search query
-  const filteredJobs = savedJobs.filter(
-    (job) =>
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.skills.some((skill) => skill.toLowerCase().includes(searchQuery.toLowerCase())),
-  )
+  // const filteredJobs = savedJobs.filter(
+  //   (job) =>
+  //     job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     job.skills.some((skill) => skill.toLowerCase().includes(searchQuery.toLowerCase())),
+  // )
 
   // Handle removing a saved job
-  const handleRemoveSavedJob = (id: string) => {
+  const handleRemoveSavedJob = async (id: string) => {
     // In a real app, this would be an API call
-    // await fetch(`/api/saved-jobs/${id}`, { method: 'DELETE' })
+    const userdetails = JSON.parse(localStorage.getItem("user") || "{}");
 
-    setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== id))
+    console.log('userdetails', userdetails);
+    let token = localStorage.getItem("token") || "";
+    const jobId = id;
+
+    try {
+
+      const response = await DataService.post(`/SavedJobs/${id}`, jobId, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log('saved jobData', response?.data);
+
+      if (response?.status === 200) {
+        setSavedJobs(response?.data || []);
+        // setAllJobs(response.data.jobs || []); 
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+
+    // setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== id))
   }
 
   return (
@@ -149,12 +128,12 @@ export default function SavedJobsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="text-sm text-muted-foreground">
+        {/* <div className="text-sm text-muted-foreground">
           {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"} saved
-        </div>
+        </div> */}
       </div>
 
-      {isLoading ? (
+      {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
@@ -175,9 +154,9 @@ export default function SavedJobsPage() {
             </Card>
           ))}
         </div>
-      ) : filteredJobs.length > 0 ? (
+      ) : savedJobs.length > 0 ? (
         <div className="space-y-4">
-          {filteredJobs.map((job) => (
+          {savedJobs.map((job) => (
             <Card key={job.id} className="overflow-hidden transition-all hover:shadow-md">
               <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4">
                 <div className="flex items-start space-x-4">
@@ -217,7 +196,7 @@ export default function SavedJobsPage() {
                 </Button>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <div className="flex flex-wrap gap-1">
+                {/* <div className="flex flex-wrap gap-1">
                   {job.skills.map((skill) => (
                     <span
                       key={skill}
@@ -226,7 +205,7 @@ export default function SavedJobsPage() {
                       {skill}
                     </span>
                   ))}
-                </div>
+                </div> */}
                 <div className="mt-4 flex items-center justify-between">
                   <div>
                     <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
@@ -240,7 +219,7 @@ export default function SavedJobsPage() {
               <Separator />
               <CardFooter className="flex justify-between p-4">
                 <Button asChild variant="outline" size="sm">
-                  <a href={`/jobs/${job.id}`}>
+                  <a href={`/jobs/${job.jobId}`}>
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Details
                   </a>

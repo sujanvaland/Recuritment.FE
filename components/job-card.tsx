@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ApplyJobButton } from "@/components/apply-job-button"
+import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
+import { DataService } from "@/services/axiosInstance";
 
 interface JobCardProps {
   job: {
@@ -25,10 +28,65 @@ interface JobCardProps {
 
 export function JobCard({ job }: JobCardProps) {
   const [isSaved, setIsSaved] = useState(false)
+  const { user } = useAuth()
+  const { toast } = useToast()
 
-  const toggleSave = () => {
-    setIsSaved(!isSaved)
+
+
+  const savejobs = async () => {
+    const jobId = {
+      id: job.id ?? null,
+    }
+
+    try {
+      //  const response = await fetch("/api/jobs", {
+      const token = localStorage.getItem("token");
+
+      console.log('ajaytoken', token);
+      const response = await DataService.post(`/SavedJobs/${jobId?.id}`, jobId, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+
+          console.log('response', response);
+
+          if (response.status === 200) {
+
+            console.log('saved', response);
+          } else {
+            console.warn("Unexpected status code:", response.status);
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating job:", error);
+        });
+
+      //  const result = await response.json()
+
+      // toast({
+      //   title: "Success!",
+      //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
+      // })
+
+
+    } catch (error) {
+      console.error("Error posting job:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to post job",
+        variant: "destructive",
+      })
+    }
+
   }
+
+
+  // const toggleSave = () => {
+  //   setIsSaved(!isSaved)
+  // }
 
   console.log('jobcard', job);
 
@@ -57,7 +115,7 @@ export function JobCard({ job }: JobCardProps) {
             variant="ghost"
             size="icon"
             className={isSaved ? "text-primary" : "text-gray-400"}
-            onClick={toggleSave}
+            onClick={() => savejobs()}
           >
             <BookmarkIcon className="h-5 w-5" />
             <span className="sr-only">{isSaved ? "Unsave" : "Save"} job</span>
