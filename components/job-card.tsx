@@ -11,6 +11,7 @@ import { ApplyJobButton } from "@/components/apply-job-button"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"
 
 interface JobCardProps {
   job: {
@@ -23,6 +24,8 @@ interface JobCardProps {
     tags: string[]
     posted: string
     logo: string
+    createdAt?: string
+    expiresAt?: string
   }
 }
 
@@ -31,7 +34,14 @@ export function JobCard({ job }: JobCardProps) {
   const { user } = useAuth()
   const { toast } = useToast()
 
+  let posted = "";
+  let expires = "";
 
+  if (job && job?.createdAt && job?.expiresAt) {
+    const timeInfo = getJobTimeInfo(job.createdAt, job.expiresAt);
+    posted = timeInfo.posted;
+    expires = timeInfo.expires;
+  }
 
   const savejobs = async () => {
     const jobId = {
@@ -136,7 +146,7 @@ export function JobCard({ job }: JobCardProps) {
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between border-t bg-muted/50 px-6 py-3">
-        <p className="text-sm text-muted-foreground">Posted {job.posted}</p>
+        <p className="text-sm text-muted-foreground">Posted {posted}</p>
         <div className="flex space-x-2">
           <Button variant="outline" size="sm" asChild>
             <Link href={`/jobs/${job.id}`}>View Details</Link>

@@ -81,7 +81,8 @@ export default function ProfilePage() {
 
   let token = localStorage.getItem("token") || "";
 
-  console.log('token21321', token);
+  let userdata = user;
+  console.log('userdata', userdata)
 
   // Fetch user profile
   useEffect(() => {
@@ -338,6 +339,9 @@ export default function ProfilePage() {
     return `${Math.floor(diffDays / 365)} years ago`
   }
 
+
+  console.log('profile', profile);
+
   if (isLoading) {
 
 
@@ -444,7 +448,7 @@ export default function ProfilePage() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      value={editedProfile?.firstName || ""}
+                      value={userdata?.firstName || ""}
                       onChange={(e) =>
                         setEditedProfile((prev) => (prev ? { ...prev, firstName: e.target.value } : null))
                       }
@@ -521,9 +525,9 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold">
-                        {profile.firstName} {profile.lastName}
+                        {userdata?.firstName} {userdata?.lastName}
                       </h3>
-                      <p className="text-muted-foreground">{profile.title}</p>
+                      <p className="text-muted-foreground">{profile?.title}</p>
                     </div>
                   </div>
 
@@ -532,7 +536,7 @@ export default function ProfilePage() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{profile.email}</span>
+                      <span>{userdata?.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-muted-foreground" />
