@@ -31,7 +31,9 @@ import { getUserProfile, updateUserProfile, uploadResume } from "@/lib/profile"
 import { Switch } from "@/components/ui/switch"
 import { DataService } from "@/services/axiosInstance";
 
+
 // Types for our profile data
+
 interface UserProfile {
   firstName: string
   lastName: string
@@ -45,8 +47,10 @@ interface UserProfile {
   resumeUrl: string | null
   resumeName: string | null
   resumeUpdated: string | null
+  userid: number;
+  id: number | string
   experience: {
-    id: string
+    id: number
     title: string
     company: string
     location: string
@@ -56,7 +60,7 @@ interface UserProfile {
     current: boolean
   }[]
   education: {
-    id: string
+    id: number
     degree: string
     institution: string
     location: string
@@ -67,14 +71,36 @@ interface UserProfile {
   }[]
 }
 
+
+interface EditableUserProfile {
+  id: number
+  userid: number
+  phone: string
+  title: string
+  location: string
+  bio: string
+  website: string
+  skills: string[]
+  resumeUrl: string | null
+  resumeName: string | null
+  experience: UserProfile["experience"]
+  education: UserProfile["education"]
+}
+
 export default function ProfilePage() {
   const { user } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [editMode, setEditMode] = useState(false)
   const [editedProfile, setEditedProfile] = useState<UserProfile | null>(null)
-  const [editingExperience, setEditingExperience] = useState<string | null>(null)
-  const [editingEducation, setEditingEducation] = useState<string | null>(null)
+  const [editProfileData, setEditProfileData] = useState<EditableUserProfile | null>(null)
+  const [editprofileDataone, setEditProfileDataone] = useState<EditableUserProfile | null>(null)
+
+  // Local state for skills input
+  const [skillsInput, setSkillsInput] = useState("");
+
+  const [editingExperience, setEditingExperience] = useState<number | null>(null)
+  const [editingEducation, setEditingEducation] = useState<number | null>(null)
   const [isUploadingResume, setIsUploadingResume] = useState(false)
 
   const { toast } = useToast()
@@ -83,6 +109,13 @@ export default function ProfilePage() {
 
   let userdata = user;
   console.log('userdata', userdata)
+
+  // Sync skillsInput with editedProfile when entering edit mode
+  useEffect(() => {
+    if (editMode && editedProfile) {
+      setSkillsInput(editedProfile.skills.join(", "));
+    }
+  }, [editMode, editedProfile]);
 
   // Fetch user profile
   useEffect(() => {
@@ -164,27 +197,60 @@ export default function ProfilePage() {
     }
   }, [])
 
+
+
+
+
   // Handle saving profile changes
   const handleSaveProfile = async () => {
-    if (!editedProfile || !user) return
+    if (!editedProfile || !user) return;
+
+    const rawUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (!rawUser || !token) {
+      toast({
+        title: "Error",
+        description: "User session expired. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const userdata = JSON.parse(rawUser); // ✅ Safe now
+
+    console.log('fsdfsd', userdata);
+
+    // Update skills from skillsInput before saving
+    editedProfile.skills = skillsInput
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter(Boolean);
+
+    const editProfileDataone = prepareProfileForApi(editedProfile, userdata);
+    console.log('editProfileDataone', editProfileDataone);
 
     try {
-      const updatedProfile = await updateUserProfile(user.id, editedProfile)
-      setProfile(updatedProfile)
-      setEditMode(false)
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
-      })
+      const response = await DataService.post("/profile/UpdateProfile", editProfileDataone, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        setEditMode(false);
+        toast({
+          title: "Profile updated",
+          description: "Your profile has been updated successfully.",
+        });
+      }
     } catch (error) {
-      console.error("Error saving profile:", error)
+      console.error("Error saving profile:", error);
       toast({
         title: "Error",
         description: "Failed to update your profile. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   // Handle resume upload
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,8 +266,8 @@ export default function ProfilePage() {
 
       // Update the profile with the new resume
       const updatedProfile = await uploadResume(user.id, file.name, fileUrl)
-      setProfile(updatedProfile)
-      setEditedProfile(updatedProfile)
+      // setProfile(updatedProfile)
+      // setEditedProfile(updatedProfile)
 
       toast({
         title: "Resume uploaded",
@@ -231,8 +297,8 @@ export default function ProfilePage() {
         resumeUpdated: null,
       })
 
-      setProfile(updatedProfile)
-      setEditedProfile(updatedProfile)
+      // setProfile(updatedProfile)
+      // setEditedProfile(updatedProfile)
 
       toast({
         title: "Resume deleted",
@@ -250,10 +316,14 @@ export default function ProfilePage() {
 
   // Handle adding new experience
   const handleAddExperience = () => {
-    if (!editedProfile) return
+    if (!editedProfile) return;
+
+    const maxId = editedProfile.experience.length
+      ? Math.max(...editedProfile.experience.map(exp => typeof exp.id === 'number' ? exp.id : 0))
+      : -1;
 
     const newExperience = {
-      id: `exp-${Date.now()}`,
+      id: maxId + 1,
       title: "",
       company: "",
       location: "",
@@ -261,22 +331,26 @@ export default function ProfilePage() {
       endDate: null,
       description: "",
       current: true,
-    }
+    };
 
     setEditedProfile({
       ...editedProfile,
       experience: [newExperience, ...editedProfile.experience],
-    })
+    });
 
-    setEditingExperience(newExperience.id)
-  }
+    setEditingExperience(newExperience.id);
+  };
 
   // Handle adding new education
   const handleAddEducation = () => {
-    if (!editedProfile) return
+    if (!editedProfile) return;
+
+    const maxId = editedProfile.education.length
+      ? Math.max(...editedProfile.education.map(edu => typeof edu.id === 'number' ? edu.id : 0))
+      : -1;
 
     const newEducation = {
-      id: `edu-${Date.now()}`,
+      id: maxId + 1,
       degree: "",
       institution: "",
       location: "",
@@ -284,35 +358,33 @@ export default function ProfilePage() {
       endDate: null,
       description: "",
       current: true,
-    }
+    };
 
     setEditedProfile({
       ...editedProfile,
       education: [newEducation, ...editedProfile.education],
-    })
+    });
 
-    setEditingEducation(newEducation.id)
-  }
+    setEditingEducation(newEducation.id);
+  };
 
   // Handle deleting experience
-  const handleDeleteExperience = (id: string) => {
-    if (!editedProfile) return
-
+  const handleDeleteExperience = (id: number) => {
+    if (!editedProfile) return;
     setEditedProfile({
       ...editedProfile,
       experience: editedProfile.experience.filter((exp) => exp.id !== id),
-    })
-  }
+    });
+  };
 
   // Handle deleting education
-  const handleDeleteEducation = (id: string) => {
-    if (!editedProfile) return
-
+  const handleDeleteEducation = (id: number) => {
+    if (!editedProfile) return;
     setEditedProfile({
       ...editedProfile,
       education: editedProfile.education.filter((edu) => edu.id !== id),
-    })
-  }
+    });
+  };
 
   // Format date for display
   const formatDate = (dateString: string | null) => {
@@ -339,6 +411,42 @@ export default function ProfilePage() {
     return `${Math.floor(diffDays / 365)} years ago`
   }
 
+  // Add this function before handleSaveProfile
+  function prepareProfileForApi(profile: UserProfile, user: { id: number }): any {
+    return {
+      id: 0, // Always 0 for update
+      userId: user.id, // Use userId, not userid
+      phone: profile.phone,
+      title: profile.title,
+      location: profile.location,
+      bio: profile.bio,
+      website: profile.website,
+      skills: profile.skills,
+      resumeUrl: profile.resumeUrl,
+      resumeName: profile.resumeName,
+      resumeUpdated: profile.resumeUpdated,
+      experience: profile.experience.map((exp: any) => ({
+        id: 0, // Always 0 for new/updated
+        title: exp.title,
+        company: exp.company,
+        location: exp.location,
+        startDate: exp.startDate,
+        endDate: exp.endDate,
+        description: exp.description,
+        current: exp.current,
+      })),
+      education: profile.education.map((edu: any) => ({
+        id: 0, // Always 0 for new/updated
+        degree: edu.degree,
+        institution: edu.institution,
+        location: edu.location,
+        startDate: edu.startDate,
+        endDate: edu.endDate,
+        description: edu.description,
+        current: edu.current,
+      })),
+    };
+  }
 
   console.log('profile', profile);
 
@@ -416,7 +524,7 @@ export default function ProfilePage() {
             </Button>
             <Button onClick={handleSaveProfile}>
               <Save className="mr-2 h-4 w-4" />
-              Save Changes
+              Save Changes 121
             </Button>
           </div>
         ) : (
@@ -458,7 +566,7 @@ export default function ProfilePage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      value={editedProfile?.lastName || ""}
+                      value={userdata?.lastName || ""}
                       onChange={(e) =>
                         setEditedProfile((prev) => (prev ? { ...prev, lastName: e.target.value } : null))
                       }
@@ -469,7 +577,7 @@ export default function ProfilePage() {
                     <Input
                       id="email"
                       type="email"
-                      value={editedProfile?.email || ""}
+                      value={userdata?.email || ""}
                       onChange={(e) => setEditedProfile((prev) => (prev ? { ...prev, email: e.target.value } : null))}
                     />
                   </div>
@@ -576,20 +684,8 @@ export default function ProfilePage() {
                     <Label htmlFor="skills">Skills (comma separated)</Label>
                     <Textarea
                       id="skills"
-                      value={editedProfile?.skills.join(", ") || ""}
-                      onChange={(e) =>
-                        setEditedProfile((prev) =>
-                          prev
-                            ? {
-                              ...prev,
-                              skills: e.target.value
-                                .split(",")
-                                .map((skill) => skill.trim())
-                                .filter(Boolean),
-                            }
-                            : null,
-                        )
-                      }
+                      value={skillsInput}
+                      onChange={(e) => setSkillsInput(e.target.value)}
                     />
                   </div>
                 </div>
