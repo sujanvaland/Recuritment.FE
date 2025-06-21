@@ -414,7 +414,7 @@ export default function ProfilePage() {
   // Add this function before handleSaveProfile
   function prepareProfileForApi(profile: UserProfile, user: { id: number }): any {
     return {
-      id: 0, // Always 0 for update
+      id: profile.id, // Always 0 for update
       userId: user.id, // Use userId, not userid
       phone: profile.phone,
       title: profile.title,
@@ -426,7 +426,7 @@ export default function ProfilePage() {
       resumeName: profile.resumeName,
       resumeUpdated: profile.resumeUpdated,
       experience: profile.experience.map((exp: any) => ({
-        id: 0, // Always 0 for new/updated
+        id: exp.id, // Use the actual id
         title: exp.title,
         company: exp.company,
         location: exp.location,
@@ -436,7 +436,7 @@ export default function ProfilePage() {
         current: exp.current,
       })),
       education: profile.education.map((edu: any) => ({
-        id: 0, // Always 0 for new/updated
+        id: edu.id, // Use the actual id
         degree: edu.degree,
         institution: edu.institution,
         location: edu.location,

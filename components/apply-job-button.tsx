@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import { JobApplicationModal } from "@/components/job-application-modal"
-import { checkIfAlreadyApplied } from "@/lib/actions"
+import { DataService } from "@/services/axiosInstance"
 
 interface ApplyJobButtonProps {
   jobId: number
@@ -18,6 +18,11 @@ interface ApplyJobButtonProps {
   size?: "default" | "sm" | "lg"
   className?: string
 }
+
+// Helper function to get user role safely (handles both 'role' and 'roles' properties)
+const getUserRole = (user: any): string | null => {
+  return user?.role || user?.roles || null;
+};
 
 export function ApplyJobButton({
   jobId,
@@ -39,12 +44,34 @@ export function ApplyJobButton({
     const checkApplicationStatus = async () => {
       if (!user) return
 
+      console.log('User object:', user);
+      console.log('User ID type:', typeof user.id, 'Value:', user.id);
+
       setIsChecking(true)
       try {
-        const alreadyApplied = await checkIfAlreadyApplied(jobId, user.id)
+        // Check if user has already applied using API
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsChecking(false);
+          return;
+        }
+
+        console.log('Checking application status for jobId:', jobId, 'userId:', user.id);
+
+        // Check if user has already applied for this specific job
+        const response = await DataService.get(`/applications/check/${jobId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log('Application check response:', response);
+
+        // Use the applied field from the API response
+        const alreadyApplied = response.data?.applied || false;
         setHasApplied(alreadyApplied)
       } catch (error) {
         console.error("Error checking application status:", error)
+        // If API doesn't exist yet, default to false
+        setHasApplied(false)
       } finally {
         setIsChecking(false)
       }
@@ -70,8 +97,13 @@ export function ApplyJobButton({
       return
     }
 
+    console.log('HandleClick - User:', user);
+    console.log('HandleClick - User ID:', user.id, 'Type:', typeof user.id);
+
     // Check if user is a job seeker
-    if (user.roles !== "job-seeker") {
+    const userRole = getUserRole(user);
+    console.log('User role:', userRole);
+    if (userRole !== "job-seeker") {
       toast({
         title: "Not available",
         description: "Only job seekers can apply for jobs",
@@ -92,7 +124,22 @@ export function ApplyJobButton({
     // Double-check if already applied (in case state is stale)
     setIsChecking(true)
     try {
-      const alreadyApplied = await checkIfAlreadyApplied(jobId, user.id)
+      // Check if user has already applied using API
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsChecking(false);
+        return;
+      }
+
+      console.log('Double-checking application for jobId:', jobId, 'userId:', user.id);
+
+      const response = await DataService.get(`/applications/check/${jobId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log('Double-check response:', response);
+
+      const alreadyApplied = response.data?.applied || false;
       if (alreadyApplied) {
         setHasApplied(true)
         toast({
@@ -103,15 +150,16 @@ export function ApplyJobButton({
       }
 
       // Open the application modal
+      console.log('Opening application modal for jobId:', jobId);
       setIsModalOpen(true)
     } catch (error) {
       console.error("Error checking application status:", error)
+      // If API doesn't exist yet, proceed with application
+      console.log('Proceeding with application despite API error');
+      setIsModalOpen(true)
     } finally {
       setIsChecking(false)
     }
-
-
-
   }
 
   const handleApplicationSuccess = () => {

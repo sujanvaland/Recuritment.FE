@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
 import { EmployerSidebar } from "@/components/employer-sidebar"
 
+// Helper function to get user role safely (handles both 'role' and 'roles' properties)
+const getUserRole = (user: any): string | null => {
+  return user?.role || user?.roles || null;
+};
+
 export default function EmployerDashboardLayout({
   children,
 }: Readonly<{
@@ -20,7 +25,8 @@ export default function EmployerDashboardLayout({
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && (!user || user.roles !== "employer")) {
+    const userRole = getUserRole(user);
+    if (!isLoading && (!user || userRole !== "employer")) {
       router.push("/auth/login")
     }
   }, [user, isLoading, router])

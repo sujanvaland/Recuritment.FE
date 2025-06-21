@@ -177,6 +177,7 @@ export default function JobsPage() {
   const [error, setError] = useState<string | null>(null)
   const [totalData, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const { user } = useAuth()
   const { toast } = useToast()
   const router = useRouter();
@@ -191,6 +192,22 @@ export default function JobsPage() {
     fetchJobs();
   }, []);
 
+  // Debounced search effect
+  useEffect(() => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      fetchJobs(1); // Reset to first page when searching
+    }, 500); // 500ms delay
+
+    setSearchTimeout(timeout);
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [searchTerm, locationTerm]);
 
   const fetchJobs = async (page = 1) => {
     setLoading(true);
@@ -205,17 +222,37 @@ export default function JobsPage() {
     }
     try {
 
-      const response = await DataService.get("/jobs", {
+      // Prepare search parameters
+      const searchParams: any = {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          search: "",
-          remote: null,
-          tag: "",
-          status: "",
           page: page,
           pageSize: pageSize,
+          tag: "",
+          status: "",
         },
-      });
+      };
+
+      // Add search parameters if they exist
+      if (searchTerm) {
+        searchParams.params.search = searchTerm;
+        console.log('Searching for:', searchTerm);
+      }
+
+      if (locationTerm) {
+        searchParams.params.location = locationTerm;
+        console.log('Location search:', locationTerm);
+        
+        // Check if location includes "remote"
+        if (locationTerm.toLowerCase().includes('remote')) {
+          searchParams.params.remote = true;
+          console.log('Remote work detected');
+        }
+      }
+
+      console.log('API call parameters:', searchParams);
+
+      const response = await DataService.get("/jobs", searchParams);
 
       console.log('jobData', response);
 
@@ -224,8 +261,12 @@ export default function JobsPage() {
         setFilteredJobs(response.data.jobs || []);
         // setAllJobs(response.data.jobs || []);
         setTotalData(response.data.total);
+        setCurrentPage(page);
+        console.log('Jobs found:', response.data.jobs?.length || 0);
+        console.log('Total jobs:', response.data.total);
       }
     } catch (err) {
+      console.error('Search error:', err);
       setError("Failed to load jobs");
     } finally {
       setLoading(false);
@@ -353,8 +394,18 @@ export default function JobsPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // Search is already applied via useEffect
+    // Trigger immediate search
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    fetchJobs(1);
   }
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setLocationTerm("");
+    fetchJobs(1);
+  };
 
 
   console.log('filters', filters);
@@ -385,9 +436,19 @@ export default function JobsPage() {
             onChange={(e) => setLocationTerm(e.target.value)}
           />
         </div>
-        <Button type="submit" className="shrink-0">
-          Search Jobs
+        <Button type="submit" className="shrink-0" disabled={loading}>
+          {loading ? "Searching..." : "Search Jobs"}
         </Button>
+        {(searchTerm || locationTerm) && (
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="shrink-0"
+            onClick={handleClearSearch}
+          >
+            Clear
+          </Button>
+        )}
       </form>
 
       <div className="flex flex-col gap-8 lg:flex-row">
@@ -459,16 +520,7 @@ export default function JobsPage() {
               <p className="mt-2 text-sm text-muted-foreground">Try adjusting your search or filter criteria</p>
               <Button
                 className="mt-4"
-                onClick={() => {
-                  setSearchTerm("")
-                  setLocationTerm("")
-                  setFilters({
-                    jobType: [],
-                    salaryRange: [0, 300000],
-                    location: [],
-                    skills: [],
-                  })
-                }}
+                onClick={handleClearSearch}
               >
                 Clear Filters
               </Button>
@@ -477,17 +529,23 @@ export default function JobsPage() {
 
           {filteredJobs.length > 0 && (
             <div className="mt-8 flex justify-center">
-              <Button variant="outline" className="mx-1">
+              <Button 
+                variant="outline" 
+                className="mx-1"
+                disabled={currentPage === 1}
+                onClick={() => fetchJobs(currentPage - 1)}
+              >
                 Previous
               </Button>
-              <Button variant="outline" className="mx-1">
-                1
-              </Button>
-              <Button className="mx-1">2</Button>
-              <Button variant="outline" className="mx-1">
-                3
-              </Button>
-              <Button variant="outline" className="mx-1">
+              <span className="mx-2 flex items-center">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button 
+                variant="outline" 
+                className="mx-1"
+                disabled={currentPage >= totalPages}
+                onClick={() => fetchJobs(currentPage + 1)}
+              >
                 Next
               </Button>
             </div>

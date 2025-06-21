@@ -106,13 +106,13 @@ client.interceptors.response.use(
         // do something here
       } else if (response && (response.status === 401 || response.status === 0)) {
         // Unauthorized access, handle accordingly (e.g., redirect to login)
-        // You might also want to refresh the token or log the user out
-        // Perform logout or redirect logic here
-        // console.log("redirecting....")
-        // Cookies.remove('logedIn');
-        // Cookies.remove('token');
-        // localStorage.removeItem("profile");
-        // localStorage.removeItem("access_token");
+        // Clear invalid token and redirect to login
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          // Redirect to login page
+          window.location.href = "/auth/login";
+        }
         return response
       } else {
         return response;

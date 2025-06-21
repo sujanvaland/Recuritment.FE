@@ -48,11 +48,76 @@ export function JobApplicationModal({
   const [resumeOption, setResumeOption] = useState<"existing" | "new">("existing")
   const [userProfile, setUserProfile] = useState<any>(null)
   const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+  const [isUploadingResume, setIsUploadingResume] = useState(false)
+  const [uploadedResumeUrl, setUploadedResumeUrl] = useState<string>("")
   const { toast } = useToast()
   const router = useRouter()
   const { user } = useAuth()
 
+  // Function to upload resume file
+  const uploadResume = async (file: File): Promise<string> => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
 
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('https://www.onemysetu.com/api/File/UploadFile', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      console.log('Resume upload response:', result);
+
+      // Extract URL from actualUrl field based on API response structure
+      return result[0].actualUrl || '';
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      throw new Error('Failed to upload resume file');
+    }
+  };
+
+  // Handle file selection and immediate upload
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setResumeFile(file);
+
+    if (file) {
+      setIsUploadingResume(true);
+      try {
+        const uploadedUrl = await uploadResume(file);
+        setUploadedResumeUrl(uploadedUrl);
+        toast({
+          title: "Resume uploaded successfully!",
+          description: "Your resume has been uploaded and is ready for submission.",
+        });
+      } catch (uploadError) {
+        toast({
+          title: "Upload failed",
+          description: uploadError instanceof Error ? uploadError.message : "Failed to upload resume",
+          variant: "destructive",
+        });
+        setResumeFile(null);
+        setUploadedResumeUrl("");
+      } finally {
+        setIsUploadingResume(false);
+      }
+    } else {
+      setUploadedResumeUrl("");
+    }
+  };
 
   // Fetch user profile data including resume
   useEffect(() => {
@@ -91,13 +156,30 @@ export function JobApplicationModal({
 
     try {
       const token = localStorage.getItem("token") || "";
-      const resumeUrl = "https://docs.google.com/document/d/1wj7prpQ2Meq-InRl7zsD7eWl0YQZnkEbHWi58ex8x48/edit?tab=t.0";
+      let resumeUrl = "";
+
+      // Handle resume upload or use existing resume
+      if (resumeOption === "existing" && userProfile?.resumeUrl) {
+        resumeUrl = userProfile.resumeUrl;
+      } else if (resumeOption === "new" && uploadedResumeUrl) {
+        resumeUrl = uploadedResumeUrl;
+      } else {
+        toast({
+          title: "Resume required",
+          description: "Please upload a resume or select your existing resume",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       const submitdata = {
         jobId: jobId,         // Set a valid jobId if needed
         resumeUrl: resumeUrl,
         coverLetter: coverLetter,   // Use empty string or remove if not required
       }
+
+      console.log('submitdata', submitdata);
 
       const response = await DataService.post("/applications", submitdata, {
         headers: {
@@ -132,60 +214,14 @@ export function JobApplicationModal({
       console.log("job submit Response:", response);
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      toast({
+        title: "Error",
+        description: "There was an error submitting your application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // try {
-    //   let resumeUrl = ""
-
-    //   // If using existing resume
-    //   if (resumeOption === "existing" && userProfile?.resumeUrl) {
-    //     resumeUrl = userProfile.resumeUrl
-    //   }
-    //   // If uploading a new resume
-    //   else if (resumeOption === "new" && resumeFile) {
-    //     // In a real app, you would upload the resume file to a storage service
-    //     // and get a URL to store in the database
-    //     resumeUrl = URL.createObjectURL(resumeFile)
-    //   } else {
-    //     toast({
-    //       title: "Resume required",
-    //       description: "Please upload a resume or select your existing resume",
-    //       variant: "destructive",
-    //     })
-    //     setIsSubmitting(false)
-    //     return
-    //   }
-
-    //   await submitJobApplication({
-    //     jobId,
-    //     coverLetter,
-    //     resumeUrl,
-    //   })
-
-    //   // Call the success callback if provided
-    //   if (onSuccess) {
-    //     onSuccess()
-    //   } else {
-    //     toast({
-    //       title: "Application submitted!",
-    //       description: `Your application for ${jobTitle} at ${companyName} has been submitted successfully.`,
-    //     })
-
-    //     // Close the modal and redirect to the applications page
-    //     onClose()
-    //     router.push("/dashboard/applications")
-    //     router.refresh()
-    //   }
-    // } catch (error) {
-    //   console.error("Error submitting application:", error)
-    //   toast({
-    //     title: "Error",
-    //     description: "There was an error submitting your application. Please try again.",
-    //     variant: "destructive",
-    //   })
-    // } finally {
-    //   setIsSubmitting(false)
-    // }
   }
 
   return (
@@ -251,13 +287,24 @@ export function JobApplicationModal({
                           id="resume"
                           type="file"
                           accept=".pdf,.doc,.docx"
-                          onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                          onChange={handleFileChange}
                           required={resumeOption === "new"}
                           className="flex-1"
                         />
                         <p className="mt-1 text-xs text-muted-foreground">
                           Upload your resume (PDF, DOC, or DOCX format)
                         </p>
+                        {isUploadingResume && (
+                          <div className="mt-2 flex items-center space-x-2 text-sm text-blue-600">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Uploading resume...</span>
+                          </div>
+                        )}
+                        {uploadedResumeUrl && !isUploadingResume && (
+                          <div className="mt-2 text-sm text-green-600">
+                            ✓ Resume uploaded successfully
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -285,8 +332,13 @@ export function JobApplicationModal({
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || isLoadingProfile}>
-              {isSubmitting ? (
+            <Button type="submit" disabled={isSubmitting || isLoadingProfile || isUploadingResume}>
+              {isUploadingResume ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading Resume...
+                </>
+              ) : isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Submitting...

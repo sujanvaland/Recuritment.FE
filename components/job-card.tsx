@@ -60,14 +60,20 @@ export function JobCard({ job }: JobCardProps) {
         },
       })
         .then((response) => {
-
           console.log('response', response);
 
           if (response.status === 200) {
-
+            toast({
+              title: "Success!",
+              description: "Job saved successfully",
+            })
             console.log('saved', response);
           } else {
             console.warn("Unexpected status code:", response.status);
+            toast({
+              title: "Alert!",
+              description: response?.data,
+            })
           }
         })
         .catch((error) => {

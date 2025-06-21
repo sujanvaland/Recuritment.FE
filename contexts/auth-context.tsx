@@ -30,6 +30,11 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Helper function to get user role safely (handles both 'role' and 'roles' properties)
+const getUserRole = (user: any): string | null => {
+  return user?.role || user?.roles || null;
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -40,35 +45,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Check if token exists in localStorage
+        const token = localStorage.getItem("token");
+        const userData = localStorage.getItem("user");
+        
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
 
         const response = await DataService.get("/auth/me");
 
         console.log('response auth', response);
 
-        if (response.data) {
+        if (response.data && response.data.user) {
+          // Set the user in state
+          setUser(response.data.user);
+          
           // Add redirection based on user role if on the homepage or auth pages
           const currentPath = window.location.pathname
           if (currentPath === "/" || currentPath === "/auth/login" || currentPath === "/auth/register") {
-            console.log("User role:", response.data.user.role) // Debug log
-            if (response.data.user.role === "employer") {
+            const userRole = getUserRole(response.data.user);
+            console.log("User role:", userRole) // Debug log
+            if (userRole === "employer") {
               console.log('employers redirect');
               router.push("/employers/dashboard")
-            } else if (response.data.user.role === "job-seeker") {
+            } else if (userRole === "job-seeker") {
               router.push("/dashboard")
               // router.push("/");
               console.log('jobseeker redirect');
             }
           }
+        } else {
+          // Token is invalid, clear localStorage
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setUser(null);
         }
       } catch (error) {
         console.error("Auth check error:", error)
+        // Clear invalid token
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setUser(null);
       } finally {
         setIsLoading(false)
       }
     }
 
     checkAuth()
-  }, [router, user])
+  }, [router]) // Remove user from dependencies to prevent infinite loop
 
   const login = async (email: string, password: string) => {
     console.log('logindetails', email, password);
@@ -82,17 +108,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       console.log('login response', response.data);
 
-
-      if (!response.data?.token) {
-        throw new Error(response.data.error || "Login failed")
+      // Check if we have a token and user data, regardless of success flag
+      if (!response.data?.token || !response.data?.user) {
+        throw new Error(response.data?.message || response.data?.error || "Login failed")
       }
 
       setUser(response.data.user);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", response.data.token);
 
-      console.log("Login successful, user role:", response.data.user.roles) // Debug log
+      const userRole = getUserRole(response.data.user);
+      console.log("Login successful, user role:", userRole) // Debug log
 
+      // Redirect based on user role after successful login
+      if (userRole === "employer") {
+        console.log('employers redirect after login');
+        router.push("/employers/dashboard")
+      } else if (userRole === "job-seeker") {
+        console.log('jobseeker redirect after login');
+        router.push("/dashboard")
+      }
 
     } catch (error) {
       setError((error as Error).message)
@@ -131,10 +166,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
       // Redirect based on user role
-      // if (response.data.user.roles === "employer") {
+      // const userRole = getUserRole(response.data.user);
+      // if (userRole === "employer") {
       //   router.push("/employers/dashboard")
       //   console.log('employerdashboard');
-      // } else if (response.data.user.roles === "job-seeker") {
+      // } else if (userRole === "job-seeker") {
       //   console.log('jobseeker dashboard');
       //   router.push("/dashboard")
       // } else {

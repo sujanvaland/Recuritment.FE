@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation'
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { DataService } from "@/services/axiosInstance";
 import { useSearchParams } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast"
 
 
 type Job = {
@@ -41,6 +42,7 @@ export default function JobDetailsPage() {
   const params = useParams()
   const jobid = params?.id
   const [job, setJobs] = useState<Job | null>(null);
+  const { toast } = useToast()
 
   // console.log('jobid', jobid);
 
@@ -144,7 +146,6 @@ export default function JobDetailsPage() {
       //  const response = await fetch("/api/jobs", {
       const token = localStorage.getItem("token");
 
-      console.log('ajaytoken', token);
       const response = await DataService.post(`/SavedJobs/${jobId?.id}`, jobId, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -156,8 +157,17 @@ export default function JobDetailsPage() {
           console.log('response', response);
 
           if (response.status === 200) {
-
             console.log('saved', response);
+            toast({
+              title: "Alert!",
+              description: "Job saved successfully",
+            })
+
+          } else if (response.status === 400) {
+            toast({
+              title: "Alert!",
+              description: `${response?.data}`,
+            })
 
           } else {
             console.warn("Unexpected status code:", response.status);
@@ -233,7 +243,14 @@ export default function JobDetailsPage() {
           </div>
 
           <div className="mb-6 flex flex-wrap gap-2">
-            {/* <ApplyJobButton jobId={job!.id} jobTitle={job?.title ?? ""} companyName={job?.company ?? ""} size="lg" /> */}
+            {job && (
+              <ApplyJobButton
+                jobId={job.id}
+                jobTitle={job.title ?? ""}
+                companyName={job.company ?? ""}
+                size="lg"
+              />
+            )}
             <Button variant="outline" size="icon" onClick={() => savedjobs()}>
               <Bookmark className="h-5 w-5" />
               <span className="sr-only">Save job</span>

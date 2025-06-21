@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
 import { JobSeekerSidebar } from "@/components/job-seeker-sidebar"
 
+// Helper function to get user role safely (handles both 'role' and 'roles' properties)
+const getUserRole = (user: any): string | null => {
+  return user?.role || user?.roles || null;
+};
+
 export default function JobSeekerDashboardLayout({
   children,
 }: Readonly<{
@@ -22,7 +27,8 @@ export default function JobSeekerDashboardLayout({
 
   useEffect(() => {
     console.log("JobSeekerDashboardLayout mounted", { user, isLoading, pathname })
-    if (!isLoading && (!user || user.roles !== "job-seeker")) {
+    const userRole = getUserRole(user);
+    if (!isLoading && (!user || userRole !== "job-seeker")) {
       router.push("/auth/login")
     }
   }, [user, isLoading, router])
