@@ -12,8 +12,9 @@ import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
+import { ApplyJobButton } from "@/components/apply-job-button"
 
-// Types for our saved job data
+// Types for our saved job data 
 interface SavedJob {
   id: string
   title: string
@@ -224,7 +225,12 @@ export default function SavedJobsPage() {
                     View Details
                   </a>
                 </Button>
-                <Button size="sm">Apply Now</Button>
+                <ApplyJobButton
+                  jobId={job.jobId}
+                  jobTitle={job.title}
+                  companyName={job.company}
+                  size="sm"
+                />
               </CardFooter>
             </Card>
           ))}
