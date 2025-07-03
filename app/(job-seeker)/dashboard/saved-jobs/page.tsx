@@ -13,12 +13,13 @@ import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
 import { ApplyJobButton } from "@/components/apply-job-button"
+import { Switch } from "@/components/ui/switch"
 
 // Types for our saved job data 
 interface SavedJob {
-  id: string
-  title: string
-  company: string
+  id: string 
+  jobTitle: string
+  companyName: string
   location: string
   type: string
   salary: string
@@ -27,6 +28,8 @@ interface SavedJob {
   skills: string[]
   saved: string
   jobId: number
+  createdDate:string
+  savedAt:string
 }
 
 export default function SavedJobsPage() {
@@ -39,7 +42,54 @@ export default function SavedJobsPage() {
   const [totalData, setTotalData] = useState(0);
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
-
+  
+  // Add settings state matching the UpdateSetting API payload
+  const [settings, setSettings] = useState({
+    id: 0,
+    createdBy: 0,
+    modifiedBy: 0,
+    createdDate: "2025-07-02T15:04:05.125Z",
+    modifiedDate: "2025-07-02T15:04:05.125Z",
+    isDeleted: true,
+    guId: "string",
+    userId: "9",
+    theme: "string",
+    language: "string",
+    timeZone: "string",
+    notifications: {
+      id: 0,
+      createdBy: 0,
+      modifiedBy: 0,
+      createdDate: "2025-07-02T15:04:05.125Z",
+      modifiedDate: "2025-07-02T15:04:05.125Z",
+      isDeleted: true,
+      guId: "string",
+      userId: "9",
+      emailNotifications: true,
+      applicationUpdates: true,
+      jobAlerts: true,
+      messageNotifications: true,
+      interviewReminders: true,
+      marketingEmails: true
+    },
+    privacy: {
+      id: 0,
+      createdBy: 0,
+      modifiedBy: 0,
+      createdDate: "2025-07-02T15:04:05.125Z",
+      modifiedDate: "2025-07-02T15:04:05.125Z",
+      isDeleted: true,
+      guId: "string",
+      userId: "string",
+      profileVisible: true,
+      showContactInfo: true,
+      allowMessaging: true,
+      shareJobActivity: true,
+      shareApplicationHistory: true
+    },
+    createdAt: "2025-07-02T15:04:05.125Z",
+    lastUpdated: "2025-07-02T15:04:05.125Z"
+  });
 
   useEffect(() => {
     fetchSavedJobs();
@@ -81,27 +131,26 @@ export default function SavedJobsPage() {
   // )
 
   // Handle removing a saved job
-  const handleRemoveSavedJob = async (id: string) => {
+  const handleRemoveSavedJob = async (id: number) => {
+    setLoading(true);
+    // Show confirmation dialog before proceeding
+    const confirmed = window.confirm("Are you sure you want to remove this saved job?");
+    if (!confirmed) return;
     // In a real app, this would be an API call
     const userdetails = JSON.parse(localStorage.getItem("user") || "{}");
-
-    console.log('userdetails', userdetails);
     let token = localStorage.getItem("token") || "";
     const jobId = id;
 
     try {
 
-      const response = await DataService.post(`/SavedJobs/${id}`, jobId, {
+      const response = await DataService.get(`/SavedJobs/Delete?jobId=${jobId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log('saved jobData', response?.data);
-
-      if (response?.status === 200) {
+     
         setSavedJobs(response?.data || []);
         // setAllJobs(response.data.jobs || []); 
         setLoading(false);
-      }
+      
     } catch (err) {
       setError("Failed to load jobs");
     } finally {
@@ -110,6 +159,46 @@ export default function SavedJobsPage() {
 
     // setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== id))
   }
+
+  // Handler for switch changes in notifications
+  const handleNotificationSwitch = (field: keyof typeof settings.notifications, value: boolean) => {
+    setSettings((prev) => ({
+      ...prev,
+      notifications: {
+        ...prev.notifications,
+        [field]: value,
+      },
+    }));
+  };
+
+  // Handler for saving settings
+  const handleSaveSettings = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await DataService.post(
+        "https://www.onemysetu.com/api/settings/UpdateSetting",
+        settings,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        // Success logic (show toast, etc.)
+        // You can use your useToast hook here if desired
+        alert("Settings updated successfully!");
+      } else {
+        alert("Failed to update settings.");
+      }
+    } catch (error) {
+      alert("Error updating settings.");
+      console.error(error);
+    }
+  };
+
+  console.log('savedJobsdatatata', savedJobs);
 
   return (
     <>
@@ -164,16 +253,16 @@ export default function SavedJobsPage() {
                   <div className="h-12 w-12 overflow-hidden rounded-md bg-slate-100">
                     <img
                       src={job.logo || "/placeholder.svg"}
-                      alt={`${job.company} logo`}
+                      alt={`${job.companyName} logo`}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{job.title}</h3>
+                    <h3 className="font-semibold">{job?.jobTitle}</h3>
                     <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
                       <div className="flex items-center">
                         <Building className="mr-1 h-3 w-3" />
-                        {job.company}
+                        {job?.companyName}
                       </div>
                       <div className="flex items-center">
                         <MapPin className="mr-1 h-3 w-3" />
@@ -181,7 +270,7 @@ export default function SavedJobsPage() {
                       </div>
                       <div className="flex items-center">
                         <Clock className="mr-1 h-3 w-3" />
-                        Saved {new Date(job.saved).toLocaleDateString()}
+                        Saved {new Date(job?.savedAt).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
@@ -190,7 +279,7 @@ export default function SavedJobsPage() {
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600"
-                  onClick={() => handleRemoveSavedJob(job.id)}
+                  onClick={() => handleRemoveSavedJob(job?.jobId)}
                 >
                   <Trash2 className="h-4 w-4" />
                   <span className="sr-only">Remove saved job</span>
@@ -214,21 +303,24 @@ export default function SavedJobsPage() {
                     </span>
                     <span className="ml-2 text-sm font-medium">{job.salary}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">Posted {job.posted}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Posted{" "}
+                    {getJobTimeInfo(job?.createdDate, job?.createdDate ?? "").posted}
+                  </span>
                 </div>
               </CardContent>
               <Separator />
               <CardFooter className="flex justify-between p-4">
                 <Button asChild variant="outline" size="sm">
-                  <a href={`/jobs/${job.jobId}`}>
+                  <a href={`/jobs/${job?.jobId}`}>
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Details
                   </a>
                 </Button>
                 <ApplyJobButton
-                  jobId={job.jobId}
-                  jobTitle={job.title}
-                  companyName={job.company}
+                  jobId={job?.jobId}
+                  jobTitle={job?.jobTitle}
+                  companyName={job?.companyName}
                   size="sm"
                 />
               </CardFooter>
@@ -255,6 +347,24 @@ export default function SavedJobsPage() {
           )}
         </div>
       )}
+
+      {/* Example usage in JSX (add this where you want the switch to appear): */}
+      {/*
+      <Card className="p-4 mb-4">
+        <div className="flex items-center justify-between">
+          <span>Email Notifications</span>
+          <Switch
+            checked={settings.notifications.emailNotifications}
+            onCheckedChange={(checked) => handleNotificationSwitch("emailNotifications", checked)}
+          />
+        </div>
+      </Card>
+      */}
+
+      {/* Example usage in JSX (add this where you want the save button to appear): */}
+      {/*
+      <Button onClick={handleSaveSettings} className="mt-4">Save Settings</Button>
+      */}
     </>
   )
 }

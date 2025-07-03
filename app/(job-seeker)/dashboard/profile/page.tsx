@@ -117,89 +117,93 @@ export default function ProfilePage() {
     }
   }, [editMode, editedProfile]);
 
-  // Fetch user profile
-  useEffect(() => {
-    let isMounted = true
-
-    const fetchProfile = async () => {
-      try {
-        //  const response = await fetch("/api/jobs", {
-        const userid = user?.id;
-        const token = localStorage.getItem("token")
-        const response = await DataService.get(`/profile/${userid}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            console.log('deletejobresponse', response);
-            if (response.status === 200) {
-              let userProfile = response?.data;
-              setProfile(userProfile)
-              setEditedProfile(userProfile)
-              console.log('profileresponse', response);
-              setIsLoading(false);
-
-            } else {
-              console.warn("Unexpected status code:", response.status);
-            }
-          })
-          .catch((error) => {
-            console.error("Error creating job:", error);
-          });
-
-        //  const result = await response.json()
-
-        // toast({
-        //   title: "Success!",
-        //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
-        // })
-
-
-      } catch (error) {
-        console.error("Error posting job:", error)
-        toast({
-          title: "Error",
-          description: error instanceof Error ? error.message : "Failed to post job",
-          variant: "destructive",
-        })
+  // Move fetchProfile outside useEffect so it can be called elsewhere
+  const fetchProfile = async () => {
+    let isMounted = true;
+    try {
+      const userid = user?.id;
+      const token = localStorage.getItem("token");
+      const response = await DataService.get(`/profile/${userid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 200 && response?.data) {
+        let userProfile = response?.data;
+        if (isMounted) {
+          setProfile(userProfile);
+          setEditedProfile(userProfile);
+          setIsLoading(false);
+        }
+      } else {
+        const localUserRaw = localStorage.getItem("user");
+        if (localUserRaw) {
+          const localUser = JSON.parse(localUserRaw);
+          const fallbackProfile = {
+            firstName: localUser.firstName || "",
+            lastName: localUser.lastName || "",
+            email: localUser.email || "",
+            phone: localUser.phone || "",
+            title: localUser.title || "",
+            location: localUser.location || "",
+            bio: localUser.bio || "",
+            website: localUser.website || "",
+            skills: localUser.skills || [],
+            resumeUrl: localUser.resumeUrl || null,
+            resumeName: localUser.resumeName || null,
+            resumeUpdated: localUser.resumeUpdated || null,
+            userid: localUser.id || 0,
+            id: localUser.id || 0,
+            experience: localUser.experience || [],
+            education: localUser.education || [],
+          };
+          if (isMounted) {
+            setProfile(fallbackProfile);
+            setEditedProfile(fallbackProfile);
+          }
+        }
+        if (isMounted) setIsLoading(false);
       }
-
-      // try {
-      //   const userProfile = await getUserProfile(user == null ? "0" : user.id)
-
-      //   // Only update state if the component is still mounted
-      //   if (isMounted && userProfile) {
-      //     setProfile(userProfile)
-      //     setEditedProfile(userProfile)
-      //   }
-      // } catch (error) {
-      //   console.error("Error fetching profile:", error)
-      //   if (isMounted) {
-      //     toast({
-      //       title: "Error",
-      //       description: "Failed to load your profile. Please try again.",
-      //       variant: "destructive",
-      //     })
-      //   }
-      // } finally {
-      //   // Always set loading to false if the component is still mounted
-      //   if (isMounted) setIsLoading(false)
-      // }
+    } catch (error) {
+      const localUserRaw = localStorage.getItem("user");
+      if (localUserRaw) {
+        const localUser = JSON.parse(localUserRaw);
+        const fallbackProfile = {
+          firstName: localUser.firstName || "",
+          lastName: localUser.lastName || "",
+          email: localUser.email || "",
+          phone: localUser.phone || "",
+          title: localUser.title || "",
+          location: localUser.location || "",
+          bio: localUser.bio || "",
+          website: localUser.website || "",
+          skills: localUser.skills || [],
+          resumeUrl: localUser.resumeUrl || null,
+          resumeName: localUser.resumeName || null,
+          resumeUpdated: localUser.resumeUpdated || null,
+          userid: localUser.id || 0,
+          id: localUser.id || 0,
+          experience: localUser.experience || [],
+          education: localUser.education || [],
+        };
+        if (isMounted) {
+          setProfile(fallbackProfile);
+          setEditedProfile(fallbackProfile);
+        }
+      }
+      if (isMounted) setIsLoading(false);
     }
-
-    fetchProfile()
-
-    // Cleanup function to prevent state updates on unmounted component
     return () => {
-      isMounted = false
-    }
-  }, [])
+      isMounted = false;
+    };
+  };
 
-
-
-
+  // useEffect to call fetchProfile on mount
+  useEffect(() => {
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle saving profile changes
   const handleSaveProfile = async () => {
@@ -241,6 +245,8 @@ export default function ProfilePage() {
           title: "Profile updated",
           description: "Your profile has been updated successfully.",
         });
+        // Refetch profile from API after update
+        fetchProfile();
       }
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -539,7 +545,7 @@ export default function ProfilePage() {
         <TabsList className="mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="resume">Resume</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          {/* <TabsTrigger value="settings">Settings</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -1207,7 +1213,7 @@ export default function ProfilePage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="settings" className="space-y-6">
+        {/* <TabsContent value="settings" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Profile Settingsttings</CardTitle>
@@ -1289,7 +1295,7 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </>
   )

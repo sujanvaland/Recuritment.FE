@@ -11,29 +11,139 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/auth-context"
+import { DataService } from "@/services/axiosInstance";
+import { useToast } from "@/hooks/use-toast"
+
+ interface UserSettings {
+  id: number; 
+  userId: string;
+  notifications: {
+    id: number;    
+    userId: string;
+    emailNotifications: boolean;
+    applicationUpdates: boolean;
+    jobAlerts: boolean;
+    messageNotifications: boolean;
+    interviewReminders: boolean;
+    marketingEmails: boolean;
+  };
+
+  privacy: {
+    id: number;    
+    userId: string;
+    profileVisible: boolean;
+    showContactInfo: boolean;
+    allowMessaging: boolean;
+    shareJobActivity: boolean;
+    shareApplicationHistory: boolean;
+  };
+ 
+}
+
 
 export default function SettingsPage() {
   const { user, logout } = useAuth()
+    const { toast } = useToast()
+
+  let token = localStorage.getItem("token") || "";
+   let userdata = user;
+
+
   const [isSaving, setIsSaving] = useState(false)
+  const [userSettings, setUserSettings] = useState<UserSettings>({
+  id:0, 
+  userId: userdata?.id.toString() || "",
+  notifications: {
+    id: 0,   
+    userId:userdata?.id.toString() || "",
+    emailNotifications: false,
+    applicationUpdates: false,
+    jobAlerts: false,
+    messageNotifications: false,
+    interviewReminders: false,
+    marketingEmails: false,
+  },
+  privacy: {
+    id: 0,  
+   userId:userdata?.id.toString() || "",
+    profileVisible: false,
+    showContactInfo: false,
+    allowMessaging: false,
+    shareJobActivity: false,
+    shareApplicationHistory: false,
+  },
+});
+
+  
 
   const handleSaveSettings = async () => {
-    setIsSaving(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsSaving(false)
+    console.log("Saving settings...", userSettings)
+     setIsSaving(true)
+
+      try {
+      const response = await DataService.post("/settings/UpdateSetting", userSettings, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+      setIsSaving(false)
+        toast({
+          title: "Profile updated",
+          description: "Your profile has been updated successfully.",
+        });
+        // Refetch profile from API after update
+       
+      }
+    } catch (error) {
+      console.error("Error saving profile:", error);
+       setIsSaving(false)
+      toast({
+        title: "Error",
+        description: "Failed to update your profile. Please try again.",
+        variant: "destructive",
+      });
+    }
+
+
+    // // Simulate API call
+    // await new Promise((resolve) => setTimeout(resolve, 1000))
+   
   }
 
-  return (
+
+  const handleNotificationChange = (field: keyof UserSettings["notifications"]) => (value: boolean) => {
+  setUserSettings(prev => ({
+    ...prev,
+    notifications: {
+      ...prev.notifications,
+      [field]: value,
+    },
+  }));
+};
+
+const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: boolean) => {
+  setUserSettings(prev => ({
+    ...prev,
+    privacy: {
+      ...prev.privacy,
+      [field]: value,
+    },
+  }));
+};
+
+
+
+  return ( 
     <>
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
         <p className="text-muted-foreground">Manage your account preferences and settings</p>
       </div>
 
-      <Tabs defaultValue="general" className="space-y-6">
+      <Tabs defaultValue="notifications" className="space-y-6">
         <div className="flex justify-between items-center">
           <TabsList>
-            <TabsTrigger value="general">General</TabsTrigger>
+            {/* <TabsTrigger value="general">General</TabsTrigger> */}
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
@@ -43,81 +153,7 @@ export default function SettingsPage() {
           </Button>
         </div>
 
-        <TabsContent value="general">
-          <Card>
-            <CardHeader>
-              <CardTitle>General Information</CardTitle>
-              <CardDescription>Update your basic account information</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center">
-                    <User className="h-10 w-10 text-slate-400" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-medium">Profile Picture</h3>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        Upload New
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue={user?.firstName || "Jane"} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue={user?.lastName || "Smith"} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue={user?.email || "jane.smith@example.com"} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" defaultValue="+1 (555) 123-4567" />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h3 className="font-medium">Account Preferences</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="language">Language</Label>
-                    <select id="language" className="rounded-md border p-2">
-                      <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="timezone">Timezone</Label>
-                    <select id="timezone" className="rounded-md border p-2">
-                      <option value="utc-8">Pacific Time (UTC-8)</option>
-                      <option value="utc-5">Eastern Time (UTC-5)</option>
-                      <option value="utc+0">GMT (UTC+0)</option>
-                      <option value="utc+1">Central European Time (UTC+1)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+       
 
         <TabsContent value="notifications">
           <Card>
@@ -127,14 +163,30 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="font-medium">Email Notifications</h3>
+                {/* <h3 className="font-medium">Email Notifications</h3> */}
                 <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="email-job-alerts">Email Notification</Label>
+                      <p className="text-sm text-muted-foreground">Receive emails about new job matches</p>
+                    </div>
+                   <Switch
+                        id="email-notification"
+                        checked={userSettings.notifications.emailNotifications}
+                        onCheckedChange={handleNotificationChange("emailNotifications")}
+                      />
+
+                  </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="email-job-alerts">Job Alerts</Label>
                       <p className="text-sm text-muted-foreground">Receive emails about new job matches</p>
                     </div>
-                    <Switch id="email-job-alerts" defaultChecked />
+                    <Switch
+                        id="email-job-alerts"
+                        checked={userSettings.notifications.jobAlerts}
+                        onCheckedChange={handleNotificationChange("jobAlerts")}
+                      />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
@@ -143,28 +195,51 @@ export default function SettingsPage() {
                         Receive emails when your application status changes
                       </p>
                     </div>
-                    <Switch id="email-applications" defaultChecked />
+                    <Switch
+                        id="email-applications"
+                        checked={userSettings.notifications.applicationUpdates}
+                        onCheckedChange={handleNotificationChange("applicationUpdates")}
+                      />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="email-messages">Messages</Label>
                       <p className="text-sm text-muted-foreground">Receive emails when you get new messages</p>
                     </div>
-                    <Switch id="email-messages" defaultChecked />
+                    <Switch
+                      id="email-messages"
+                      checked={userSettings.notifications.messageNotifications}
+                      onCheckedChange={handleNotificationChange("messageNotifications")}
+                    />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="email-marketing">Marketing</Label>
                       <p className="text-sm text-muted-foreground">Receive emails about new features and promotions</p>
                     </div>
-                    <Switch id="email-marketing" />
+                    <Switch
+                      id="email-marketing"
+                      checked={userSettings.notifications.marketingEmails}
+                      onCheckedChange={handleNotificationChange("marketingEmails")}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="email-marketing">Interview Reminders</Label>
+                      <p className="text-sm text-muted-foreground">Receive emails about new features and promotions</p>
+                    </div>
+                    <Switch
+                        id="interview-reminders"
+                        checked={userSettings.notifications.interviewReminders}
+                        onCheckedChange={handleNotificationChange("interviewReminders")}
+                      />
                   </div>
                 </div>
               </div>
 
               <Separator />
 
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h3 className="font-medium">Push Notifications</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -193,9 +268,9 @@ export default function SettingsPage() {
                     <Switch id="push-messages" defaultChecked />
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <Separator />
+              {/* <Separator /> */}
 
               <div className="space-y-4">
                 <h3 className="font-medium">Notification Frequency</h3>
@@ -222,47 +297,56 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="font-medium">Profile Visibility</h3>
+                {/* <h3 className="font-medium">Profile Visibility</h3> */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label htmlFor="profile-visibility">Who can see your profile</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Control who can view your full profile information
-                      </p>
+                      <Label htmlFor="email-marketing">Profile Visibility</Label>
+                      <p className="text-sm text-muted-foreground">Receive emails about new features and promotions</p>
                     </div>
-                    <select id="profile-visibility" className="rounded-md border p-2">
-                      <option value="public">Everyone</option>
-                      <option value="employers">Employers Only</option>
-                      <option value="private">Private</option>
-                    </select>
+                    <Switch
+                        id="profile-visibility"
+                        checked={userSettings.privacy.profileVisible}
+                        onCheckedChange={handlePrivacyChange("profileVisible")}
+                      />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label htmlFor="resume-visibility">Resume Visibility</Label>
-                      <p className="text-sm text-muted-foreground">Control who can download your resume</p>
+                      <Label htmlFor="email-marketing">Show ContactInfo</Label>
+                      <p className="text-sm text-muted-foreground">Receive emails about new features and promotions</p>
                     </div>
-                    <select id="resume-visibility" className="rounded-md border p-2">
-                      <option value="public">Everyone</option>
-                      <option value="employers">Employers Only</option>
-                      <option value="private">Private</option>
-                    </select>
+                    <Switch
+                        id="show-contactinfo"
+                        checked={userSettings.privacy.showContactInfo}
+                        onCheckedChange={handlePrivacyChange("showContactInfo")}
+                      />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label htmlFor="contact-info">Contact Information</Label>
-                      <p className="text-sm text-muted-foreground">Control who can see your contact information</p>
+                      <Label htmlFor="email-marketing">Share Job Activity</Label>
+                      <p className="text-sm text-muted-foreground">Receive emails about new features and promotions</p>
                     </div>
-                    <select id="contact-info" className="rounded-md border p-2">
-                      <option value="public">Everyone</option>
-                      <option value="employers">Employers Only</option>
-                      <option value="private">Private</option>
-                    </select>
+                        <Switch
+                        id="sharejob-activity"
+                        checked={userSettings.privacy.shareJobActivity}
+                        onCheckedChange={handlePrivacyChange("shareJobActivity")}
+                      />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="email-marketing">Share Application History</Label>
+                      <p className="text-sm text-muted-foreground">Receive emails about new features and promotions</p>
+                    </div>
+                    <Switch
+                      id="shareapplication-history"
+                      checked={userSettings.privacy.shareApplicationHistory}
+                      onCheckedChange={handlePrivacyChange("shareApplicationHistory")}
+                    />
                   </div>
                 </div>
               </div>
 
-              <Separator />
+              {/* <Separator />
 
               <div className="space-y-4">
                 <h3 className="font-medium">Data Usage</h3>
@@ -284,7 +368,7 @@ export default function SettingsPage() {
                     <Switch id="data-personalization" defaultChecked />
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <Separator />
 
