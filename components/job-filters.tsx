@@ -18,21 +18,27 @@ export type FilterState = {
 interface JobFiltersProps {
   onFilterChange: (filters: FilterState) => void
   initialFilters?: FilterState
+  selectedFilters?: FilterState // <-- Add this line
 }
 
-export function JobFilters({ onFilterChange, initialFilters }: JobFiltersProps) {
+export function JobFilters({ onFilterChange, initialFilters, selectedFilters }: JobFiltersProps) {
   const [filters, setFilters] = useState<FilterState>(
     () =>
+      selectedFilters ||
       initialFilters || {
         jobType: [],
         salaryRange: [50000, 150000],
         location: [],
         skills: [],
-
       },
   )
-  console.log('initialFilters', initialFilters);
 
+  // Sync local state with selectedFilters if provided (controlled)
+  useEffect(() => {
+    if (selectedFilters) {
+      setFilters(selectedFilters)
+    }
+  }, [selectedFilters])
 
   // Update parent component when filters change
   useEffect(() => {

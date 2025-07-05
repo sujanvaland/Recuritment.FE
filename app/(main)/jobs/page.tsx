@@ -31,134 +31,11 @@ type Job = {
   posted?: string
   expires?: string
   salary: string
+  minSalary: number
+  maxSalary: number
   logo: string
   company: string
 }
-
-
-// Mock job data
-const allJobs = [
-  {
-    id: 1,
-    title: "Senior Frontend Developer",
-    company: "TechCorp",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    salary: "$120K - $150K",
-    salaryRange: [120000, 150000],
-    skills: ["React", "TypeScript", "Next.js"],
-    posted: "2 days ago",
-    logo: "/abstract-tc.png",
-    experienceLevel: "senior-level",
-    workLocation: "on-site",
-    education: "bachelor",
-  },
-  {
-    id: 2,
-    title: "Backend Engineer",
-    company: "DataSystems",
-    location: "New York, NY",
-    type: "Full-time",
-    salary: "$130K - $160K",
-    salaryRange: [130000, 160000],
-    skills: ["Node.js", "Python", "AWS"],
-    posted: "1 day ago",
-    logo: "/abstract-data-stream.png",
-    experienceLevel: "mid-level",
-    workLocation: "hybrid",
-    education: "bachelor",
-  },
-  {
-    id: 3,
-    title: "UX/UI Designer",
-    company: "CreativeMinds",
-    location: "Remote",
-    type: "Contract",
-    salary: "$80K - $100K",
-    salaryRange: [80000, 100000],
-    skills: ["Figma", "Adobe XD", "Sketch"],
-    posted: "3 days ago",
-    logo: "/abstract-geometric-cm.png",
-    experienceLevel: "mid-level",
-    workLocation: "remote",
-    education: "bachelor",
-  },
-  {
-    id: 4,
-    title: "DevOps Engineer",
-    company: "CloudTech",
-    location: "Austin, TX",
-    type: "Full-time",
-    salary: "$110K - $140K",
-    salaryRange: [110000, 140000],
-    skills: ["Docker", "Kubernetes", "CI/CD"],
-    posted: "5 days ago",
-    logo: "/computed-tomography-scan.png",
-    experienceLevel: "senior-level",
-    workLocation: "hybrid",
-    education: "master",
-  },
-  {
-    id: 5,
-    title: "Product Manager",
-    company: "InnovateCo",
-    location: "Seattle, WA",
-    type: "Full-time",
-    salary: "$130K - $170K",
-    salaryRange: [130000, 170000],
-    skills: ["Agile", "Product Strategy", "User Research"],
-    posted: "1 week ago",
-    logo: "/circuit-cityscape.png",
-    experienceLevel: "director",
-    workLocation: "on-site",
-    education: "master",
-  },
-  {
-    id: 6,
-    title: "Data Scientist",
-    company: "AnalyticsPro",
-    location: "Boston, MA",
-    type: "Full-time",
-    salary: "$140K - $180K",
-    salaryRange: [140000, 180000],
-    skills: ["Python", "Machine Learning", "SQL"],
-    posted: "3 days ago",
-    logo: "/abstract-purple-swirl.png",
-    experienceLevel: "senior-level",
-    workLocation: "hybrid",
-    education: "doctorate",
-  },
-  {
-    id: 7,
-    title: "Junior Web Developer",
-    company: "WebStarters",
-    location: "Remote",
-    type: "Part-time",
-    salary: "$50K - $70K",
-    salaryRange: [50000, 70000],
-    skills: ["HTML", "CSS", "JavaScript"],
-    posted: "2 days ago",
-    logo: "/abstract-geometric-ws.png",
-    experienceLevel: "entry-level",
-    workLocation: "remote",
-    education: "associate",
-  },
-  {
-    id: 8,
-    title: "Computer Science Instructor",
-    company: "Tech Academy",
-    location: "Chicago, IL",
-    type: "Contract",
-    salary: "$90K - $110K",
-    salaryRange: [90000, 110000],
-    skills: ["Teaching", "Computer Science", "Curriculum Development"],
-    posted: "1 week ago",
-    logo: "/computer-science-abstract.png",
-    experienceLevel: "mid-level",
-    workLocation: "on-site",
-    education: "master",
-  },
-]
 
 export default function JobsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -183,10 +60,6 @@ export default function JobsPage() {
   const router = useRouter();
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
-
-
-
-
 
   useEffect(() => {
     fetchJobs();
@@ -221,7 +94,6 @@ export default function JobsPage() {
       token = "";
     }
     try {
-
       // Prepare search parameters
       const searchParams: any = {
         headers: { Authorization: `Bearer ${token}` },
@@ -275,122 +147,110 @@ export default function JobsPage() {
 
 
 
-
   console.log('filteredJobs', filteredJobs);
 
-  useEffect(() => {
+  // Only set filters on first jobs load (prevents resetting filters on every jobs change)
+useEffect(() => {
+  if (
+    jobs.length > 0 &&
+    filters.jobType.length === 0 &&
+    filters.location.length === 0 &&
+    filters.skills.length === 0
+  ) {
     const jobTypeSet = new Set<string>();
     const locationSet = new Set<string>();
     const skillSet = new Set<string>();
 
-    if (jobs?.length > 0) {
-      jobs.forEach((job) => {
-        if (job.type) jobTypeSet.add(job.type);
-        if (job.location) locationSet.add(job.location);
-        (job.tags || []).forEach((tag) => skillSet.add(tag));
-      });
+    jobs.forEach((job) => {
+      if (job.type) jobTypeSet.add(job.type);
+      if (job.location) locationSet.add(job.location);
+      (job.tags || []).forEach((tag) => skillSet.add(tag));
+    });
 
-      const jobTypes = Array.from(jobTypeSet);
-      const locations = Array.from(locationSet);
-      const skills = Array.from(skillSet);
+    setFilters((prev) => ({
+      ...prev,
+      jobType: Array.from(jobTypeSet),
+      location: Array.from(locationSet),
+      skills: Array.from(skillSet),
+    }));
+  }
+}, [jobs]);
 
-      console.log('jobTypes', jobTypes);
-      console.log('locations', locations);
-      console.log('skills', skills);
 
-      // Set as default filters (select all initially)
-      setFilters({
-        jobType: jobTypes,
-        location: locations,
-        skills: skills,
-        salaryRange: [0, 300000],
+
+   // Apply filters and search
+  useEffect(() => {
+    let result = [...jobs];
+
+    // Apply search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter(
+        (job) =>
+          job.title.toLowerCase().includes(searchLower) ||
+          job.company.toLowerCase().includes(searchLower) ||
+          job.tags.some((skill) => skill.toLowerCase().includes(searchLower)),
+      );
+    }
+
+    // Apply location search (search box)
+    if (locationTerm) {
+      const locationLower = locationTerm.toLowerCase();
+      result = result.filter((job) => job.location.toLowerCase().includes(locationLower));
+    }
+
+    // Apply job type filter (advanced filter)
+    if (filters.jobType.length > 0) {
+      result = result.filter((job) =>
+        filters.jobType.includes(job.type)
+      );
+    }
+
+    // Apply salary range filter (advanced filter)
+    if (filters.salaryRange && filters.salaryRange.length === 2) {
+      const [min, max] = filters.salaryRange;
+      result = result.filter(
+        (job) =>
+          // Check if job's salary range overlaps with filter range
+          job.maxSalary >= min && job.minSalary <= max
+      );
+    }
+
+    // Apply location filter (advanced filter)
+    if (filters.location.length > 0) {
+      result = result.filter((job) =>
+        filters.location.includes(job.location)
+      );
+    }
+
+    // Apply skills filter (advanced filter)
+    if (filters.skills.length > 0) {
+      result = result.filter((job) => {
+        const jobSkills = job.tags.map((skill) => skill.toLowerCase());
+        // At least one selected skill must be present in job's tags
+        return filters.skills.some((skill) => jobSkills.includes(skill.toLowerCase()));
       });
     }
 
+    // Apply sorting
+    switch (sortBy) {
+      case "newest":
+        // Sort by createdAt (descending: newest first)
+        result.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+      case "salary":
+        result.sort((a, b) => b.minSalary - a.minSalary);
+        break;
+      // "relevance" is default, no need to sort
+    }
 
-  }, [jobs]);
+    setFilteredJobs(result);
+  }, [searchTerm, locationTerm, filters, sortBy, jobs]);
 
-
-
-  // Apply filters and search
-  //useEffect(() => {
-  // let result = [...jobs]
-
-  //   // Apply search term
-  //   if (searchTerm) {
-  //     const searchLower = searchTerm.toLowerCase()
-  //     result = result.filter(
-  //       (job) =>
-  //         job.title.toLowerCase().includes(searchLower) ||
-  //         job.company.toLowerCase().includes(searchLower) ||
-  //         job.skills.some((skill) => skill.toLowerCase().includes(searchLower)),
-  //     )
-  //   }
-
-  //   // Apply location search
-  //   if (locationTerm) {
-  //     const locationLower = locationTerm.toLowerCase()
-  //     result = result.filter((job) => job.location.toLowerCase().includes(locationLower))
-  //   }
-
-  //   // Apply job type filter
-  //   if (filters.jobType.length > 0) {
-  //     result = result.filter((job) => {
-  //       const jobTypeLower = job.type.toLowerCase()
-  //       return filters.jobType.some((type) => jobTypeLower.includes(type.toLowerCase()))
-  //     })
-  //   }
-
-  //   // Apply experience level filter
-  //   if (filters.experienceLevel.length > 0) {
-  //     result = result.filter((job) => filters.experienceLevel.includes(job.experienceLevel))
-  //   }
-
-  //   // Apply salary range filter
-  //   result = result.filter((job) => {
-  //     // Use the lower end of the job's salary range for comparison
-  //     return job.salaryRange[0] >= filters.salaryRange[0] && job.salaryRange[1] <= filters.salaryRange[1]
-  //   })
-
-  //   // Apply location type filter
-  //   if (filters.location.length > 0) {
-  //     result = result.filter((job) => filters.location.includes(job.workLocation))
-  //   }
-
-  //   // Apply skills filter
-  //   if (filters.skills.length > 0) {
-  //     result = result.filter((job) => {
-  //       const jobSkills = job.skills.map((skill) => skill.toLowerCase())
-  //       return filters.skills.some((skill) => jobSkills.includes(skill.toLowerCase()))
-  //     })
-  //   }
-
-  //   // Apply education filter
-  //   if (filters.education.length > 0) {
-  //     result = result.filter((job) => filters.education.includes(job.education))
-  //   }
-
-  //   // Apply sorting
-  //   switch (sortBy) {
-  //     case "newest":
-  //       // For demo purposes, we'll sort by the "posted" field
-  //       result.sort((a, b) => {
-  //         if (a.posted.includes("day") && b.posted.includes("day")) {
-  //           return Number.parseInt(a.posted) - Number.parseInt(b.posted)
-  //         }
-  //         if (a.posted.includes("day")) return -1
-  //         if (b.posted.includes("day")) return 1
-  //         return 0
-  //       })
-  //       break
-  //     case "salary":
-  //       result.sort((a, b) => b.salaryRange[1] - a.salaryRange[1])
-  //       break
-  //     // "relevance" is default, no need to sort
-  //   }
-
-  //   setFilteredJobs(result)
-  // }, [searchTerm, locationTerm, filters, sortBy])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -406,6 +266,36 @@ export default function JobsPage() {
     setLocationTerm("");
     fetchJobs(1);
   };
+
+  // Add new state for available filter options
+const [availableFilters, setAvailableFilters] = useState<FilterState>({
+  jobType: [],
+  salaryRange: [0, 300000],
+  location: [],
+  skills: [],
+});
+
+// Only update availableFilters when jobs change
+useEffect(() => {
+  if (jobs.length > 0) {
+    const jobTypeSet = new Set<string>();
+    const locationSet = new Set<string>();
+    const skillSet = new Set<string>();
+
+    jobs.forEach((job) => {
+      if (job.type) jobTypeSet.add(job.type);
+      if (job.location) locationSet.add(job.location);
+      (job.tags || []).forEach((tag) => skillSet.add(tag));
+    });
+
+    setAvailableFilters({
+      jobType: Array.from(jobTypeSet),
+      salaryRange: [0, 300000], // or calculate min/max if needed
+      location: Array.from(locationSet),
+      skills: Array.from(skillSet),
+    });
+  }
+}, [jobs]);
 
 
   console.log('filters', filters);
@@ -463,7 +353,11 @@ export default function JobsPage() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <div className="py-6">
-                <JobFilters onFilterChange={setFilters} initialFilters={filters} />
+                <JobFilters
+                  onFilterChange={setFilters}
+                  initialFilters={availableFilters}
+                  selectedFilters={filters}
+                />
 
               </div>
             </SheetContent>
@@ -472,7 +366,11 @@ export default function JobsPage() {
 
         {/* Filters - Desktop */}
         <div className="hidden w-[280px] shrink-0 lg:block">
-          <JobFilters onFilterChange={setFilters} initialFilters={filters} />
+          <JobFilters
+            onFilterChange={setFilters}
+            initialFilters={availableFilters}
+            selectedFilters={filters}
+          />
         </div>
 
         {/* Job Listings */}
