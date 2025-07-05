@@ -9,7 +9,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Briefcase className="h-6 w-6" />
-              <span className="font-bold">JobConnect</span>
+              <span className="font-bold">Sarvha</span>
             </div>
             <p className="text-sm text-gray-500">
               Connecting talented professionals with their dream jobs and helping employers find the perfect candidates.
@@ -92,7 +92,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} JobConnect. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Sarvha. All rights reserved.</p>
         </div>
       </div>
     </footer>

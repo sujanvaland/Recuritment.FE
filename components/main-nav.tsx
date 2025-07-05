@@ -25,11 +25,11 @@ export function MainNav() {
       label: "For Employers",
       active: pathname === "/employers",
     },
-    {
-      href: "/pricing",
-      label: "Pricing",
-      active: pathname === "/pricing",
-    }
+    // {
+    //   href: "/pricing",
+    //   label: "Pricing",
+    //   active: pathname === "/pricing",
+    // }
   ]
 
   return (
@@ -37,7 +37,7 @@ export function MainNav() {
       <div className="flex items-center md:gap-6">
         <Link href="/" className="flex items-center space-x-2">
           <Briefcase className="h-6 w-6" />
-          <span className="hidden font-bold sm:inline-block">JobConnect</span>
+          <span className="hidden font-bold sm:inline-block">Sarvha Logo</span>
         </Link>
         <nav className="hidden gap-6 md:flex">
           {routes.map((route) => (
