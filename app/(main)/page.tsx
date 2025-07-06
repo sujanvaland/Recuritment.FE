@@ -229,7 +229,9 @@ const [loading, setLoading] = useState(true)
             <div className="flex flex-col gap-2 flex-1">
               <div className="flex items-center gap-3">
                 <span className="bg-emerald-50" >
-                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">12 min ago</span>
+                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">
+                    
+                  </span>
                 </span>
                 <button className="ml-auto">
                   <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
