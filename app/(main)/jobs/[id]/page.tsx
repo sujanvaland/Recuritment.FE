@@ -198,7 +198,14 @@ export default function JobDetailsPage() {
 
 
   return (
-    <div className="container px-4 py-8 md:px-6 md:py-12">
+    <div className="w-full">
+       <div className="bg-black w-full flex flex-col justify-center">
+      <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center py-16 md:py-24">
+        <h1 className="text-5xl md:text-6xl font-extrabold text-white text-center mb-0">Jobs Details</h1>
+      </div>
+    </div>
+     <div className="w-full bg-white px-4 py-8 md:px-6 md:py-12 flex justify-center">
+  <div className="container max-w-[1400px] w-full">
       <div className="mb-6">
         <Link
           href="/jobs"
@@ -355,8 +362,8 @@ export default function JobDetailsPage() {
           </Tabs>
         </div>
 
-        <div>
-          <div className="rounded-lg border bg-card p-6 shadow-sm">
+       <div >
+          <div className="rounded-lg border bg-card p-6 shadow-sm" style={{ background: "#EBF5F4" }}>
             <h2 className="mb-4 text-xl font-semibold">Job Summary</h2>
             <div className="space-y-4">
               <div>
@@ -392,12 +399,12 @@ export default function JobDetailsPage() {
             {/* <ApplyJobButton jobId={job!.id} jobTitle={job?.title ?? ""} companyName={job?.company ?? ""} className="mt-6 w-full" /> */}
           </div>
 
-          <div className="mt-6 rounded-lg border bg-card p-6 shadow-sm">
+          <div className="mt-6 rounded-lg border bg-card p-6 shadow-sm" style={{ background: "#EBF5F4" }}>
             <h2 className="mb-4 text-xl font-semibold">Similar Jobs</h2>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex gap-4">
-                  <div className="h-10 w-10 shrink-0 rounded bg-slate-100"></div>
+                  <div className="h-10 w-10 shrink-0 rounded" style={{ background: "#afdad5" }}></div>
                   <div>
                     <h3 className="font-medium">Frontend Developer</h3>
                     <p className="text-sm text-muted-foreground">WebTech • Remote • Full-time</p>
@@ -409,5 +416,8 @@ export default function JobDetailsPage() {
         </div>
       </div>
     </div>
+    </div>
+    </div>
+   
   )
 }
