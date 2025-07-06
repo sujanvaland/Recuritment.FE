@@ -16,6 +16,7 @@ import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useSearchParams } from 'next/navigation';
 
 type Job = {
   id: number
@@ -61,6 +62,14 @@ export default function JobsPage() {
   const router = useRouter();
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
+   const searchParams = useSearchParams();
+ 
+
+
+
+  
+ 
+  
 
 
 
@@ -269,6 +278,26 @@ export default function JobsPage() {
 
   //   setFilteredJobs(result)
   // }, [searchTerm, locationTerm, filters, sortBy])
+
+
+   useEffect(() => {
+  const rawTitle = searchParams.get('title');
+  const rawLocation = searchParams.get('location');
+
+  const decodedTitle = rawTitle ? decodeURIComponent(rawTitle) : '';
+  const decodedLocation = rawLocation ? decodeURIComponent(rawLocation) : '';
+
+  setSearchTerm(decodedTitle);
+  setLocationTerm(decodedLocation);
+}, [searchParams]);
+
+// 2️⃣ Once both are set, trigger search
+useEffect(() => {
+  if (searchTerm || locationTerm) {
+    handleSearch({ preventDefault: () => {} } as React.FormEvent); // safely simulate a submit
+  }
+}, [searchTerm, locationTerm]);
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

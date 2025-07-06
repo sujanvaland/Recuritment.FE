@@ -7,7 +7,12 @@ import Link from "next/link"
 import { ArrowRight, Leaf, Package, ShoppingBag, HardHat,  GraduationCap, Coins, Bus, Briefcase, Building, Search, Users,MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DataService } from "@/services/axiosInstance";
+import { getJobTimeInfo } from "@/utils/dateComponent"; 
+import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/contexts/auth-context"
 
+ 
 const iconGreen = "#309689";
 
 type Job = {
@@ -21,7 +26,8 @@ type Job = {
   createdAt?: string
   expiresAt?: string,
   modifiedDate?: string,
-  posted?: string
+  posted?: string,
+  createdDate?: string,
   expires?: string
   salary: string
   logo: string
@@ -76,8 +82,43 @@ const categories = [
 
 export default function Home() {
   const [jobs, setJobs] = useState<Job[]>([])
-const [loading, setLoading] = useState(true)
+  const [locations, setLocations] = useState<{ label: string; value: string }[]>([]);
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [title, setTitle] = useState("");
+  const [searchlocation, setSearchLocation] = useState("");
+  const { toast } = useToast()
+  const { user, isLoading } = useAuth()
+
+
+ 
+
+
+
+  
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const trimmedTitle = title.trim();
+  const trimmedLocation = searchlocation.trim();
+
+  // Validation: Require at least one field to be filled
+  if (!trimmedTitle && !trimmedLocation) {
+    alert('Please enter a job title or select a location.');
+    return;
+  }
+
+  const params = new URLSearchParams();
+
+  if (trimmedTitle) params.append('title', trimmedTitle);
+  if (trimmedLocation) params.append('location', trimmedLocation);
+
+  router.push(`/jobs?${params.toString()}`);
+};
+
+
+
   
     useEffect(() => {
       fetchJobs();
@@ -114,12 +155,36 @@ const [loading, setLoading] = useState(true)
       const response = await DataService.get("/jobs", searchParams);
 
       console.log('jobData', response);
+        if (response?.status === 200) {
+          const alljobs: Job[] = response.data.jobs;
 
-      if (response?.status === 200) {
-        setJobs(response.data.jobs || []);    
-        console.log('Jobs found:', response.data.jobs?.length || 0);
-        console.log('Total jobs:', response.data.total);
-      }
+          console.log("Raw jobs:", alljobs); // Debug log
+
+          const recentJobs = alljobs
+            .filter((job) => !!job.createdAt || !!job.createdDate)
+            .sort((a, b) => {
+              const dateA = new Date(a.createdAt || a.createdDate!).getTime();
+              const dateB = new Date(b.createdAt || b.createdDate!).getTime();
+              return dateB - dateA;
+            });
+
+            const top5RecentJobs = recentJobs.slice(0, 5);
+
+          setJobs(top5RecentJobs);
+
+          const uniqueLocations = Array.from(
+            new Set(alljobs.map(job => job.location?.trim()).filter(Boolean))
+          );
+
+          // Map to label/value format
+          const formattedLocations = uniqueLocations.map(loc => ({
+            label: loc,
+            value: loc
+          }));
+
+          setLocations(formattedLocations);
+       
+        }
     } catch (err) {
       console.error('Search error:', err);
       setError("Failed to load jobs");
@@ -127,6 +192,76 @@ const [loading, setLoading] = useState(true)
       setLoading(false);
     }
   };
+
+
+   const savejobs = async (id:any) => {
+    const jobId = id;
+
+
+      if (!user) {
+      // Redirect to login if not authenticated
+      toast({
+        title: "Login required",
+        description: "Please log in to apply for this job",
+      })
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(`/jobs/${jobId}`)}`)
+      return
+    } else {
+
+       try {
+      //  const response = await fetch("/api/jobs", {
+      const token = localStorage.getItem("token");
+
+      
+      const response = await DataService.post(`/SavedJobs/${jobId?.id}`, jobId, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          console.log('response', response);
+
+          if (response.status === 200) {
+            toast({
+              title: "Success!",
+              description: "Job saved successfully",
+            })
+            console.log('saved', response);
+          } else {
+            console.warn("Unexpected status code:", response.status);
+            toast({
+              title: "Alert!",
+              description: response?.data,
+            })
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating job:", error);
+        });
+
+      //  const result = await response.json()
+
+      // toast({
+      //   title: "Success!",
+      //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
+      // })
+
+
+    } catch (error) {
+      console.error("Error posting job:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to post job",
+        variant: "destructive",
+      })
+    }
+
+    }
+
+   
+
+  }
 
 
 
@@ -142,25 +277,34 @@ const [loading, setLoading] = useState(true)
             Connecting Talent with Opportunity: Your Gateway to Career Success
           </p>
           {/* Search Bar */}
-         <form className="flex flex-col md:flex-row gap-4 w-full max-w-3xl mb-12 bg-white rounded-[10px] shadow-lg">
+         <form 
+          onSubmit={handleSubmit}
+         className="flex flex-col md:flex-row gap-4 w-full max-w-3xl mb-12 bg-white rounded-[10px] shadow-lg">
           <input
             type="text"
             placeholder="Job Title or Company"
+             onChange={(e) => setTitle(e.target.value)}
             className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none md:rounded-l-[10px] text-black outline-none"
             style={{ minHeight: 60 }}
           />
           <select
             className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
             style={{ minHeight: 60 }}
+            onChange={(e) => setSearchLocation(e.target.value)}
           >
-            <option>Select Location</option>
+              <option value="">Select Location</option>
+                {locations.map(loc => (
+                  <option key={loc.value} value={loc.value}>
+                    {loc.label}
+                  </option>
+                ))}
           </select>
-          <select
+          {/* <select
             className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
             style={{ minHeight: 60 }}
           >
             <option>Select Category</option>
-          </select>
+          </select> */}
           <button
             type="submit"
             className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 py-3 rounded-[8px] md:rounded-none md:rounded-r-[10px] transition whitespace-nowrap"
@@ -224,38 +368,44 @@ const [loading, setLoading] = useState(true)
   <div className="flex flex-col gap-6 mt-6 px-4 md:px-0">
      
     {/* Job Card 2 */}
-      {jobs.map((job) => (  
+       {jobs.map((job) => {
+                  const { createdAt, expiresAt } = job;
+                  const { posted, expires } = createdAt && expiresAt
+                    ? getJobTimeInfo(createdAt, expiresAt)
+                    : { posted: "N/A", expires: "N/A" };
+ 
+                  return (
     <div  key={job.id} className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
             <div className="flex flex-col gap-2 flex-1">
               <div className="flex items-center gap-3">
                 <span className="bg-emerald-50" >
                   <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">
-                    
+                    {posted}
                   </span>
                 </span>
-                <button className="ml-auto">
+                <button className="ml-auto" onClick={() => savejobs(job?.id)}>
                   <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
                 </button>
               </div>
               <div className="flex items-center gap-3 mt-2">
                 <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Regional Creative Facilitator</h3>
-                  <p className="text-gray-500 text-sm">Wisoky - Becker Co</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{job?.title}</h3>
+                  <p className="text-gray-500 text-sm">{job?.company}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
-                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Media</div>
-                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Part time</div>
-                <div className="flex items-center gap-1"><span>$28000-$32000</span></div>
-                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Los- Angeles, USA</div>
+              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center"> 
+                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> {job?.type}</div>
+                <div className="flex items-center gap-1"><span>{job?.salary}</span></div>
+                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> {job?.location}</div>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
-              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
+            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0"> 
+              <Link  href={`/jobs/${job.id}`} className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
             </div>
           </div>
-      ))}
+                  )
+       })}
  
   </div>
 </section>
