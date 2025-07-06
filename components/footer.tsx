@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
               <Briefcase className="h-7 w-7 text-white" />
-              <span className="font-bold text-lg">Job</span>
+              <span className="font-bold text-lg">Sarvha</span>
             </div>
             <p className="text-base text-gray-300 font-semibold max-w-xs">
               Quis enim pellentesque viverra tellus eget malesuada facilisis. Congue nibh vivamus aliquet nunc mauris d...
@@ -57,6 +57,7 @@ export function Footer() {
             </form>
           </div>
         </div>
+<<<<<<< HEAD
         <div className="mt-12 border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
           <p className="mb-4 md:mb-0">
             © Copyright Job Portal {new Date().getFullYear()}. Designed by Figma.guru
@@ -65,6 +66,10 @@ export function Footer() {
             <Link href="/privacy" className="underline hover:text-white">Privacy Policy</Link>
             <Link href="/terms" className="underline hover:text-white">Terms & Conditions</Link>
           </div>
+=======
+        <div className="mt-12 border-t pt-8 text-center text-sm text-gray-500">
+          <p>&copy; {new Date().getFullYear()} Sarvha. All rights reserved.</p>
+>>>>>>> a4861705e7bf214c08ec5f9466a5cd07286f2435
         </div>
       </div>
     </footer>

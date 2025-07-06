@@ -36,7 +36,7 @@ export default function EmployersPage() {
       {/* Features */}
       <section className="container px-4 py-16 md:px-6 md:py-24">
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Why Choose JobConnect?</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Why Choose Sarvha?</h2>
           <p className="mt-4 text-muted-foreground md:text-lg">
             Our platform offers everything you need to streamline your recruitment process
           </p>
@@ -145,7 +145,7 @@ export default function EmployersPage() {
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight">What Employers Say</h2>
           <p className="mt-4 text-muted-foreground md:text-lg">
-            Hear from companies that have found success with JobConnect
+            Hear from companies that have found success with Sarvha
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -159,7 +159,7 @@ export default function EmployersPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "JobConnect has transformed our hiring process. We've reduced our time-to-hire by 40% and found
+                "Sarvha has transformed our hiring process. We've reduced our time-to-hire by 40% and found
                 exceptional candidates for hard-to-fill positions."
               </p>
             </CardContent>
@@ -174,7 +174,7 @@ export default function EmployersPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "As a startup, finding the right talent is crucial. JobConnect's platform helped us build our core team
+                "As a startup, finding the right talent is crucial. Sarvha's platform helped us build our core team
                 with candidates who align with our mission and values."
               </p>
             </CardContent>
@@ -189,7 +189,7 @@ export default function EmployersPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "The quality of candidates we've found through JobConnect is outstanding. The filtering tools save us
+                "The quality of candidates we've found through Sarvha is outstanding. The filtering tools save us
                 countless hours in the screening process."
               </p>
             </CardContent>
@@ -313,7 +313,7 @@ export default function EmployersPage() {
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Ready to Find Your Next Great Hire?</h2>
               <p className="mx-auto max-w-[600px] text-slate-300 md:text-xl">
-                Join thousands of companies that use JobConnect to build their teams.
+                Join thousands of companies that use Sarvha to build their teams.
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">

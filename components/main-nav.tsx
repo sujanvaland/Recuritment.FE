@@ -25,11 +25,11 @@ export function MainNav() {
       label: "For Employers",
       active: pathname === "/employers",
     },
-    {
-      href: "/pricing",
-      label: "Pricing",
-      active: pathname === "/pricing",
-    }
+    // {
+    //   href: "/pricing",
+    //   label: "Pricing",
+    //   active: pathname === "/pricing",
+    // }
   ]
 
   return (
@@ -40,7 +40,7 @@ export function MainNav() {
       <div className="flex items-center min-w-[170px]">
         <Link href="/" className="flex items-center gap-2">
           <Briefcase className="h-7 w-7 text-emerald-500" />
-          <span className="text-2xl font-bold text-white">JobConnect</span>
+          <span className="text-2xl font-bold text-white">Sarvha Logo</span>
         </Link>
       </div>
       {/* Nav Links - Center */}
