@@ -1,8 +1,33 @@
+
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, Leaf, Package, ShoppingBag, HardHat,  GraduationCap, Coins, Bus, Briefcase, Building, Search, Users,MapPin } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
+import { DataService } from "@/services/axiosInstance";
+
 const iconGreen = "#309689";
+
+type Job = {
+  id: number
+  title: string
+  location: string
+  type: string
+  tags: string[]
+  applicants?: number
+  status?: string
+  createdAt?: string
+  expiresAt?: string,
+  modifiedDate?: string,
+  posted?: string
+  expires?: string
+  salary: string
+  logo: string
+  company: string
+}
+
 
 const categories = [
   {
@@ -47,7 +72,64 @@ const categories = [
   },
 ];
 
+
+
 export default function Home() {
+  const [jobs, setJobs] = useState<Job[]>([])
+const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+    useEffect(() => {
+      fetchJobs();
+    }, []);
+
+    const fetchJobs = async (page = 1) => {
+    setLoading(true);
+
+    const userdetails = JSON.parse(localStorage.getItem("user") || "{}");
+    console.log('userdetails', userdetails);
+    let token = "";
+    if (userdetails?.roles !== 'job-seeker') {
+      token = localStorage.getItem("token") || "";
+    } else {
+      token = "";
+    }
+    try {
+
+      // Prepare search parameters
+      const searchParams: any = {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          page: page,
+          pageSize: null,
+          tag: "",
+          status: "",
+        },
+      };
+
+ 
+
+      console.log('API call parameters:', searchParams);
+
+      const response = await DataService.get("/jobs", searchParams);
+
+      console.log('jobData', response);
+
+      if (response?.status === 200) {
+        setJobs(response.data.jobs || []);    
+        console.log('Jobs found:', response.data.jobs?.length || 0);
+        console.log('Total jobs:', response.data.total);
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
   return (
     <div className="flex min-h-screen flex-col ">
       {/* Hero Section */}
@@ -88,7 +170,7 @@ export default function Home() {
           </button>
         </form>
           {/* Stats */}
-        <div className="flex flex-wrap justify-center gap-12 mb-12">
+        <div className="flex flex-wrap justify-center gap-12 mb-12 mt-12">
             <div className="flex items-center gap-4">
               <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
                 <Briefcase className="h-7 w-7 text-white" />
@@ -127,7 +209,7 @@ export default function Home() {
     <img src="/linear_logo.svg" alt="Linear" className="h-10" />
   </div>
 </div>
-      </section>
+      </section> 
  
 <section className="w-full" style={{ maxWidth: 1400, margin: "0 auto" }}>
   <div className="flex items-center justify-between mb-2 mt-16 px-4 md:px-0">
@@ -140,39 +222,10 @@ export default function Home() {
     </Link>
   </div>
   <div className="flex flex-col gap-6 mt-6 px-4 md:px-0">
-    {/* Job Card 1 */}
-     {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((job) => (
-            <div
-              key={job}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
-                  <Briefcase className="h-6 w-6" color={iconGreen} />
-                </div>
-                <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                  Full-time
-                </span>
-              </div>
-              <h3 className="mb-2 text-lg font-bold">Software Engineer</h3>
-              <p className="mb-2 text-sm text-gray-500">TechCorp • San Francisco, CA</p>
-              <div className="mb-4 flex flex-wrap gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">React</span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">Node.js</span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">TypeScript</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">$120K - $150K</span>
-                <Button variant="outline" size="sm">
-                  Apply Now <ArrowRight className="ml-2 h-4 w-4" color={iconGreen} />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div> */}
+     
     {/* Job Card 2 */}
-    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
+      {jobs.map((job) => (  
+    <div  key={job.id} className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
             <div className="flex flex-col gap-2 flex-1">
               <div className="flex items-center gap-3">
                 <span className="bg-emerald-50" >
@@ -200,93 +253,8 @@ export default function Home() {
               <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
             </div>
           </div>
-    {/* Job Card 3 */}
-    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-3">
-                <span className="bg-emerald-50" >
-                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">15 min ago</span>
-                </span>
-                <button className="ml-auto">
-                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
-                </button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Internal Integration Planner</h3>
-                  <p className="text-gray-500 text-sm">Mraz, Quigley and Feest Inc.</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
-                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Construction</div>
-                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Full time</div>
-                <div className="flex items-center gap-1"><span>$48000-$50000</span></div>
-                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Texas, USA</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
-              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
-            </div>
-          </div>
-    {/* Job Card 4 */}
-    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-3">
-                <span className="bg-emerald-50" >
-                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">24 min ago</span>
-                </span>
-                <button className="ml-auto">
-                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
-                </button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">District Intranet Director</h3>
-                  <p className="text-gray-500 text-sm">VonRueden - Weber Co</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
-                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Commerce</div>
-                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Full time</div>
-                <div className="flex items-center gap-1"><span>$42000-$48000</span></div>
-                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Florida, USA</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
-              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
-            </div>
-          </div>
-    {/* Job Card 5 */}
-    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-3">
-                <span className="bg-emerald-50" >
-                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">26 min ago</span>
-                </span>
-                <button className="ml-auto">
-                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
-                </button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Corporate Tactics Facilitator</h3>
-                  <p className="text-gray-500 text-sm">Cormier, Turner and Flatley Inc</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
-                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Commerce</div>
-                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Full time</div>
-                <div className="flex items-center gap-1"><span>$38000-$40000</span></div>
-                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Boston, USA</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
-              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
-            </div>
-          </div>
+      ))}
+ 
   </div>
 </section>
       {/* Featured Jobs */}
@@ -344,7 +312,7 @@ export default function Home() {
             >
               {cat.icon}
               <div className="mt-6 mb-3 text-xl md:text-2xl font-bold text-center">{cat.title}</div>
-              <span className="bg-[#e6f6f4] text-[#309689] text-base font-semibold rounded-lg px-4 py-1">
+              <span className="bg-[#e6f6f4] text-[#309689] text-base font-semibold rounded-lg px-4 py-1 text-sm">
                 {cat.jobs}
               </span>
             </div>
@@ -358,7 +326,7 @@ export default function Home() {
         {/* Left: Image */}
         <div className="flex-1 w-full">
           <img
-            src="/company-hero.jpg"
+            src="/img_demo.png"
             alt="Company"
             className="rounded-2xl w-full object-cover min-h-[350px] max-h-[450px]"
             style={{ aspectRatio: "1/1" }}

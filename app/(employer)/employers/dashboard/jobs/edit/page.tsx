@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react" 
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Plus, X } from "lucide-react"
 import Link from "next/link"
@@ -469,7 +469,7 @@ export default function EditJobPage() {
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full bg-[#309689]" disabled={isSubmitting}>
                     {isSubmitting ? "Publishing..." : "Publish Job"}
                   </Button>
                   <Button

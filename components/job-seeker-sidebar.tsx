@@ -12,21 +12,22 @@ export function JobSeekerSidebar() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="flex h-screen w-64 flex-col border-r bg-white">
-      <div className="flex h-16 items-center border-b px-6">
+    
+    <div className="flex h-screen w-64 flex-col border-r bg-[#608d89]">
+      <div className="flex h-16 items-center border-b px-6 bg-black">
         <div className="flex items-center gap-2">
-          <Briefcase className="h-6 w-6" />
-          <span className="font-bold">Job Seeker Portal</span>
+          <Briefcase className="h-6 w-6 text-[#309689]" />
+          <span className="font-bold text-white">Job Seeker Portal</span>
         </div>
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="space-y-1 px-2">
           <Link
             href="/dashboard"
-            className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
+            className={`flex items-center rounded-md px-3 py-2 text-sm text font-medium ${
               pathname === "/dashboard"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-100 text-black-900"
+                : "text-black-600 hover:bg-slate-50 hover:text-black-900"
             }`}
           >
             <Home className="mr-3 h-5 w-5" />
@@ -36,8 +37,8 @@ export function JobSeekerSidebar() {
             href="/dashboard/applications"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
               pathname === "/dashboard/applications"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-100 text-black-900"
+                : "text-black-600 hover:bg-slate-50 hover:text-black-900"
             }`}
           >
             <FileText className="mr-3 h-5 w-5" />
@@ -47,8 +48,8 @@ export function JobSeekerSidebar() {
             href="/dashboard/saved-jobs"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
               pathname === "/dashboard/saved-jobs"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-100 text-black-900"
+                : "text-black-600 hover:bg-slate-50 hover:text-black-900"
             }`}
           >
             <Heart className="mr-3 h-5 w-5" />
@@ -58,8 +59,8 @@ export function JobSeekerSidebar() {
             href="/dashboard/messages"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
               pathname === "/dashboard/messages"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-100 text-black-900"
+                : "text-black-600 hover:bg-slate-50 hover:text-black-900"
             }`}
           >
             <MessageSquare className="mr-3 h-5 w-5" />
@@ -69,8 +70,8 @@ export function JobSeekerSidebar() {
             href="/dashboard/profile"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
               pathname === "/dashboard/profile"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-100 text-black-900"
+                : "text-black-600 hover:bg-slate-50 hover:text-black-900"
             }`}
           >
             <User className="mr-3 h-5 w-5" />
@@ -80,8 +81,8 @@ export function JobSeekerSidebar() {
             href="/dashboard/settings"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
               pathname === "/dashboard/settings"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-100 text-black-900"
+                : "text-black-600 hover:bg-slate-50 hover:text-black-900"
             }`}
           >
             <Settings className="mr-3 h-5 w-5" />
@@ -96,11 +97,11 @@ export function JobSeekerSidebar() {
             <div className="text-sm font-medium">
               {user?.firstName} {user?.lastName}
             </div>
-            <div className="text-xs text-slate-500">Job Seeker</div>
+            <div className="text-xs text-slate-500 text-white">Job Seeker</div>
           </div>
         </div>
         <Button variant="outline" size="sm" className="w-full justify-start" onClick={logout}>
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 h-4 w-4 text-[#309689]" />
           Logout
         </Button>
       </div>

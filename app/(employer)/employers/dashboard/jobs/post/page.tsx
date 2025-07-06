@@ -458,7 +458,7 @@ export default function PostJobPage() {
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full bg-[#309689]" disabled={isSubmitting} >
                     {isSubmitting ? "Publishing..." : "Publish Job"}
                   </Button>
                   <Button
