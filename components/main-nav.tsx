@@ -33,77 +33,143 @@ export function MainNav() {
   ]
 
   return (
-    <div className="flex items-center">
-      <div className="flex items-center md:gap-6">
-        <Link href="/" className="flex items-center space-x-2">
-          <Briefcase className="h-6 w-6" />
-          <span className="hidden font-bold sm:inline-block">JobConnect</span>
+     <div className="w-full bg-black">
+      <div className="mx-auto w-full" style={{ maxWidth: 1400 }}> 
+      <nav className="relative flex w-full items-center h-16">
+      {/* Logo - Left */}
+      <div className="flex items-center min-w-[170px]">
+        <Link href="/" className="flex items-center gap-2">
+          <Briefcase className="h-7 w-7 text-emerald-500" />
+          <span className="text-2xl font-bold text-white">JobConnect</span>
         </Link>
-        <nav className="hidden gap-6 md:flex">
-          {routes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                route.active ? "text-black" : "text-muted-foreground",
-              )}
-            >
-              {route.label}
-            </Link>
-          ))}
-        </nav>
       </div>
-      <div className="ml-auto flex items-center space-x-4">
-        <div className="hidden md:flex md:items-center md:gap-4">
+      {/* Nav Links - Center */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex gap-8">
+        <Link
+          href="/"
+          className={cn(
+            "font-medium hover:text-emerald-400 text-white transition-colors",
+            pathname === "/" && "text-emerald-400"
+          )}
+        >
+          Home
+        </Link>
+        {routes.map((route) => (
+          <Link
+            key={route.href}
+            href={route.href}
+            className={cn(
+              "font-medium hover:text-emerald-400 text-white transition-colors",
+              route.active && "text-emerald-400"
+            )}
+          >
+            {route.label}
+          </Link>
+        ))}
+        <Link
+          href="/about"
+          className={cn(
+            "font-medium hover:text-emerald-400 text-white transition-colors",
+            pathname === "/about" && "text-emerald-400"
+          )}
+        >
+          About Us
+        </Link>
+        <Link
+          href="/contact"
+          className={cn(
+            "font-medium hover:text-emerald-400 text-white transition-colors",
+            pathname === "/contact" && "text-emerald-400"
+          )}
+        >
+          Contact Us
+        </Link>
+      </div>
+      {/* Auth Buttons - Right */}
+      <div className="ml-auto flex items-center gap-4 min-w-[170px] justify-end">
+        <div className="hidden md:flex items-center gap-4">
           {user ? (
             <>
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="ghost" size="sm" className="text-white hover:text-emerald-400">
                 <Link href={user.role === "employer" ? "/employers/dashboard" : "/dashboard"}>
                   <User className="mr-2 h-4 w-4" />
                   {user.firstName}
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" onClick={logout}>
+              <Button variant="ghost" size="sm" onClick={logout} className="text-white hover:text-emerald-400">
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/auth/login">Sign In</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/auth/register">Sign Up</Link>
-              </Button>
+              <Link href="/auth/login" className="font-medium text-white hover:text-emerald-400 transition-colors px-3 py-1 rounded">
+                Login
+              </Link>
+              <Link href="/auth/register">
+                <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded transition">
+                  Register
+                </button>
+              </Link>
             </>
           )}
         </div>
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        {/* Mobile menu button */}
+        <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
       </div>
+      {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="absolute inset-x-0 top-16 z-50 bg-white p-4 shadow-lg md:hidden">
+        <div className="absolute inset-x-0 top-16 z-50 bg-[#181c1f] p-4 shadow-lg md:hidden">
           <nav className="flex flex-col space-y-4">
+            <Link
+              href="/"
+              className={cn(
+                "text-base font-medium hover:text-emerald-400 text-white transition-colors",
+                pathname === "/" && "text-emerald-400"
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
             {routes.map((route) => (
               <Link
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  route.active ? "text-black" : "text-muted-foreground",
+                  "text-base font-medium hover:text-emerald-400 text-white transition-colors",
+                  route.active && "text-emerald-400"
                 )}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {route.label}
               </Link>
             ))}
+            <Link
+              href="/about"
+              className={cn(
+                "text-base font-medium hover:text-emerald-400 text-white transition-colors",
+                pathname === "/about" && "text-emerald-400"
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About Us
+            </Link>
+            <Link
+              href="/contact"
+              className={cn(
+                "text-base font-medium hover:text-emerald-400 text-white transition-colors",
+                pathname === "/contact" && "text-emerald-400"
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
             <div className="flex flex-col gap-2 pt-4">
               {user ? (
                 <>
-                  <Button asChild variant="outline" size="sm">
+                  <Button asChild variant="outline" size="sm" className="text-white hover:text-emerald-400">
                     <Link
                       href={user.role === "employer" ? "/employers/dashboard" : "/dashboard"}
                       onClick={() => setIsMenuOpen(false)}
@@ -118,6 +184,7 @@ export function MainNav() {
                       logout()
                       setIsMenuOpen(false)
                     }}
+                    className="text-white hover:text-emerald-400"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
@@ -125,22 +192,23 @@ export function MainNav() {
                 </>
               ) : (
                 <>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link href="/auth/register" onClick={() => setIsMenuOpen(false)}>
-                      Sign Up
-                    </Link>
-                  </Button>
+                  <Link href="/auth/login" className="font-medium text-white hover:text-emerald-400 transition-colors px-3 py-1 rounded" onClick={() => setIsMenuOpen(false)}>
+                    Login
+                  </Link>
+                  <Link href="/auth/register" onClick={() => setIsMenuOpen(false)}>
+                    <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded transition w-full">
+                      Register
+                    </button>
+                  </Link>
                 </>
               )}
             </div>
           </nav>
         </div>
       )}
+    </nav>
     </div>
+    </div>
+   
   )
 }

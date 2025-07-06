@@ -1,93 +1,296 @@
 import Link from "next/link"
-import { ArrowRight, Briefcase, Building, Search, Users } from "lucide-react"
+import { ArrowRight, Leaf, Package, ShoppingBag, HardHat,  GraduationCap, Coins, Bus, Briefcase, Building, Search, Users,MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+const iconGreen = "#309689";
+
+const categories = [
+  {
+    icon: <Leaf className="h-12 w-12 text-[#309689]" />,
+    title: "Agriculture",
+    jobs: "1254 jobs",
+  },
+  {
+    icon: <Package className="h-12 w-12 text-[#309689]" />,
+    title: "Metal Production",
+    jobs: "816 jobs",
+  },
+  {
+    icon: <ShoppingBag className="h-12 w-12 text-[#309689]" />,
+    title: "Commerce",
+    jobs: "2082 jobs",
+  },
+  {
+    icon: <HardHat className="h-12 w-12 text-[#309689]" />,
+    title: "Construction",
+    jobs: "1520 jobs",
+  },
+  {
+    icon: <Briefcase className="h-12 w-12 text-[#309689]" />,
+    title: "Hotels & Tourism",
+    jobs: "1022 jobs",
+  },
+  {
+    icon: <GraduationCap className="h-12 w-12 text-[#309689]" />,
+    title: "Education",
+    jobs: "1496 jobs",
+  },
+  {
+    icon: <Coins className="h-12 w-12 text-[#309689]" />,
+    title: "Financial Services",
+    jobs: "1529 jobs",
+  },
+  {
+    icon: <Bus className="h-12 w-12 text-[#309689]" />,
+    title: "Transport",
+    jobs: "1244 jobs",
+  },
+];
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col ">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-slate-50 to-white py-20 md:py-28">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">Find Your Dream Job Today</h1>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl">
-                Connect with top employers and discover opportunities that match your skills and aspirations.
-              </p>
+     <section className="relative flex flex-col items-center justify-center min-h-[70vh] w-full bg-black text-white">
+  <div className="container flex flex-col items-center justify-center pt-24 pb-34">
+    <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-center leading-tight">
+            Find Your Dream Job Today!
+          </h1>
+          <p className="mb-8 text-lg md:text-xl text-center text-gray-200 max-w-2xl">
+            Connecting Talent with Opportunity: Your Gateway to Career Success
+          </p>
+          {/* Search Bar */}
+         <form className="flex flex-col md:flex-row gap-4 w-full max-w-3xl mb-12 bg-white rounded-[10px] shadow-lg">
+          <input
+            type="text"
+            placeholder="Job Title or Company"
+            className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none md:rounded-l-[10px] text-black outline-none"
+            style={{ minHeight: 60 }}
+          />
+          <select
+            className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
+            style={{ minHeight: 60 }}
+          >
+            <option>Select Location</option>
+          </select>
+          <select
+            className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
+            style={{ minHeight: 60 }}
+          >
+            <option>Select Category</option>
+          </select>
+          <button
+            type="submit"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 py-3 rounded-[8px] md:rounded-none md:rounded-r-[10px] transition whitespace-nowrap"
+            style={{ minWidth: 160, minHeight: 60 }}
+          >
+            Search Job
+          </button>
+        </form>
+          {/* Stats */}
+        <div className="flex flex-wrap justify-center gap-12 mb-12">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
+                <Briefcase className="h-7 w-7 text-white" />
+              </span>
+              <div>
+                <span className="text-2xl font-bold text-emerald-400 block leading-tight">25,850</span>
+                <span className="text-gray-200 text-base">Jobs</span>
+              </div>
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button asChild size="lg">
-                <Link href="/jobs">
-                  Find Jobs <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/employers">For Employers</Link>
-              </Button>
+            <div className="flex items-center gap-4">
+              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
+                <Users className="h-7 w-7 text-white" />
+              </span>
+              <div>
+                <span className="text-2xl font-bold text-emerald-400 block leading-tight">10,250</span>
+                <span className="text-gray-200 text-base">Candidates</span>
+              </div>
             </div>
-          </div>
-        </div>
+            <div className="flex items-center gap-4">
+              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
+                <Building className="h-7 w-7 text-white" />
+              </span>
+              <div>
+                <span className="text-2xl font-bold text-emerald-400 block leading-tight">18,400</span>
+                <span className="text-gray-200 text-base">Companies</span>
+              </div>
+            </div>
+          </div>       
+        </div> 
+             <div className="left-0 right-0 bottom-0 w-full flex justify-center bg-black" style={{ paddingTop:40, paddingBottom: 40 }}>
+    <div className="flex flex-wrap justify-around w-full gap-10 items-center px-8">
+    <img src="/spoty_logo.svg" alt="Spotify" className="h-10" />
+    <img src="/slack_logo.svg" alt="Slack" className="h-10" />
+    <img src="/adobe_logo.svg" alt="Adobe" className="h-10" />
+    <img src="/asana_logo.svg" alt="Asana" className="h-10" />
+    <img src="/linear_logo.svg" alt="Linear" className="h-10" />
+  </div>
+</div>
       </section>
-
-      {/* Search Bar */}
-      <section className="container -mt-6 px-4 md:px-6">
-        <div className="mx-auto max-w-4xl rounded-xl bg-white p-4 shadow-lg">
-          <div className="flex flex-col gap-4 md:flex-row">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Job title, keywords, or company"
-                className="w-full rounded-md border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm outline-none focus:border-slate-500 focus:ring-slate-500"
-              />
+ 
+<section className="w-full" style={{ maxWidth: 1400, margin: "0 auto" }}>
+  <div className="flex items-center justify-between mb-2 mt-16 px-4 md:px-0">
+    <div>
+      <h2 className="text-3xl font-bold">Recent Jobs Available</h2>
+      <p className="text-gray-500 mt-2">At eu lobortis pretium tincidunt amet lacus ut senen aliquet...</p>
+    </div>
+    <Link href="/jobs" className="text-emerald-600 font-semibold hover:underline whitespace-nowrap mt-4 md:mt-0">
+      View all
+    </Link>
+  </div>
+  <div className="flex flex-col gap-6 mt-6 px-4 md:px-0">
+    {/* Job Card 1 */}
+     {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((job) => (
+            <div
+              key={job}
+              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
+                  <Briefcase className="h-6 w-6" color={iconGreen} />
+                </div>
+                <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                  Full-time
+                </span>
+              </div>
+              <h3 className="mb-2 text-lg font-bold">Software Engineer</h3>
+              <p className="mb-2 text-sm text-gray-500">TechCorp • San Francisco, CA</p>
+              <div className="mb-4 flex flex-wrap gap-2">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">React</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">Node.js</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">TypeScript</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">$120K - $150K</span>
+                <Button variant="outline" size="sm">
+                  Apply Now <ArrowRight className="ml-2 h-4 w-4" color={iconGreen} />
+                </Button>
+              </div>
             </div>
-            <div className="relative flex-1">
-              <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Location"
-                className="w-full rounded-md border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm outline-none focus:border-slate-500 focus:ring-slate-500"
-              />
+          ))}
+        </div> */}
+    {/* Job Card 2 */}
+    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="flex items-center gap-3">
+                <span className="bg-emerald-50" >
+                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">12 min ago</span>
+                </span>
+                <button className="ml-auto">
+                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
+                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Regional Creative Facilitator</h3>
+                  <p className="text-gray-500 text-sm">Wisoky - Becker Co</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
+                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Media</div>
+                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Part time</div>
+                <div className="flex items-center gap-1"><span>$28000-$32000</span></div>
+                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Los- Angeles, USA</div>
+              </div>
             </div>
-            <Button className="shrink-0">Search Jobs</Button>
+            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
+              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="container px-4 py-16 md:px-6 md:py-24">
-        <div className="grid gap-8 md:grid-cols-3">
-          <div className="flex flex-col items-center space-y-2 rounded-lg border border-gray-100 bg-white p-6 text-center shadow-sm">
-            <div className="rounded-full bg-slate-100 p-3">
-              <Briefcase className="h-6 w-6 text-slate-600" />
+    {/* Job Card 3 */}
+    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="flex items-center gap-3">
+                <span className="bg-emerald-50" >
+                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">15 min ago</span>
+                </span>
+                <button className="ml-auto">
+                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
+                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Internal Integration Planner</h3>
+                  <p className="text-gray-500 text-sm">Mraz, Quigley and Feest Inc.</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
+                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Construction</div>
+                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Full time</div>
+                <div className="flex items-center gap-1"><span>$48000-$50000</span></div>
+                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Texas, USA</div>
+              </div>
             </div>
-            <h3 className="text-xl font-bold">Thousands of Jobs</h3>
-            <p className="text-gray-500">
-              Access thousands of job listings from top companies across various industries.
-            </p>
-          </div>
-          <div className="flex flex-col items-center space-y-2 rounded-lg border border-gray-100 bg-white p-6 text-center shadow-sm">
-            <div className="rounded-full bg-slate-100 p-3">
-              <Search className="h-6 w-6 text-slate-600" />
+            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
+              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
             </div>
-            <h3 className="text-xl font-bold">Advanced Search</h3>
-            <p className="text-gray-500">Find the perfect job with our powerful search and filtering tools.</p>
           </div>
-          <div className="flex flex-col items-center space-y-2 rounded-lg border border-gray-100 bg-white p-6 text-center shadow-sm">
-            <div className="rounded-full bg-slate-100 p-3">
-              <Users className="h-6 w-6 text-slate-600" />
+    {/* Job Card 4 */}
+    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="flex items-center gap-3">
+                <span className="bg-emerald-50" >
+                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">24 min ago</span>
+                </span>
+                <button className="ml-auto">
+                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
+                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">District Intranet Director</h3>
+                  <p className="text-gray-500 text-sm">VonRueden - Weber Co</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
+                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Commerce</div>
+                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Full time</div>
+                <div className="flex items-center gap-1"><span>$42000-$48000</span></div>
+                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Florida, USA</div>
+              </div>
             </div>
-            <h3 className="text-xl font-bold">Direct Communication</h3>
-            <p className="text-gray-500">
-              Connect directly with employers and recruiters through our messaging system.
-            </p>
+            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
+              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
+            </div>
           </div>
-        </div>
-      </section>
-
+    {/* Job Card 5 */}
+    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="flex items-center gap-3">
+                <span className="bg-emerald-50" >
+                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">26 min ago</span>
+                </span>
+                <button className="ml-auto">
+                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
+                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Corporate Tactics Facilitator</h3>
+                  <p className="text-gray-500 text-sm">Cormier, Turner and Flatley Inc</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center">
+                <div className="flex items-center gap-1"><Briefcase className="h-4 w-4" color={iconGreen} /> Commerce</div>
+                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> Full time</div>
+                <div className="flex items-center gap-1"><span>$38000-$40000</span></div>
+                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> Boston, USA</div>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0">
+              <Link href="#" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
+            </div>
+          </div>
+  </div>
+</section>
       {/* Featured Jobs */}
-      <section className="container px-4 py-16 md:px-6 md:py-24">
+      {/* <section className="container px-4 py-16 md:px-6 md:py-24">
         <div className="mb-10 text-center">
           <h2 className="text-3xl font-bold tracking-tight">Featured Jobs</h2>
           <p className="mt-2 text-gray-500">Explore our handpicked selection of top job opportunities</p>
@@ -119,13 +322,187 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
+        </div> 
         <div className="mt-10 flex justify-center">
           <Button asChild variant="outline">
             <Link href="/jobs">View All Jobs</Link>
           </Button>
         </div>
-      </section>
+      </section>*/}
+
+     <section className="w-full bg-[#eef8f7] py-16 mt-[60px]">
+      <div className="max-w-[1400px] mx-auto px-4">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4">Browse by Category</h2>
+        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+          At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum id scel...
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {categories.map((cat) => (
+            <div
+              key={cat.title}
+              className="bg-white rounded-2xl flex flex-col items-center justify-center py-12 px-4 shadow-sm"
+            >
+              {cat.icon}
+              <div className="mt-6 mb-3 text-xl md:text-2xl font-bold text-center">{cat.title}</div>
+              <span className="bg-[#e6f6f4] text-[#309689] text-base font-semibold rounded-lg px-4 py-1">
+                {cat.jobs}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section className="w-full max-w-[1400px] mx-auto px-4 py-16">
+      <div className="flex flex-col lg:flex-row items-center gap-12">
+        {/* Left: Image */}
+        <div className="flex-1 w-full">
+          <img
+            src="/company-hero.jpg"
+            alt="Company"
+            className="rounded-2xl w-full object-cover min-h-[350px] max-h-[450px]"
+            style={{ aspectRatio: "1/1" }}
+          />
+        </div>
+        {/* Right: Text */}
+        <div className="flex-1 w-full">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+            Good Life Begins With <br />A Good Company
+          </h2>
+          <p className="text-gray-600 mb-8 text-base md:text-lg">
+            Ultricies purus dolor viverra mi laoreet at cursus justo. Ultrices purus diam egestas amet faucibus tempor blandit. Elit velit mauris aliquam est diam. Leo sagittis consectetur diam morbi erat aenean. Vulputate praesent congue faucibus in euismod feugiat euismod volutpat...
+          </p>
+          <div className="flex gap-6">
+            <Link
+              href="/jobs"
+              className="bg-[#309689] hover:bg-emerald-700 text-white font-semibold px-7 py-3 rounded-lg transition"
+            >
+              Search Job
+            </Link>
+            <Link
+              href="/about"
+              className="text-[#309689] font-semibold px-2 py-3 hover:underline"
+            >
+              Learn more
+            </Link>
+          </div>
+        </div>
+      </div>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-16">
+        <div>
+          <div className="text-3xl md:text-4xl font-extrabold text-[#309689] mb-2">12k+</div>
+          <div className="text-xl font-bold mb-2">Clients worldwide</div>
+          <div className="text-gray-600">
+            At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum...
+          </div>
+        </div>
+        <div>
+          <div className="text-3xl md:text-4xl font-extrabold text-[#309689] mb-2">20k+</div>
+          <div className="text-xl font-bold mb-2">Active resume</div>
+          <div className="text-gray-600">
+            At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum...
+          </div>
+        </div>
+        <div>
+          <div className="text-3xl md:text-4xl font-extrabold text-[#309689] mb-2">18k+</div>
+          <div className="text-xl font-bold mb-2">Compnies</div>
+          <div className="text-gray-600">
+            At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum...
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+     <section className="w-full bg-[#eef8f7] py-16">
+      <div className="max-w-[1400px] mx-auto px-4">
+        <h2 className="text-5xl font-extrabold text-center mb-4">Testimonials from Our Customers</h2>
+        <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+          At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum id...
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Testimonial 1 */}
+          <div className="bg-white rounded-2xl p-8 shadow-sm flex flex-col h-full">
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <polygon points="10,1 12.59,7.36 19.51,7.36 13.96,11.64 16.55,18 10,13.72 3.45,18 6.04,11.64 0.49,7.36 7.41,7.36" />
+                </svg>
+              ))}
+            </div>
+            <h3 className="text-2xl font-bold mb-3">Amazing services</h3>
+            <p className="italic text-gray-800 mb-8">
+              Metus faucibus sed turpis lectus feugiat tincidunt. Rhoncus sed tristique in dolor. Mus etiam et vestibulum venenatis
+            </p>
+            <div className="flex items-end justify-between mt-auto">
+              <div className="flex items-center gap-3">
+                <img src="/icon_job.png" alt="Marco Kihn" width={48} height={48} className="rounded-full" />
+                <div>
+                  <div className="font-bold">Marco Kihn</div>
+                  <div className="text-gray-400 text-sm">Happy Client</div>
+                </div>
+              </div>
+              <svg className="h-8 w-8 text-[#309689]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path d="M9 17c0-4.418 3.582-8 8-8V7a5 5 0 00-5-5H7a5 5 0 00-5 5v2c4.418 0 8 3.582 8 8z" />
+              </svg>
+            </div>
+          </div>
+          {/* Testimonial 2 */}
+          <div className="bg-white rounded-2xl p-8 shadow-sm flex flex-col h-full">
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <polygon points="10,1 12.59,7.36 19.51,7.36 13.96,11.64 16.55,18 10,13.72 3.45,18 6.04,11.64 0.49,7.36 7.41,7.36" />
+                </svg>
+              ))}
+            </div>
+            <h3 className="text-2xl font-bold mb-3">Everything simple</h3>
+            <p className="italic text-gray-800 mb-8">
+              Mus etiam et vestibulum venenatis viverra ut. Elit morbi bibendum ullamcorper augue faucibus
+            </p>
+            <div className="flex items-end justify-between mt-auto">
+              <div className="flex items-center gap-3">
+                <img src="/icon_job.png" alt="Kristin Hester" width={48} height={48} className="rounded-full" />
+                <div>
+                  <div className="font-bold">Kristin Hester</div>
+                  <div className="text-gray-400 text-sm">Happy Client</div>
+                </div>
+              </div>
+              <svg className="h-8 w-8 text-[#309689]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path d="M9 17c0-4.418 3.582-8 8-8V7a5 5 0 00-5-5H7a5 5 0 00-5 5v2c4.418 0 8 3.582 8 8z" />
+              </svg>
+            </div>
+          </div>
+          {/* Testimonial 3 */}
+          <div className="bg-white rounded-2xl p-8 shadow-sm flex flex-col h-full">
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <polygon points="10,1 12.59,7.36 19.51,7.36 13.96,11.64 16.55,18 10,13.72 3.45,18 6.04,11.64 0.49,7.36 7.41,7.36" />
+                </svg>
+              ))}
+            </div>
+            <h3 className="text-2xl font-bold mb-3">Awesome, thank you!</h3>
+            <p className="italic text-gray-800 mb-8">
+              Rhoncus sed tristique in dolor. Mus etiam et vestibulum venenatis viverra ut. Elit morbi bibendum ullamcorper augue faucibus. Nulla et tempor montes
+            </p>
+            <div className="flex items-end justify-between mt-auto">
+              <div className="flex items-center gap-3">
+                <img src="/icon_job.png" alt="Zion Cisneros" width={48} height={48} className="rounded-full" />
+                <div>
+                  <div className="font-bold">Zion Cisneros</div>
+                  <div className="text-gray-400 text-sm">Happy Client</div>
+                </div>
+              </div>
+              <svg className="h-8 w-8 text-[#309689]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path d="M9 17c0-4.418 3.582-8 8-8V7a5 5 0 00-5-5H7a5 5 0 00-5 5v2c4.418 0 8 3.582 8 8z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
       {/* CTA Section */}
       <section className="bg-slate-900 py-16 text-white md:py-24">
@@ -152,6 +529,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      
     </div>
   )
 }

@@ -410,6 +410,12 @@ export default function JobsPage() {
 
   console.log('filters', filters);
   return (
+    <div className="w-full">
+    <div className="bg-black w-full">
+      <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center py-16 md:py-24">
+        <h1 className="text-5xl md:text-6xl font-extrabold text-white text-center mb-0">Jobs</h1>
+      </div>
+    </div>
     <div className="w-full max-w-[1200px] mx-auto px-4 py-8 md:px-6 md:py-12 containerwidth">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Find Jobs</h1>
@@ -552,6 +558,7 @@ export default function JobsPage() {
           )}
         </div>
       </div>
+    </div>
     </div>
   )
 }
