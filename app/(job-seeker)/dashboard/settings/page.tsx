@@ -83,7 +83,7 @@ const validatePassword = () => {
   setIsPasswordSaving(true);
   try {
     const response = await DataService.post(
-      "https://www.onemysetu.com/api/settings/UpdatePassword",
+      "/settings/UpdatePassword",
       passwords,
       { headers: { Authorization: `Bearer ${token}` } }
     );

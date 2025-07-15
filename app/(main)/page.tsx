@@ -2,7 +2,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { ArrowRight, Leaf, Package, ShoppingBag, HardHat,  GraduationCap, Coins, Bus, Briefcase, Building, Search, Users,MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -90,6 +90,9 @@ export default function Home() {
   const [searchlocation, setSearchLocation] = useState("");
   const { toast } = useToast()
   const { user, isLoading } = useAuth()
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
 
  
@@ -263,6 +266,21 @@ const handleSubmit = (e: React.FormEvent) => {
 
   }
 
+  // Autocomplete filtering
+  useEffect(() => {
+    if (title.trim().length > 0) {
+      setFilteredJobs(
+        jobs.filter(
+          (job) =>
+            job.title.toLowerCase().includes(title.toLowerCase()) ||
+            job.company.toLowerCase().includes(title.toLowerCase()) ||
+            job.location.toLowerCase().includes(title.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredJobs([]);
+    }
+  }, [title, jobs]);
 
 
   return (
@@ -279,14 +297,39 @@ const handleSubmit = (e: React.FormEvent) => {
           {/* Search Bar */}
          <form 
           onSubmit={handleSubmit}
-         className="flex flex-col md:flex-row gap-4 w-full max-w-3xl mb-12 bg-white rounded-[10px] shadow-lg">
-          <input
-            type="text"
-            placeholder="Job Title or Company"
-             onChange={(e) => setTitle(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none md:rounded-l-[10px] text-black outline-none"
-            style={{ minHeight: 60 }}
-          />
+         className="flex flex-col md:flex-row gap-4 w-full max-w-3xl mb-12 bg-white rounded-[10px] shadow-lg relative">
+          <div className="relative w-full">
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Job Title or Company"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onFocus={() => setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+              className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none md:rounded-l-[10px] text-black outline-none"
+              style={{ minHeight: 60 }}
+            />
+            {showDropdown && filteredJobs.length > 0 && (
+              <div className="absolute left-0 right-0 z-10 bg-white border rounded shadow w-full mt-1 max-h-60 overflow-y-auto">
+                {filteredJobs.slice(0, 8).map((job, idx) => (
+                  <div
+                    key={job.id || idx}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onMouseDown={() => {
+                      setTitle(job.title);
+                      setShowDropdown(false);
+                      inputRef.current?.blur();
+                    }}
+                  >
+                    <div className="font-semibold text-black">{job.title}</div>
+                    <div className="text-sm text-gray-500 text-black">{job.company}</div>
+                    <div className="text-xs text-emerald-700">{job.location}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <select
             className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
             style={{ minHeight: 60 }}
