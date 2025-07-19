@@ -1,5 +1,5 @@
 import { Check } from "lucide-react"
-
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -67,7 +67,7 @@ export default function PricingPage() {
                   </CardContent>
                   <CardFooter className="p-6">
                     <Button className="w-full" size="lg">
-                      Get Started
+                      <Link href="/auth/register">Get Started</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -121,7 +121,7 @@ export default function PricingPage() {
                   </CardContent>
                   <CardFooter className="p-6">
                     <Button className="w-full" size="lg">
-                      Get Started
+                      <Link href="/auth/register">Get Started</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -178,7 +178,7 @@ export default function PricingPage() {
                   </CardContent>
                   <CardFooter className="p-6">
                     <Button className="w-full" size="lg">
-                      Get Started
+                      <Link href="/auth/register">Get Started</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -228,7 +228,7 @@ export default function PricingPage() {
                   </CardContent>
                   <CardFooter className="p-6">
                     <Button className="w-full" size="lg">
-                      Get Started
+                      <Link href="/auth/register">Get Started</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -282,7 +282,7 @@ export default function PricingPage() {
                   </CardContent>
                   <CardFooter className="p-6">
                     <Button className="w-full" size="lg">
-                      Get Started
+                      <Link href="/auth/register">Get Started</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -339,7 +339,7 @@ export default function PricingPage() {
                   </CardContent>
                   <CardFooter className="p-6">
                     <Button className="w-full" size="lg">
-                      Get Started
+                      <Link href="/auth/register">Get Started</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -395,14 +395,11 @@ export default function PricingPage() {
               Ready to find the perfect candidates?
             </h2>
             <p className="mt-4 text-xl text-white/80">
-              Join thousands of companies that use JobConnect to find and hire top talent.
+              Join thousands of companies that use Sarvha to find and hire top talent.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
               <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
-                Get Started
-              </Button>
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-primary/80">
-                Contact Sales
+                <Link href="/auth/register">Get Started</Link>
               </Button>
             </div>
           </div>

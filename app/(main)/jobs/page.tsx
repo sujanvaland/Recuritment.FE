@@ -16,6 +16,7 @@ import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useSearchParams } from 'next/navigation';
 
 type Job = {
   id: number
@@ -36,6 +37,9 @@ type Job = {
   logo: string
   company: string
 }
+
+
+ 
 
 export default function JobsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -60,6 +64,14 @@ export default function JobsPage() {
   const router = useRouter();
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
+   const searchParams = useSearchParams();
+ 
+
+
+
+  
+ 
+  
 
   useEffect(() => {
     fetchJobs();
@@ -252,6 +264,107 @@ useEffect(() => {
   }, [searchTerm, locationTerm, filters, sortBy, jobs]);
 
 
+
+  // Apply filters and search
+  //useEffect(() => {
+  // let result = [...jobs]
+
+  //   // Apply search term
+  //   if (searchTerm) {
+  //     const searchLower = searchTerm.toLowerCase()
+  //     result = result.filter(
+  //       (job) =>
+  //         job.title.toLowerCase().includes(searchLower) ||
+  //         job.company.toLowerCase().includes(searchLower) ||
+  //         job.skills.some((skill) => skill.toLowerCase().includes(searchLower)),
+  //     )
+  //   }
+
+  //   // Apply location search
+  //   if (locationTerm) {
+  //     const locationLower = locationTerm.toLowerCase()
+  //     result = result.filter((job) => job.location.toLowerCase().includes(locationLower))
+  //   }
+
+  //   // Apply job type filter
+  //   if (filters.jobType.length > 0) {
+  //     result = result.filter((job) => {
+  //       const jobTypeLower = job.type.toLowerCase()
+  //       return filters.jobType.some((type) => jobTypeLower.includes(type.toLowerCase()))
+  //     })
+  //   }
+
+  //   // Apply experience level filter
+  //   if (filters.experienceLevel.length > 0) {
+  //     result = result.filter((job) => filters.experienceLevel.includes(job.experienceLevel))
+  //   }
+
+  //   // Apply salary range filter
+  //   result = result.filter((job) => {
+  //     // Use the lower end of the job's salary range for comparison
+  //     return job.salaryRange[0] >= filters.salaryRange[0] && job.salaryRange[1] <= filters.salaryRange[1]
+  //   })
+
+  //   // Apply location type filter
+  //   if (filters.location.length > 0) {
+  //     result = result.filter((job) => filters.location.includes(job.workLocation))
+  //   }
+
+  //   // Apply skills filter
+  //   if (filters.skills.length > 0) {
+  //     result = result.filter((job) => {
+  //       const jobSkills = job.skills.map((skill) => skill.toLowerCase())
+  //       return filters.skills.some((skill) => jobSkills.includes(skill.toLowerCase()))
+  //     })
+  //   }
+
+  //   // Apply education filter
+  //   if (filters.education.length > 0) {
+  //     result = result.filter((job) => filters.education.includes(job.education))
+  //   }
+
+  //   // Apply sorting
+  //   switch (sortBy) {
+  //     case "newest":
+  //       // For demo purposes, we'll sort by the "posted" field
+  //       result.sort((a, b) => {
+  //         if (a.posted.includes("day") && b.posted.includes("day")) {
+  //           return Number.parseInt(a.posted) - Number.parseInt(b.posted)
+  //         }
+  //         if (a.posted.includes("day")) return -1
+  //         if (b.posted.includes("day")) return 1
+  //         return 0
+  //       })
+  //       break
+  //     case "salary":
+  //       result.sort((a, b) => b.salaryRange[1] - a.salaryRange[1])
+  //       break
+  //     // "relevance" is default, no need to sort
+  //   }
+
+  //   setFilteredJobs(result)
+  // }, [searchTerm, locationTerm, filters, sortBy])
+
+
+   useEffect(() => {
+  const rawTitle = searchParams.get('title');
+  const rawLocation = searchParams.get('location');
+
+  const decodedTitle = rawTitle ? decodeURIComponent(rawTitle) : '';
+  const decodedLocation = rawLocation ? decodeURIComponent(rawLocation) : '';
+
+  setSearchTerm(decodedTitle);
+  setLocationTerm(decodedLocation);
+}, [searchParams]);
+
+// 2️⃣ Once both are set, trigger search
+useEffect(() => {
+  if (searchTerm || locationTerm) {
+    handleSearch({ preventDefault: () => {} } as React.FormEvent); // safely simulate a submit
+  }
+}, [searchTerm, locationTerm]);
+
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     // Trigger immediate search
@@ -300,6 +413,12 @@ useEffect(() => {
 
   console.log('filters', filters);
   return (
+    <div className="w-full">
+    <div className="bg-black w-full">
+      <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center py-16 md:py-24">
+        <h1 className="text-5xl md:text-6xl font-extrabold text-white text-center mb-0">Jobs</h1>
+      </div>
+    </div>
     <div className="w-full max-w-[1200px] mx-auto px-4 py-8 md:px-6 md:py-12 containerwidth">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Find Jobs</h1>
@@ -450,6 +569,7 @@ useEffect(() => {
           )}
         </div>
       </div>
+    </div>
     </div>
   )
 }

@@ -13,7 +13,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "JobConnect - Find Your Dream Job",
+  title: "Sarvha - Find Your Dream Job",
   description: "Connect with top employers and discover opportunities that match your skills and aspirations.",
     generator: 'v0.dev'
 }

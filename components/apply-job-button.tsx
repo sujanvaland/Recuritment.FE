@@ -179,24 +179,24 @@ export function ApplyJobButton({
 
   return (
     <>
-      <Button
-        onClick={handleClick}
-        variant={variant}
-        size={size}
-        className={className}
-        disabled={isLoading || isChecking || hasApplied}
-      >
-        {isChecking ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Checking...
-          </>
-        ) : hasApplied ? (
-          "Already Applied"
-        ) : (
-          "Apply Now"
-        )}
-      </Button>
+    <Button
+  onClick={handleClick}
+  variant={variant}
+  size={size}
+  className={`bg-[#309689] hover:bg-emerald-600 text-white ${className ?? ""}`}
+  disabled={isLoading || isChecking || hasApplied}
+>
+  {isChecking ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Checking...
+    </>
+  ) : hasApplied ? (
+    "Already Applied"
+  ) : (
+    "Apply Now"
+  )}
+</Button>
 
       <JobApplicationModal
         isOpen={isModalOpen}

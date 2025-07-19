@@ -492,7 +492,7 @@ export default function JobsPage() {
                       key={i}
                       onClick={() => handlePageChange(i + 1)}
                       className={`px-3 py-1 rounded ${currentPage === i + 1
-                        ? "bg-blue-500 text-white"
+                        ? "bg-black text-white"
                         : "bg-gray-200"
                         }`}
                     >
@@ -620,7 +620,7 @@ export default function JobsPage() {
                     </CardContent>
                     <CardFooter className="border-t pt-4">
                       <div className="flex w-full justify-between">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="bg-[#309689]">
                           View Applicants
                         </Button>
                         <Button size="sm" onClick={() => fnpublishedJob(job)}>Repost Job</Button>
@@ -707,7 +707,7 @@ function JobCard({
           <Button variant="outline" size="sm" onClick={() => router.push(`/employers/dashboard/jobs/${job.id}`)}>
             View Details
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="bg-[#309689] text-white">
             View Applicants
           </Button>
         </div>

@@ -67,106 +67,112 @@ export function JobFilters({ onFilterChange, initialFilters, selectedFilters }: 
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="mb-4 text-lg font-medium">Filters</h3>
-        <Accordion type="multiple" defaultValue={["job-type", "salary", "location", "skills"]}>
-          {/* Job Type */}
-          <AccordionItem value="job-type">
-            <AccordionTrigger>Job Type</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2">
-                {initialFilters?.jobType.map((type) => (
-                  <div key={type} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`job-type-${type}`}
-                      checked={filters.jobType.includes(type)}
-                      onCheckedChange={(checked) => {
-                        if (checked !== "indeterminate") {
-                          handleCheckboxChange("jobType", type);
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`job-type-${type}`} className="font-normal">
-                      {type}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* Salary */}
-          <AccordionItem value="salary">
-            <AccordionTrigger>Salary Range</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4">
-                <Slider
-                  value={[filters.salaryRange[0], filters.salaryRange[1]]}
-                  min={0}
-                  max={initialFilters?.salaryRange[1]}
-                  step={5000}
-                  onValueChange={handleSalaryChange}
+    <div className="bg-[#eef8f7] rounded-2xl p-6 space-y-6">
+  <div>
+    <h3 className="mb-4 text-lg font-medium font-bold">Filters</h3>
+    <Accordion type="multiple" defaultValue={["job-type", "salary", "location", "skills"]}>
+      {/* Job Type */}
+      <AccordionItem value="job-type">
+        <AccordionTrigger>Job Type</AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-2">
+            {initialFilters?.jobType.map((type) => (
+              <div key={type} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`job-type-${type}`}
+                  checked={filters.jobType.includes(type)}
+                  onCheckedChange={(checked) => {
+                    if (checked !== "indeterminate") {
+                      handleCheckboxChange("jobType", type);
+                    }
+                  }}
                 />
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">${filters.salaryRange[0].toLocaleString()}</span>
-                  <span className="text-sm">${filters.salaryRange[1].toLocaleString()}</span>
-                </div>
+                <Label htmlFor={`job-type-${type}`} className="font-normal">
+                  {type}
+                </Label>
               </div>
-            </AccordionContent>
-          </AccordionItem>
+            ))}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
 
-          {/* Location */}
-          <AccordionItem value="location">
-            <AccordionTrigger>Location</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2">
-                {initialFilters?.location.map((loc) => (
-                  <div key={loc} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`location-${loc}`}
-                      checked={filters.location.includes(loc)}
-                      onCheckedChange={(checked) => {
-                        if (checked !== "indeterminate") {
-                          handleCheckboxChange("location", loc);
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`location-${loc}`} className="font-normal">
-                      {loc}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+      {/* Salary */}
+      <AccordionItem value="salary">
+        <AccordionTrigger>Salary Range</AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-4">
+            <Slider
+              value={[filters.salaryRange[0], filters.salaryRange[1]]}
+              min={0}
+              max={initialFilters?.salaryRange[1]}
+              step={5000}
+              onValueChange={handleSalaryChange}
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-sm">${filters.salaryRange[0].toLocaleString()}</span>
+              <span className="text-sm">${filters.salaryRange[1].toLocaleString()}</span>
+            </div>
+            <button
+              className="w-full bg-[#309689] hover:bg-emerald-600 text-white font-semibold py-2 rounded-lg transition"
+              type="button"
+            >
+              Apply
+            </button>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
 
-          {/* Skills */}
-          <AccordionItem value="skills">
-            <AccordionTrigger>Skills</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2">
-                {initialFilters?.skills.map((skill) => (
-                  <div key={skill} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`skill-${skill}`}
-                      checked={filters.skills.includes(skill)}
-                      onCheckedChange={(checked) => {
-                        if (checked !== "indeterminate") {
-                          handleCheckboxChange("skills", skill);
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`skill-${skill}`} className="font-normal">
-                      {skill}
-                    </Label>
-                  </div>
-                ))}
+      {/* Location */}
+      <AccordionItem value="location">
+        <AccordionTrigger>Location</AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-2">
+            {initialFilters?.location.map((loc) => (
+              <div key={loc} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`location-${loc}`}
+                  checked={filters.location.includes(loc)}
+                  onCheckedChange={(checked) => {
+                    if (checked !== "indeterminate") {
+                      handleCheckboxChange("location", loc);
+                    }
+                  }}
+                />
+                <Label htmlFor={`location-${loc}`} className="font-normal">
+                  {loc}
+                </Label>
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
+            ))}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+
+      {/* Skills */}
+      <AccordionItem value="skills">
+        <AccordionTrigger>Skills</AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-2">
+            {initialFilters?.skills.map((skill) => (
+              <div key={skill} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`skill-${skill}`}
+                  checked={filters.skills.includes(skill)}
+                  onCheckedChange={(checked) => {
+                    if (checked !== "indeterminate") {
+                      handleCheckboxChange("skills", skill);
+                    }
+                  }}
+                />
+                <Label htmlFor={`skill-${skill}`} className="font-normal">
+                  {skill}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  </div>
+</div>
   )
 }
