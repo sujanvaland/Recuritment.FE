@@ -232,13 +232,11 @@ export default function InterviewsPage() {
                   ))}
                 </div>
               </div>
-              <ScrollArea className="h-[calc(100vh-24rem)]">
-                <div className="space-y-4 p-4">
-                  {interviews.map((interview) => (
-                    <InterviewCard key={interview.id} interview={interview} />
-                  ))}
-                </div>
-              </ScrollArea>
+              <div className="space-y-4 p-4">
+                {interviews.map((interview) => (
+                  <InterviewCard key={interview.id} interview={interview} />
+                ))}
+              </div>
             </TabsContent>
 
             <TabsContent value="week" className="m-0">

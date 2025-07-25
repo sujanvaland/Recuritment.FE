@@ -12,22 +12,23 @@ const fileService = {
     formData.append("fileType", fileType);
 
     try {
-      const response = await DataService.post(
-        "/File/UploadFile",
-        formData,
+      const response = await fetch(
+        "https://www.onemysetu.com/api/File/UploadFile",
         {
+          method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
+            // Do NOT set Content-Type for FormData; browser will set it automatically
           },
+          body: formData,
         }
       );
 
-      if (!response.status || (response.status !== 200 && response.status !== 201)) {
+      if (!response.ok) {
         throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
       }
 
-      const result = response.data;
+      const result = await response.json();
 
       console.log("Resume upload response:", result);
 
