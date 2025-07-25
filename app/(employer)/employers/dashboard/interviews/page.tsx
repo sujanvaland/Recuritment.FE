@@ -109,30 +109,34 @@ const interviews = [
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 // Generate dates for the current week
-const generateWeekDates = () => {
-  const today = new Date()
-  const day = today.getDay()
-  const diff = today.getDate() - day
-
+function generateWeekDates(weekStart: Date) {
   return Array(7)
-    .fill()
+    .fill(null)
     .map((_, index) => {
-      const date = new Date(today)
-      date.setDate(diff + index)
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + index);
       return {
         date,
         day: daysOfWeek[date.getDay()],
         dateNum: date.getDate(),
-        isToday: date.toDateString() === today.toDateString(),
-      }
-    })
+        isToday: date.toDateString() === new Date().toDateString(),
+      };
+    });
 }
 
 export default function InterviewsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("day")
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const weekDates = generateWeekDates()
+  const [weekStart, setWeekStart] = useState(() => {
+    const today = new Date();
+    const day = today.getDay();
+    const start = new Date(today);
+    start.setDate(today.getDate() - day);
+    start.setHours(0, 0, 0, 0);
+    return start;
+  });
+  const weekDates = generateWeekDates(weekStart);
 
   return (
     <div className="space-y-6">
@@ -175,11 +179,29 @@ export default function InterviewsPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setWeekStart(prev => {
+                  const newStart = new Date(prev);
+                  newStart.setDate(prev.getDate() - 7);
+                  return newStart;
+                })}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <div className="font-medium">May 15 - May 21, 2023</div>
-              <Button variant="outline" size="icon">
+              <div className="font-medium">
+                {weekDates[0].date.toLocaleDateString()} - {weekDates[6].date.toLocaleDateString()}
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setWeekStart(prev => {
+                  const newStart = new Date(prev);
+                  newStart.setDate(prev.getDate() + 7);
+                  return newStart;
+                })}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>

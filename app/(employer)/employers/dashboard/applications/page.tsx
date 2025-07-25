@@ -27,6 +27,9 @@ import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { format } from "date-fns"
 
 type application = {
   id: number
@@ -66,6 +69,11 @@ export default function ApplicationsPage() {
   const { user } = useAuth()
   const { toast } = useToast()
   const [totalData, setTotalData] = useState(0);
+  const [openInterviewModal, setOpenInterviewModal] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<application | null>(null);
+  const [interviewDate, setInterviewDate] = useState("");
+  const [interviewTime, setInterviewTime] = useState("");
+  const [interviewNote, setInterviewNote] = useState("");
 
   // Filter applications based on selected tab
   const filteredApplications = applicationData.filter((app) => {
@@ -200,9 +208,15 @@ export default function ApplicationsPage() {
         <TabsContent value="all" className="space-y-4">
           {filteredApplications.map((application) => {
             const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            console.log('posted', posted);
             return (
-              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                applied={posted}
+                changeStatus={fetchApplications}
+                setSelectedApplication={setSelectedApplication}
+                setOpenInterviewModal={setOpenInterviewModal}
+              />
             );
           })}
         </TabsContent>
@@ -210,20 +224,31 @@ export default function ApplicationsPage() {
         <TabsContent value="review" className="space-y-4">
           {filteredApplications.map((application) => {
             const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            console.log('posted', posted);
             return (
-              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                applied={posted}
+                changeStatus={fetchApplications}
+                setSelectedApplication={setSelectedApplication}
+                setOpenInterviewModal={setOpenInterviewModal}
+              />
             );
           })}
-
         </TabsContent>
 
         <TabsContent value="interview" className="space-y-4">
           {filteredApplications.map((application) => {
             const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            console.log('posted', posted);
             return (
-              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                applied={posted}
+                changeStatus={fetchApplications}
+                setSelectedApplication={setSelectedApplication}
+                setOpenInterviewModal={setOpenInterviewModal}
+              />
             );
           })}
         </TabsContent>
@@ -231,9 +256,15 @@ export default function ApplicationsPage() {
         <TabsContent value="offer" className="space-y-4">
           {filteredApplications.map((application) => {
             const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            console.log('posted', posted);
             return (
-              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                applied={posted}
+                changeStatus={fetchApplications}
+                setSelectedApplication={setSelectedApplication}
+                setOpenInterviewModal={setOpenInterviewModal}
+              />
             );
           })}
         </TabsContent>
@@ -241,13 +272,99 @@ export default function ApplicationsPage() {
         <TabsContent value="rejected" className="space-y-4">
           {filteredApplications.map((application) => {
             const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            console.log('posted', posted);
             return (
-              <ApplicationCard key={application.id} application={application} applied={posted} changeStatus={fetchApplications} />
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                applied={posted}
+                changeStatus={fetchApplications}
+                setSelectedApplication={setSelectedApplication}
+                setOpenInterviewModal={setOpenInterviewModal}
+              />
             );
           })}
         </TabsContent>
       </Tabs>
+
+      <Dialog open={openInterviewModal} onOpenChange={setOpenInterviewModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Schedule Interview</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Date</Label>
+              <Input
+                type="date"
+                value={interviewDate}
+                onChange={e => setInterviewDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Time</Label>
+              <Input
+                type="time"
+                value={interviewTime}
+                onChange={e => setInterviewTime(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Note (optional)</Label>
+              <Input
+                type="text"
+                value={interviewNote}
+                onChange={e => setInterviewNote(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={async () => {
+                const token = localStorage.getItem("token");
+                try {
+                  const response = await DataService.post("/interview", {
+                    applicationId: selectedApplication?.id,
+                    date: interviewDate,
+                    time: interviewTime,
+                    note: interviewNote,
+                  }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (response.status === 200 || response.status === 201) {
+                    toast({
+                      title: "Interview Scheduled",
+                      description: "The interview has been scheduled successfully.",
+                    });
+                    setOpenInterviewModal(false);
+                    setInterviewDate("");
+                    setInterviewTime("");
+                    setInterviewNote("");
+                    setSelectedApplication(null);
+                    fetchApplications();
+                  } else {
+                    toast({
+                      title: "Error",
+                      description: "Failed to schedule interview.",
+                      variant: "destructive",
+                    });
+                  }
+                } catch (error) {
+                  toast({
+                    title: "Error",
+                    description: "Failed to schedule interview.",
+                    variant: "destructive",
+                  });
+                }
+              }}
+            >
+              Schedule
+            </Button>
+            <Button variant="outline" onClick={() => setOpenInterviewModal(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
@@ -257,11 +374,15 @@ export default function ApplicationsPage() {
 function ApplicationCard({
   application,
   applied,
-  changeStatus
+  changeStatus,
+  setSelectedApplication,
+  setOpenInterviewModal
 }: {
   application: application;
   applied: string;
   changeStatus: () => void;
+  setSelectedApplication: (app: application) => void;
+  setOpenInterviewModal: (open: boolean) => void;
 }) {
   const getStatusBadge = (status: any) => {
     switch (status) {
@@ -360,7 +481,12 @@ function ApplicationCard({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>View Profile</DropdownMenuItem>
                 <DropdownMenuItem>View Resume</DropdownMenuItem>
-                <DropdownMenuItem>Schedule Interview</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  setSelectedApplication(application);
+                  setOpenInterviewModal(true);
+                }}>
+                  Schedule Interview
+                </DropdownMenuItem>
                 <DropdownMenuItem>Send Message</DropdownMenuItem>
                 <DropdownMenuItem className="text-destructive" onClick={() => {
                   handleChangeStatus(application?.id, "rejected");

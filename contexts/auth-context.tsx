@@ -8,6 +8,7 @@ import type { User, UserRole } from "@/lib/auth"
 import { API_BASE_URL } from "@/lib/auth"
 import { DataService } from "@/services/axiosInstance";
 import { set } from "date-fns";
+import { Console } from "console";
 
 interface AuthContextType {
   user: User | null
@@ -116,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(response.data.user);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", response.data.token);
-
+      localStorage.setItem("companyId", response.data.user.companyDetails.id);
       const userRole = getUserRole(response.data.user);
       console.log("Login successful, user role:", userRole) // Debug log
 

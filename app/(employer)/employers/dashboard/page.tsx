@@ -8,10 +8,83 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/auth-context"
+import { useState, useEffect } from "react"
 
 export default function EmployerDashboardPage() {
   const { user } = useAuth()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   //alert('employer dashboard page')
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
+    isDraft: boolean
+  ) => {
+    e.preventDefault();
+    console.log('Submitting form...');
+    // if (!isDraft && !validateForm()) {
+    //   console.log('Validation failed');
+    //   toast({
+    //     title: "Validation Error",
+    //     description: "Please fill in all required fields.",
+    //     variant: "destructive",
+    //   })
+    //   return
+    // }
+    // console.log('Form is valid, proceeding...');
+    // console.log('formData', formData);
+
+    setIsSubmitting(true);
+
+
+    console.log('formdata', formData);
+    const jobData = {
+      ...formData,
+      status: isDraft ? "draft" : "active",
+    }
+
+    try {
+      //  const response = await fetch("/api/jobs", {
+      const token = localStorage.getItem("token")
+      const response = await DataService.post("/jobs", jobData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.status === 201) {
+            toast({
+              title: "Success!",
+              description: isDraft ? "Job saved as draft" : "Job posted successfully",
+            })
+          } else {
+            console.warn("Unexpected status code:", response.status);
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating job:", error);
+        });
+
+      //  const result = await response.json()
+
+      // toast({
+      //   title: "Success!",
+      //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
+      // })
+
+      router.push("/employers/dashboard/jobs")
+    } catch (error) {
+      console.error("Error posting job:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to post job",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <>
       <div className="mb-8">
@@ -21,6 +94,7 @@ export default function EmployerDashboardPage() {
         </p>
       </div>
 
+      <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -63,6 +137,7 @@ export default function EmployerDashboardPage() {
           </CardContent>
         </Card>
       </div>
+      </form>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         <Card>

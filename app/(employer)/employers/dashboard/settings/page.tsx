@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Bell,
   Building,
@@ -28,16 +28,134 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/contexts/auth-context"
 import { Badge } from "@/components/ui/badge"
+import { DataService } from "@/services/axiosInstance";
+import fileService from "@/services/fileService"
 
 export default function SettingsPage() {
   const { user } = useAuth()
-  const [companyName, setCompanyName] = useState("TechCorp Inc.")
-  const [companyWebsite, setCompanyWebsite] = useState("https://techcorp.com")
-  const [companySize, setCompanySize] = useState("50-200")
-  const [companyIndustry, setCompanyIndustry] = useState("Technology")
-  const [companyDescription, setCompanyDescription] = useState(
-    "TechCorp is a leading technology company specializing in innovative software solutions for businesses of all sizes.",
-  )
+  const [companyName, setCompanyName] = useState("")
+  const [companyWebsite, setCompanyWebsite] = useState("")
+  const [companySize, setCompanySize] = useState("")
+  const [companyIndustry, setCompanyIndustry] = useState("")
+  const [companyDescription, setCompanyDescription] = useState("")
+  const [companyAddress, setCompanyAddress] = useState("")
+  const [companyCity, setCompanyCity] = useState("")
+  const [companyState, setCompanyState] = useState("")
+  const [companyZip, setCompanyZip] = useState("")
+  const [companyLogo, setCompanyLogo] = useState("")
+  const [companyBanner, setCompanyBanner] = useState("")
+  const [careerPageHeadline, setCareerPageHeadline] = useState("")
+  const [careerPageDescription, setCareerPageDescription] = useState("")
+  const [companyId, setCompanyId] = useState<number | null>(null)
+
+  // Fetch company details on mount
+  useEffect(() => {
+    const fetchCompany = async () => {
+      const token = localStorage.getItem("token")
+      const storedCompanyId = localStorage.getItem("companyId")
+      if (!storedCompanyId) return
+
+      try {
+        const response = await DataService.get(`/companies/${storedCompanyId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        })
+        if (response.status === 200 && response.data) {
+          const data = response.data
+          setCompanyId(data.id)
+          setCompanyName(data.name || "")
+          setCompanyWebsite(data.website || "")
+          setCompanySize(data.companySize || "")
+          setCompanyIndustry(data.industry || "")
+          setCompanyDescription(data.description || "")
+          setCompanyAddress(data.address || "")
+          setCompanyCity(data.city || "")
+          setCompanyState(data.state || "")
+          setCompanyZip(data.zipCode || "")
+          setCompanyLogo(data.companyLogo || "")
+          setCompanyBanner(data.companyBanner || "")
+          setCareerPageHeadline(data.careerPageHeadline || "")
+          setCareerPageDescription(data.careerPageDescription || "")
+        }
+      } catch (error) {
+        // Optionally handle error
+      }
+    }
+    fetchCompany()
+  }, [])
+
+  const updateCompany = async () => {
+    const payload = {
+      id: companyId ?? 0,
+      createdBy: user?.id ?? 0,
+      modifiedBy: user?.id ?? 0,
+      createdDate: new Date().toISOString(),
+      modifiedDate: new Date().toISOString(),
+      isDeleted: false,
+      userId: user?.id ?? 0,
+      name: companyName,
+      website: companyWebsite,
+      companySize,
+      industry: companyIndustry,
+      description: companyDescription,
+      address: companyAddress,
+      city: companyCity,
+      state: companyState,
+      zipCode: companyZip,
+      companyLogo,
+      companyBanner,
+      careerPageHeadline,
+      careerPageDescription,
+    }
+  
+    const token = localStorage.getItem("token")
+debugger;
+    try {
+      const response = await DataService.post(
+        "/companies",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      )
+
+      if (response.status !== 200 && response.status !== 201) {
+        alert("Failed to update company")
+        return
+      }
+
+      const data = response.data
+      setCompanyId(data.id)
+      alert("Company updated successfully!")
+    } catch (error) {
+      alert("Failed to update company")
+    }
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+debugger;
+   
+    try {
+      const response = await fileService.uploadfile(file, "companylogo");
+
+      if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
+        const logoUrl = response.data[0].actualUrl;
+        setCompanyLogo(logoUrl); // Update your logo state with the uploaded file URL
+        alert("Logo uploaded successfully!");
+      } else {
+        alert("Failed to upload logo.");
+      }
+    } catch (error) {
+      alert("Error uploading logo.");
+    }
+  };
 
   return (
     <div>
@@ -90,6 +208,12 @@ export default function SettingsPage() {
                         <Button size="sm" variant="outline">
                           Change Logo
                         </Button>
+                        <Input
+                          id="company-logo-upload"
+                          type="file"
+                          accept="image/png, image/jpeg"
+                          onChange={handleLogoUpload}
+                        />
                         <p className="mt-2 text-xs text-muted-foreground">Recommended: 400x400px, PNG or JPG</p>
                       </div>
                     </div>
@@ -190,19 +314,39 @@ export default function SettingsPage() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="company-address">Address</Label>
-                      <Input id="company-address" placeholder="123 Main St" />
+                      <Input
+                        id="company-address"
+                        placeholder="123 Main St"
+                        value={companyAddress}
+                        onChange={e => setCompanyAddress(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="company-city">City</Label>
-                      <Input id="company-city" placeholder="San Francisco" />
+                      <Input
+                        id="company-city"
+                        placeholder="San Francisco"
+                        value={companyCity}
+                        onChange={e => setCompanyCity(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="company-state">State/Province</Label>
-                      <Input id="company-state" placeholder="CA" />
+                      <Input
+                        id="company-state"
+                        placeholder="CA"
+                        value={companyState}
+                        onChange={e => setCompanyState(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="company-zip">Zip/Postal Code</Label>
-                      <Input id="company-zip" placeholder="94103" />
+                      <Input
+                        id="company-zip"
+                        placeholder="94103"
+                        value={companyZip}
+                        onChange={e => setCompanyZip(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2 sm:col-span-2">
                       <Label htmlFor="company-country">Country</Label>
@@ -224,7 +368,7 @@ export default function SettingsPage() {
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
               <Button variant="outline">Cancel</Button>
-              <Button>
+              <Button onClick={updateCompany}>
                 <Save className="mr-2 h-4 w-4" />
                 Save Changes
               </Button>
