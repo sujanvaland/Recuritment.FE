@@ -45,6 +45,7 @@ type application = {
   expires?: string
   resumeUrl?: string
   user?: {
+    id: number // <-- Add this line
     firstName: string
     lastName: string
     email: string
@@ -321,19 +322,33 @@ export default function ApplicationsPage() {
             <Button
               onClick={async () => {
                 const token = localStorage.getItem("token");
+                if (!selectedApplication) return;
+debugger;
+                // Combine date and time into ISO string
+                const scheduledTime = new Date(
+                  `${interviewDate}T${interviewTime}:00.000Z`
+                ).toISOString();
+
                 try {
-                  const response = await DataService.post("/interview", {
-                    applicationId: selectedApplication?.id,
-                    date: interviewDate,
-                    time: interviewTime,
-                    note: interviewNote,
-                  }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                  });
+                  const response = await DataService.post(
+                    "/interviews",
+                    {
+                      jobId: selectedApplication?.id,
+                      candidateId: selectedApplication?.user?.id.toString(),
+                      scheduledTime,
+                      duration: 0, // or set as needed
+                      type: "",
+                      location: "",
+                      notes: interviewNote,
+                    },
+                    {
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
                   if (response.status === 200 || response.status === 201) {
                     toast({
                       title: "Interview Scheduled",
-                      description: "The interview has been scheduled successfully.",
+                      description: response.data?.message || "The interview has been scheduled successfully.",
                     });
                     setOpenInterviewModal(false);
                     setInterviewDate("");
@@ -480,17 +495,34 @@ function ApplicationCard({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>View Profile</DropdownMenuItem>
-                <DropdownMenuItem>View Resume</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setSelectedApplication(application);
-                  setOpenInterviewModal(true);
-                }}>
-                  Schedule Interview
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (application?.resumeUrl) {
+                      window.open(application.resumeUrl, "_blank", "noopener,noreferrer");
+                    } else {
+                      alert("Resume not available.");
+                    }
+                  }}
+                >
+                  View Resume
                 </DropdownMenuItem>
+                {/* Show Schedule Interview only if status is "interview" */}
+                {application?.status === "interview" && (
+                  <DropdownMenuItem onClick={() => {
+                    setSelectedApplication(application);
+                    setOpenInterviewModal(true);
+                  }}>
+                    Schedule Interview
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem>Send Message</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive" onClick={() => {
-                  handleChangeStatus(application?.id, "rejected");
-                }}>Reject Application</DropdownMenuItem>
+                {application?.status !== "rejected" && (
+                  <DropdownMenuItem className="text-destructive" onClick={() => {
+                    handleChangeStatus(application?.id, "rejected");
+                  }}>
+                    Reject Application
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -543,18 +575,32 @@ function ApplicationCard({
             </a>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600" onClick={() => {
-              handleChangeStatus(application?.id, "rejected");
-            }}>
-              <X className="mr-2 h-3 w-3" />
-              Reject
-            </Button>
-            <Button size="sm" onClick={() => {
-              handleChangeStatus(application?.id, "interview");
-            }}>
-              <Check className="mr-2 h-3 w-3" />
-              Move to Interview
-            </Button>
+            {/* Only show Reject button if status is NOT rejected */}
+            {application?.status !== "rejected" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-red-500 hover:text-red-600"
+                onClick={() => {
+                  handleChangeStatus(application?.id, "rejected");
+                }}
+              >
+                <X className="mr-2 h-3 w-3" />
+                Reject
+              </Button>
+            )}
+            {/* Only show Move to Interview if status is NOT interview */}
+            {application?.status !== "interview" && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  handleChangeStatus(application?.id, "interview");
+                }}
+              >
+                <Check className="mr-2 h-3 w-3" />
+                Move to Interview
+              </Button>
+            )}
           </div>
         </div>
       </CardFooter>

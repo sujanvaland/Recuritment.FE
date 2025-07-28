@@ -53,7 +53,7 @@ export default function SettingsPage() {
     company: true,
     account: true,
     team: false, // Set to false to hide Team tab
-    billing: true,
+    billing: false,
     notifications: true,
   });
 
@@ -180,6 +180,40 @@ debugger;
       }
     } catch (error) {
       alert("Error uploading banner.");
+    }
+  };
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleUpdatePassword = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await DataService.post(
+        "https://www.onemysetu.com/api/settings/UpdatePassword",
+        {
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200 && response.data?.message) {
+        alert(response.data.message);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        alert("Failed to update password");
+      }
+    } catch (error) {
+      alert("Failed to update password");
     }
   };
 
@@ -565,17 +599,32 @@ debugger;
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" />
+                  <Input
+                    id="current-password"
+                    type="password"
+                    value={currentPassword}
+                    onChange={e => setCurrentPassword(e.target.value)}
+                  />
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="new-password">New Password</Label>
-                    <Input id="new-password" type="password" />
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm New Password</Label>
-                    <Input id="confirm-password" type="password" />
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                    />
                   </div>
                 </div>
 
@@ -589,7 +638,7 @@ debugger;
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
                 <Button variant="outline">Cancel</Button>
-                <Button>
+                <Button onClick={handleUpdatePassword}>
                   <Lock className="mr-2 h-4 w-4" />
                   Update Password
                 </Button>
@@ -937,34 +986,38 @@ debugger;
 
                 <Separator />
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Notification Frequency</h3>
+                {/* Hide Notification Frequency */}
+                {false && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Notification Frequency</h3>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="notification-frequency">Email Digest Frequency</Label>
-                    <Select defaultValue="daily">
-                      <SelectTrigger id="notification-frequency">
-                        <SelectValue placeholder="Select frequency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="realtime">Real-time</SelectItem>
-                        <SelectItem value="daily">Daily Digest</SelectItem>
-                        <SelectItem value="weekly">Weekly Digest</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="space-y-2">
+                      <Label htmlFor="notification-frequency">Email Digest Frequency</Label>
+                      <Select defaultValue="daily">
+                        <SelectTrigger id="notification-frequency">
+                          <SelectValue placeholder="Select frequency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="realtime">Real-time</SelectItem>
+                          <SelectItem value="daily">Daily Digest</SelectItem>
+                          <SelectItem value="weekly">Weekly Digest</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">Reset to Default</Button>
+              {/*<CardFooter className="flex justify-end gap-2">
+                 <Button variant="outline">Reset to Default</Button>
                 <Button>
                   <Save className="mr-2 h-4 w-4" />
                   Save Preferences
-                </Button>
-              </CardFooter>
+                </Button> 
+              </CardFooter>*/}
             </Card>
 
-            <Card>
+        {/* Hide Privacy Settings */}
+             {false && (<Card>
               <CardHeader>
                 <CardTitle>Privacy Settings</CardTitle>
                 <CardDescription>Manage your data privacy preferences</CardDescription>
@@ -1002,6 +1055,7 @@ debugger;
                 <Button>Save Settings</Button>
               </CardFooter>
             </Card>
+             )}
           </TabsContent>
         )}
       </Tabs>

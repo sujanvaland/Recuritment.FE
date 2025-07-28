@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   CalendarIcon,
   ChevronLeft,
@@ -25,85 +25,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
-
-// Sample interview data
-const interviews = [
-  {
-    id: 1,
-    candidate: {
-      name: "Emily Johnson",
-      avatar: "/abstract-geometric-shapes.png",
-      position: "Senior Frontend Developer",
-    },
-    date: "2023-05-15",
-    time: "10:00 AM - 11:00 AM",
-    type: "Technical Interview",
-    interviewer: "John Smith",
-    status: "scheduled",
-    location: "Video Call",
-    notes: "Focus on React, TypeScript, and system design questions",
-  },
-  {
-    id: 2,
-    candidate: {
-      name: "Michael Chen",
-      avatar: "/number-two-graphic.png",
-      position: "UX/UI Designer",
-    },
-    date: "2023-05-18",
-    time: "2:00 PM - 3:00 PM",
-    type: "Portfolio Review",
-    interviewer: "Sarah Johnson",
-    status: "scheduled",
-    location: "In-person",
-    notes: "Review portfolio and discuss design process",
-  },
-  {
-    id: 3,
-    candidate: {
-      name: "Sarah Williams",
-      avatar: "/abstract-geometric-shapes.png",
-      position: "DevOps Engineer",
-    },
-    date: "2023-05-20",
-    time: "11:00 AM - 12:00 PM",
-    type: "Technical Interview",
-    interviewer: "David Lee",
-    status: "scheduled",
-    location: "Video Call",
-    notes: "Focus on AWS, Docker, and CI/CD pipelines",
-  },
-  {
-    id: 4,
-    candidate: {
-      name: "David Rodriguez",
-      avatar: "/abstract-geometric-shapes.png",
-      position: "Product Manager",
-    },
-    date: "2023-05-22",
-    time: "3:00 PM - 4:00 PM",
-    type: "Case Study",
-    interviewer: "Jennifer Wilson",
-    status: "scheduled",
-    location: "Video Call",
-    notes: "Present a product case study and discuss approach",
-  },
-  {
-    id: 5,
-    candidate: {
-      name: "Jessica Lee",
-      avatar: "/abstract-geometric-composition-5.png",
-      position: "Marketing Specialist",
-    },
-    date: "2023-05-25",
-    time: "1:00 PM - 2:00 PM",
-    type: "Initial Screening",
-    interviewer: "Robert Johnson",
-    status: "scheduled",
-    location: "Phone Call",
-    notes: "Discuss experience with digital marketing and content strategy",
-  },
-]
 
 // Days of the week
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -137,6 +58,53 @@ export default function InterviewsPage() {
     return start;
   });
   const weekDates = generateWeekDates(weekStart);
+
+  // Interview data from API
+  const [interviews, setInterviews] = useState([]);
+
+  useEffect(() => {
+    const fetchInterviews = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch("https://www.onemysetu.com/api/interviews", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setInterviews(data);
+        }
+      } catch (error) {
+        // Optionally handle error
+      }
+    };
+    fetchInterviews();
+  }, []);
+
+  // Map API interviews to UI format
+  const mappedInterviews = interviews.map((interview) => {
+    // Parse date and time from scheduledTime
+    const scheduled = new Date(interview.scheduledTime);
+    const date = scheduled.toLocaleDateString();
+    const time = scheduled.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    return {
+      ...interview,
+      candidate: {
+        name: `Candidate ${interview.candidateId}`,
+        avatar: "/placeholder.svg",
+        position: "",
+      },
+      date,
+      time,
+      interviewer: interview.employerId ? `Employer ${interview.employerId}` : "",
+      type: interview.type && interview.type.trim() ? interview.type : "Interview",
+      location: interview.location || "",
+      notes: interview.notes || "",
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -233,7 +201,7 @@ export default function InterviewsPage() {
                 </div>
               </div>
               <div className="space-y-4 p-4">
-                {interviews.map((interview) => (
+                {mappedInterviews.map((interview) => (
                   <InterviewCard key={interview.id} interview={interview} />
                 ))}
               </div>
@@ -252,7 +220,7 @@ export default function InterviewsPage() {
                 {weekDates.map((date, index) => (
                   <div key={index} className="border-r">
                     <div className="space-y-1 p-2">
-                      {interviews
+                      {mappedInterviews
                         .filter((interview) => interview.date === "2023-05-15")
                         .map((interview) => (
                           <div
