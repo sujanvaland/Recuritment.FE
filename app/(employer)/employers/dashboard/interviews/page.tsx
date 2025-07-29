@@ -84,7 +84,10 @@ export default function InterviewsPage() {
   }, []);
 
   // Map API interviews to UI format
-  const mappedInterviews = interviews.map((interview) => {
+  const mappedInterviews = interviews.map((item) => {
+    // Extract interview data from the nested structure
+    const interview = item.interviews;
+    
     // Parse date and time from scheduledTime
     const scheduled = new Date(interview.scheduledTime);
     const date = scheduled.toLocaleDateString();
@@ -93,16 +96,16 @@ export default function InterviewsPage() {
     return {
       ...interview,
       candidate: {
-        name: `Candidate ${interview.candidateId}`,
+        name: item.candidateName || `Candidate ${interview.candidateId}`,
         avatar: "/placeholder.svg",
-        position: "",
+        position: "", // Add position if available in API
       },
       date,
       time,
-      interviewer: interview.employerId ? `Employer ${interview.employerId}` : "",
+      interviewer: item.employerName || `Employer ${interview.employerId}`,
       type: interview.type && interview.type.trim() ? interview.type : "Interview",
-      location: interview.location || "",
-      notes: interview.notes || "",
+      location: interview.location || "Virtual Meeting",
+      notes: interview.notes || "No notes added",
     };
   });
 
@@ -190,7 +193,7 @@ export default function InterviewsPage() {
                   {weekDates.map((date, index) => (
                     <Button
                       key={index}
-                      variant={date.isToday ? "default" : "ghost"}
+                      variant={selectedDate.toDateString() === date.date.toDateString() ? "default" : "ghost"}
                       className="flex flex-col items-center rounded-full px-4 py-2"
                       onClick={() => setSelectedDate(date.date)}
                     >
@@ -201,9 +204,24 @@ export default function InterviewsPage() {
                 </div>
               </div>
               <div className="space-y-4 p-4">
-                {mappedInterviews.map((interview) => (
-                  <InterviewCard key={interview.id} interview={interview} />
-                ))}
+                {/* Filter interviews by selected date */}
+                {mappedInterviews
+                  .filter((interview) => {
+                    const interviewDate = new Date(interview.scheduledTime).toDateString();
+                    return interviewDate === selectedDate.toDateString();
+                  })
+                  .map((interview) => (
+                    <InterviewCard key={interview.id} interview={interview} />
+                  ))}
+                {/* Show message if no interviews for selected date */}
+                {mappedInterviews.filter((interview) => {
+                  const interviewDate = new Date(interview.scheduledTime).toDateString();
+                  return interviewDate === selectedDate.toDateString();
+                }).length === 0 && (
+                  <div className="text-center text-muted-foreground py-8">
+                    No interviews scheduled for this date.
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -220,13 +238,17 @@ export default function InterviewsPage() {
                 {weekDates.map((date, index) => (
                   <div key={index} className="border-r">
                     <div className="space-y-1 p-2">
+                      {/* Filter interviews for each specific date */}
                       {mappedInterviews
-                        .filter((interview) => interview.date === "2023-05-15")
+                        .filter((interview) => {
+                          const interviewDate = new Date(interview.scheduledTime).toDateString();
+                          return interviewDate === date.date.toDateString();
+                        })
                         .map((interview) => (
                           <div
                             key={interview.id}
-                            className="rounded-md bg-primary/10 p-2 text-xs"
-                            style={{ marginTop: "40px" }}
+                            className="rounded-md bg-primary/10 p-2 text-xs cursor-pointer hover:bg-primary/20"
+                            onClick={() => setSelectedDate(date.date)}
                           >
                             <div className="font-medium">{interview.time}</div>
                             <div>{interview.candidate.name}</div>
@@ -248,17 +270,35 @@ export default function InterviewsPage() {
               <div className="grid h-[calc(100vh-24rem)] grid-cols-7 overflow-auto">
                 {Array(35)
                   .fill()
-                  .map((_, index) => (
-                    <div key={index} className={`border-b border-r p-2 ${index === 15 ? "bg-primary/10" : ""}`}>
-                      <div className="text-xs">{(index % 31) + 1}</div>
-                      {index === 15 && (
-                        <div className="mt-1 rounded-sm bg-primary/20 p-1 text-xs">
-                          <div>10:00 AM</div>
-                          <div className="font-medium">Emily J.</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  .map((_, index) => {
+                    const currentDate = new Date();
+                    const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                    const cellDate = new Date(monthStart);
+                    cellDate.setDate(monthStart.getDate() + index - monthStart.getDay());
+                    
+                    const dayInterviews = mappedInterviews.filter((interview) => {
+                      const interviewDate = new Date(interview.scheduledTime).toDateString();
+                      return interviewDate === cellDate.toDateString();
+                    });
+
+                    return (
+                      <div 
+                        key={index} 
+                        className={`border-b border-r p-2 cursor-pointer hover:bg-muted ${
+                          cellDate.toDateString() === new Date().toDateString() ? "bg-primary/10" : ""
+                        }`}
+                        onClick={() => setSelectedDate(cellDate)}
+                      >
+                        <div className="text-xs">{cellDate.getDate()}</div>
+                        {dayInterviews.map((interview, idx) => (
+                          <div key={idx} className="mt-1 rounded-sm bg-primary/20 p-1 text-xs">
+                            <div>{interview.time}</div>
+                            <div className="font-medium">{interview.candidate.name}</div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
               </div>
             </TabsContent>
           </Tabs>
