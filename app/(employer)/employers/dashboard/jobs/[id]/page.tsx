@@ -271,7 +271,7 @@ export default function JobDetailsPage() {
             {/* <ApplyJobButton jobId={job?.id} jobTitle={job?.title} companyName={job?.company} className="mt-6 w-full" /> */}
           </div>
 
-          <div className="mt-6 rounded-lg border bg-[#EBF5F4] p-6 shadow-sm">
+         {false && <div className="mt-6 rounded-lg border bg-[#EBF5F4] p-6 shadow-sm">
             <h2 className="mb-4 text-xl font-semibold">Similar Jobs</h2>
             <div className="space-y-4">
               {/* {[1, 2, 3].map((i) => (
@@ -285,6 +285,7 @@ export default function JobDetailsPage() {
               ))} */}
             </div>
           </div>
+}
         </div>
       </div>
     </div>

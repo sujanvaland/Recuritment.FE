@@ -90,7 +90,7 @@ export default function JobSeekerDashboardPage() {
         </div>
       </div>
 
-      <div className="mt-8">
+      {false && <div className="mt-8">
         <h2 className="mb-4 text-xl font-bold">Recommended Jobs</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((job) => (
@@ -127,6 +127,7 @@ export default function JobSeekerDashboardPage() {
           </Button>
         </div>
       </div>
+      }
     </>
   )
 }
