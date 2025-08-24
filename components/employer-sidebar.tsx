@@ -73,7 +73,7 @@ export function EmployerSidebar() {
             <Users className="mr-3 h-5 w-5" />
             Candidates
           </Link>
-          <Link
+          {/* <Link
             href="/employers/dashboard/messages"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/messages"
               ? "bg-slate-100 text-black-900"
@@ -82,7 +82,7 @@ export function EmployerSidebar() {
           >
             <MessageSquare className="mr-3 h-5 w-5" />
             Messages
-          </Link>
+          </Link> */}
           <Link
             href="/employers/dashboard/interviews"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/interviews"
@@ -93,7 +93,7 @@ export function EmployerSidebar() {
             <Calendar className="mr-3 h-5 w-5" />
             Interviews
           </Link>
-          <Link
+          {/* <Link
             href="/employers/dashboard/analytics"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/analytics"
               ? "bg-slate-100 text-black-900"
@@ -102,7 +102,7 @@ export function EmployerSidebar() {
           >
             <BarChart className="mr-3 h-5 w-5" />
             Analytics
-          </Link>
+          </Link> */}
           <Link
             href="/employers/dashboard/settings"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${pathname === "/employers/dashboard/settings"

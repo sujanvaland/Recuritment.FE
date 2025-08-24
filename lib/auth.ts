@@ -16,6 +16,8 @@ export interface User {
   company?: string
   title?: string
   createdAt: string
+  recuriterPhone? : string
+  profileImageUrl?: string
 }
 
 // Dummy users data

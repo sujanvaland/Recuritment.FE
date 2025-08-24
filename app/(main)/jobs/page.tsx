@@ -32,6 +32,8 @@ type Job = {
   posted?: string
   expires?: string
   salary: string
+  minSalary: number
+  maxSalary: number
   logo: string
   company: string
 }
@@ -71,10 +73,6 @@ export default function JobsPage() {
  
   
 
-
-
-
-
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -108,7 +106,6 @@ export default function JobsPage() {
       token = "";
     }
     try {
-
       // Prepare search parameters
       const searchParams: any = {
         headers: { Authorization: `Bearer ${token}` },
@@ -162,40 +159,109 @@ export default function JobsPage() {
 
 
 
-
   console.log('filteredJobs', filteredJobs);
 
-  useEffect(() => {
+  // Only set filters on first jobs load (prevents resetting filters on every jobs change)
+useEffect(() => {
+  if (
+    jobs.length > 0 &&
+    filters.jobType.length === 0 &&
+    filters.location.length === 0 &&
+    filters.skills.length === 0
+  ) {
     const jobTypeSet = new Set<string>();
     const locationSet = new Set<string>();
     const skillSet = new Set<string>();
 
-    if (jobs?.length > 0) {
-      jobs.forEach((job) => {
-        if (job.type) jobTypeSet.add(job.type);
-        if (job.location) locationSet.add(job.location);
-        (job.tags || []).forEach((tag) => skillSet.add(tag));
-      });
+    jobs.forEach((job) => {
+      if (job.type) jobTypeSet.add(job.type);
+      if (job.location) locationSet.add(job.location);
+      (job.tags || []).forEach((tag) => skillSet.add(tag));
+    });
 
-      const jobTypes = Array.from(jobTypeSet);
-      const locations = Array.from(locationSet);
-      const skills = Array.from(skillSet);
+    setFilters((prev) => ({
+      ...prev,
+      jobType: Array.from(jobTypeSet),
+      location: Array.from(locationSet),
+      skills: Array.from(skillSet),
+    }));
+  }
+}, [jobs]);
 
-      console.log('jobTypes', jobTypes);
-      console.log('locations', locations);
-      console.log('skills', skills);
 
-      // Set as default filters (select all initially)
-      setFilters({
-        jobType: jobTypes,
-        location: locations,
-        skills: skills,
-        salaryRange: [0, 300000],
+
+   // Apply filters and search
+  useEffect(() => {
+    let result = [...jobs];
+
+    // Apply search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter(
+        (job) =>
+          job.title.toLowerCase().includes(searchLower) ||
+          job.company.toLowerCase().includes(searchLower) ||
+          job.tags.some((skill) => skill.toLowerCase().includes(searchLower)),
+      );
+    }
+
+    // Apply location search (search box)
+    if (locationTerm) {
+      const locationLower = locationTerm.toLowerCase();
+      result = result.filter((job) => job.location.toLowerCase().includes(locationLower));
+    }
+
+    // Apply job type filter (advanced filter)
+    if (filters.jobType.length > 0) {
+      result = result.filter((job) =>
+        filters.jobType.includes(job.type)
+      );
+    }
+
+    // Apply salary range filter (advanced filter)
+    if (filters.salaryRange && filters.salaryRange.length === 2) {
+      const [min, max] = filters.salaryRange;
+      result = result.filter(
+        (job) =>
+          // Check if job's salary range overlaps with filter range
+          job.maxSalary >= min && job.minSalary <= max
+      );
+    }
+
+    // Apply location filter (advanced filter)
+    if (filters.location.length > 0) {
+      result = result.filter((job) =>
+        filters.location.includes(job.location)
+      );
+    }
+
+    // Apply skills filter (advanced filter)
+    if (filters.skills.length > 0) {
+      result = result.filter((job) => {
+        const jobSkills = job.tags.map((skill) => skill.toLowerCase());
+        // At least one selected skill must be present in job's tags
+        return filters.skills.some((skill) => jobSkills.includes(skill.toLowerCase()));
       });
     }
 
+    // Apply sorting
+    switch (sortBy) {
+      case "newest":
+        // Sort by createdAt (descending: newest first)
+        result.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+      case "salary":
+        result.sort((a, b) => b.minSalary - a.minSalary);
+        break;
+      // "relevance" is default, no need to sort
+    }
 
-  }, [jobs]);
+    setFilteredJobs(result);
+  }, [searchTerm, locationTerm, filters, sortBy, jobs]);
 
 
 
@@ -314,6 +380,36 @@ useEffect(() => {
     fetchJobs(1);
   };
 
+  // Add new state for available filter options
+const [availableFilters, setAvailableFilters] = useState<FilterState>({
+  jobType: [],
+  salaryRange: [0, 300000],
+  location: [],
+  skills: [],
+});
+
+// Only update availableFilters when jobs change
+useEffect(() => {
+  if (jobs.length > 0) {
+    const jobTypeSet = new Set<string>();
+    const locationSet = new Set<string>();
+    const skillSet = new Set<string>();
+
+    jobs.forEach((job) => {
+      if (job.type) jobTypeSet.add(job.type);
+      if (job.location) locationSet.add(job.location);
+      (job.tags || []).forEach((tag) => skillSet.add(tag));
+    });
+
+    setAvailableFilters({
+      jobType: Array.from(jobTypeSet),
+      salaryRange: [0, 300000], // or calculate min/max if needed
+      location: Array.from(locationSet),
+      skills: Array.from(skillSet),
+    });
+  }
+}, [jobs]);
+
 
   console.log('filters', filters);
   return (
@@ -376,7 +472,11 @@ useEffect(() => {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <div className="py-6">
-                <JobFilters onFilterChange={setFilters} initialFilters={filters} />
+                <JobFilters
+                  onFilterChange={setFilters}
+                  initialFilters={availableFilters}
+                  selectedFilters={filters}
+                />
 
               </div>
             </SheetContent>
@@ -385,7 +485,11 @@ useEffect(() => {
 
         {/* Filters - Desktop */}
         <div className="hidden w-[280px] shrink-0 lg:block">
-          <JobFilters onFilterChange={setFilters} initialFilters={filters} />
+          <JobFilters
+            onFilterChange={setFilters}
+            initialFilters={availableFilters}
+            selectedFilters={filters}
+          />
         </div>
 
         {/* Job Listings */}

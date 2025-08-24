@@ -80,18 +80,18 @@ export default function LoginPage() {
               </Button>
             </div>
           </form>
-          <div className="relative">
+          {/* <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">Demo Accounts</span>
             </div>
-          </div>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          </div> */}
+          {/* <div className="space-y-2 text-sm text-muted-foreground">
             <p>Employer: employer@example.com (any password)</p>
             <p>Job Seeker: jobseeker@example.com (any password)</p>
-          </div>
+          </div> */}
         </div>
         <p className="px-8 text-center text-sm text-muted-foreground">
           <span>Don&apos;t have an account? </span>

@@ -30,7 +30,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { getUserProfile, updateUserProfile, uploadResume } from "@/lib/profile"
 import { Switch } from "@/components/ui/switch"
 import { DataService } from "@/services/axiosInstance";
-
+import fileService from "@/services/fileService"
 
 // Types for our profile data
 
@@ -154,7 +154,7 @@ export default function ProfilePage() {
             resumeName: localUser.resumeName || null,
             resumeUpdated: localUser.resumeUpdated || null,
             userid: localUser.id || 0,
-            id: localUser.id || 0,
+            id: 0,// localUser.id || 0,
             experience: localUser.experience || [],
             education: localUser.education || [],
           };
@@ -258,27 +258,147 @@ export default function ProfilePage() {
     }
   };
 
+  // Add file validation helper
+  const validateFile = (file: File): boolean => {
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    const maxSize = 10 * 1024 * 1024 // 10MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF, DOC, or DOCX file.",
+        variant: "destructive",
+      })
+      return false
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive",
+      })
+      return false
+    }
+
+    if (file.size === 0) {
+      toast({
+        title: "Empty file",
+        description: "Please upload a valid file that is not empty.",
+        variant: "destructive",
+      })
+      return false
+    }
+
+    return true
+  }
+
   // Handle resume upload
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user || !e.target.files || e.target.files.length === 0) return
-
+    
     const file = e.target.files[0]
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    const maxSize = 10 * 1024 * 1024 // 10MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF, DOC, or DOCX file.",
+        variant: "destructive",
+      })
+      e.target.value = ""
+      return
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive",
+      })
+      e.target.value = ""
+      return
+    }
+
+    if (file.size === 0) {
+      toast({
+        title: "Empty file",
+        description: "Please upload a valid file that is not empty.",
+        variant: "destructive",
+      })
+      e.target.value = ""
+      return
+    }
+
     setIsUploadingResume(true)
 
     try {
-      // In a real app, you would upload the file to a storage service
-      // For now, we'll create a URL for the file
-      const fileUrl = URL.createObjectURL(file)
+      const token = localStorage.getItem("token");
+      
+      // Use your fileService to upload
+      //const response = await fileService.uploadfile(file, "resume");
+      const formData = new FormData();
+    formData.append("file", file);
+    formData.append("fileType", 'resume');
 
-      // Update the profile with the new resume
-      const updatedProfile = await uploadResume(user.id, file.name, fileUrl)
-      // setProfile(updatedProfile)
-      // setEditedProfile(updatedProfile)
+ 
+      const result = await fetch(
+        "https://www.onemysetu.com/api/File/UploadFile",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Do NOT set Content-Type for FormData; browser will set it automatically
+          },
+          body: formData,
+        }
+      );
 
-      toast({
-        title: "Resume uploaded",
-        description: "Your resume has been uploaded successfully.",
-      })
+     
+      const response  = await result.json();
+
+      if (response && response) {
+        // Update the profile with the new resume information
+        if (!editedProfile) {
+          console.error("editedProfile is null")
+          return
+        }
+
+        const updatedProfile = {
+          ...editedProfile,
+          resumeUrl: response[0].actualUrl, // Make sure this is set
+          resumeName: file.name,
+          resumeUpdated: new Date().toISOString(),
+        }
+
+        console.log('Updated profile:', updatedProfile) // Debug log
+
+        // Update local state first
+        setProfile(updatedProfile)
+        setEditedProfile(updatedProfile)
+
+        // Update profile on server with new resume info
+        const userdata = JSON.parse(localStorage.getItem("user") || "{}")
+        const profileData = prepareProfileForApi(updatedProfile, userdata)
+        
+        const updateResponse = await DataService.post("/profile/UpdateProfile", profileData, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (updateResponse.status === 200) {
+          toast({
+            title: "Resume uploaded",
+            description: "Your resume has been uploaded and is now available for viewing.",
+          })
+        } else {
+          throw new Error("Failed to update profile with resume information")
+        }
+      } else {
+        throw new Error("Upload failed - no file data returned")
+      }
     } catch (error) {
       console.error("Error uploading resume:", error)
       toast({
@@ -288,28 +408,48 @@ export default function ProfilePage() {
       })
     } finally {
       setIsUploadingResume(false)
+      // Reset file input
+      if (e.target) {
+        e.target.value = ""
+      }
     }
   }
 
   // Handle resume deletion
   const handleDeleteResume = async () => {
-    if (!user) return
+    if (!user || !editedProfile) return
 
     try {
+      const token = localStorage.getItem("token")
+      const userdata = JSON.parse(localStorage.getItem("user") || "{}")
+
       // Update the profile to remove the resume
-      const updatedProfile = await updateUserProfile(user.id, {
+      const updatedProfile = {
+        ...editedProfile,
         resumeUrl: null,
         resumeName: null,
         resumeUpdated: null,
+      }
+
+      // Update profile on server
+      const profileData = prepareProfileForApi(updatedProfile, userdata)
+      
+      const response = await DataService.post("/profile/UpdateProfile", profileData, {
+        headers: { Authorization: `Bearer ${token}` },
       })
 
-      // setProfile(updatedProfile)
-      // setEditedProfile(updatedProfile)
+      if (response.status === 200) {
+        // Update local state
+        setProfile(updatedProfile)
+        setEditedProfile(updatedProfile)
 
-      toast({
-        title: "Resume deleted",
-        description: "Your resume has been deleted successfully.",
-      })
+        toast({
+          title: "Resume deleted",
+          description: "Your resume has been deleted successfully. You can upload a new one anytime.",
+        })
+      } else {
+        throw new Error("Failed to delete resume from profile")
+      }
     } catch (error) {
       console.error("Error deleting resume:", error)
       toast({
@@ -455,6 +595,8 @@ export default function ProfilePage() {
   }
 
   console.log('profile', profile);
+
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
 
   if (isLoading) {
 
@@ -662,14 +804,18 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Globe className="h-4 w-4 text-muted-foreground" />
-                      <a
-                        href={profile.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        {profile.website.replace(/^https?:\/\//, "")}
-                      </a>
+                      {profile.website ? (
+                        <a
+                          href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {profile.website.replace(/^https?:\/\//, "")}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">No website</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1148,15 +1294,36 @@ export default function ProfilePage() {
                         <p className="text-sm text-muted-foreground">
                           Updated {formatResumeDate(profile.resumeUpdated)}
                         </p>
+                        <p className="text-xs text-muted-foreground">
+                          PDF Document • Ready to view
+                        </p>
                       </div>
                     </div>
                     <div className="flex gap-2">
+                      {/* Download Button */}
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => {
                           if (profile.resumeUrl) {
-                            window.open(profile.resumeUrl, "_blank")
+                            // Create download link
+                            const link = document.createElement('a')
+                            link.href = profile.resumeUrl
+                            link.download = profile.resumeName || 'resume.pdf'
+                            document.body.appendChild(link)
+                            link.click()
+                            document.body.removeChild(link)
+                            
+                            toast({
+                              title: "Downloading",
+                              description: "Your resume download should start shortly",
+                            })
+                          } else {
+                            toast({
+                              title: "No resume",
+                              description: "Resume URL not available",
+                              variant: "destructive",
+                            })
                           }
                         }}
                         disabled={!profile.resumeUrl}
@@ -1164,13 +1331,81 @@ export default function ProfilePage() {
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </Button>
-                      {editMode && (
-                        <Button variant="destructive" size="sm" onClick={handleDeleteResume}>
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </Button>
-                      )}
+                      
+                      {/* Enhanced View Button */}
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (profile.resumeUrl) {
+                            // Method 1: Direct window.open (most reliable)
+                            const newWindow = window.open(profile.resumeUrl, '_blank', 'noopener,noreferrer,width=1200,height=800')
+                            
+                            // Check if popup was blocked
+                            if (!newWindow) {
+                              // Fallback: Create a temporary link element
+                              const link = document.createElement('a')
+                              link.href = profile.resumeUrl
+                              link.target = '_blank'
+                              link.rel = 'noopener noreferrer'
+                              document.body.appendChild(link)
+                              link.click()
+                              document.body.removeChild(link)
+                              
+                              toast({
+                                title: "Opening resume",
+                                description: "If the resume didn't open, please check your popup blocker settings",
+                              })
+                            } else {
+                              toast({
+                                title: "Opening resume",
+                                description: "Your resume is opening in a new tab",
+                              })
+                            }
+                          } else {
+                            toast({
+                              title: "No resume",
+                              description: "Resume URL not available. Please try uploading your resume again.",
+                              variant: "destructive",
+                            })
+                          }
+                        }}
+                        disabled={!profile.resumeUrl}
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        View Resume
+                      </Button>
+                      
+                      {/* Delete Button */}
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        onClick={() => {
+                          if (window.confirm("Are you sure you want to delete your resume? This action cannot be undone.")) {
+                            handleDeleteResume()
+                          }
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </Button>
                     </div>
+                  </div>
+                  
+                  {/* Success message after upload */}
+                  <div className="rounded-md bg-green-50 p-3 border border-green-200">
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 8 8">
+                          <path d="M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z"/>
+                        </svg>
+                      </div>
+                      <p className="text-sm text-green-800 font-medium">
+                        Resume successfully uploaded and ready for viewing
+                      </p>
+                    </div>
+                    <p className="text-xs text-green-700 mt-1">
+                      Click "View Resume" button above to open your document in a new tab
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -1180,7 +1415,10 @@ export default function ProfilePage() {
                   </div>
                   <h3 className="mt-2 text-sm font-medium">No resume uploaded</h3>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Drag and drop or click to upload your resume (PDF, DOCX)
+                    Upload your resume in PDF, DOC, or DOCX format (Max 10MB)
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    <span className="font-medium">Supported formats:</span> PDF (.pdf), Microsoft Word (.doc, .docx)
                   </p>
                   <div className="mt-4">
                     <Input
@@ -1203,7 +1441,10 @@ export default function ProfilePage() {
                           Uploading...
                         </>
                       ) : (
-                        "Choose File"
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Choose File
+                        </>
                       )}
                     </Button>
                   </div>
@@ -1297,6 +1538,42 @@ export default function ProfilePage() {
           </Card>
         </TabsContent> */}
       </Tabs>
+
+      {showDeleteConfirmation && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
+          <Trash2 className="h-5 w-5 text-red-600" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">Delete Resume</h3>
+          <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+        </div>
+      </div>
+      <p className="text-sm text-gray-600 mb-6">
+        Are you sure you want to delete your resume? You'll need to upload a new one if you want employers to see your resume.
+      </p>
+      <div className="flex gap-3 justify-end">
+        <Button 
+          variant="outline" 
+          onClick={() => setShowDeleteConfirmation(false)}
+        >
+          Cancel
+        </Button>
+        <Button 
+          variant="destructive" 
+          onClick={() => {
+            handleDeleteResume()
+            setShowDeleteConfirmation(false)
+          }}
+        >
+          Delete Resume
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
     </>
   )
 }
