@@ -80,7 +80,7 @@ export default function JobSeekerDashboardPage() {
                   </span>
                 </div>
                 <div className="col-span-1 flex justify-end">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="bg-[#309689] text-white rounded-[10px] hover:bg-[#267a6d] py-2">
                     View
                   </Button>
                 </div>

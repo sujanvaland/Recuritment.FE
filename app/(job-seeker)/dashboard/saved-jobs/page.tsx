@@ -12,8 +12,9 @@ import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
-import { ApplyJobButton } from "@/components/apply-job-button"
-import { Switch } from "@/components/ui/switch"
+import { ApplyJobButton } from "@/components/apply-job-button";
+import { Switch } from "@/components/ui/switch";
+import Link from "next/link";
 
 // Types for our saved job data 
 interface SavedJob {
@@ -312,10 +313,10 @@ export default function SavedJobsPage() {
               <Separator />
               <CardFooter className="flex justify-between p-4">
                 <Button asChild variant="outline" size="sm">
-                  <a href={`/jobs/${job?.jobId}`}>
+                  <Link href={`/jobs/${job?.jobId}`}>
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Details
-                  </a>
+                  </Link>
                 </Button>
                 <ApplyJobButton
                   jobId={job?.jobId}
@@ -342,7 +343,7 @@ export default function SavedJobsPage() {
             </Button>
           ) : (
             <Button className="mt-4" asChild>
-              <a href="/jobs">Browse Jobs</a>
+              <Link href="/jobs">Browse Jobs</Link>
             </Button>
           )}
         </div>

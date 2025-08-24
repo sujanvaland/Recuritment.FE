@@ -8,19 +8,19 @@ export default function EmployersPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-slate-50 to-white py-20 md:py-28">
+      <section className="bg-black py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+              <h1 className="text-white text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                 Find the Perfect Candidates
               </h1>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl">
+              <p className="mx-auto text-white max-w-[700px] text-gray-500 md:text-xl">
                 Post jobs, screen applicants, and build your team with our powerful recruitment platform.
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="bg-[#309689] text-white border-[#309689]  hover:bg-[#267a6d]">
                 <Link href="/pricing">
                   Post a Job <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -44,7 +44,7 @@ export default function EmployersPage() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader className="pb-2">
-              <Users className="h-10 w-10 text-primary" />
+              <Users className="h-10 w-10 text-[#309689]" />
               <CardTitle className="mt-4">Access to Top Talent</CardTitle>
               <CardDescription>
                 Connect with thousands of qualified candidates across various industries and skill sets.
@@ -53,7 +53,7 @@ export default function EmployersPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <Filter className="h-10 w-10 text-primary" />
+              <Filter className="h-10 w-10   text-[#309689]" />
               <CardTitle className="mt-4">Advanced Filtering</CardTitle>
               <CardDescription>
                 Use our powerful filtering tools to find candidates that match your specific requirements.
@@ -62,7 +62,7 @@ export default function EmployersPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <BarChart className="h-10 w-10 text-primary" />
+              <BarChart className="h-10 w-10  text-[#309689]" />
               <CardTitle className="mt-4">Detailed Analytics</CardTitle>
               <CardDescription>
                 Track your job performance with comprehensive analytics and reporting tools.
@@ -71,7 +71,7 @@ export default function EmployersPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <Building2 className="h-10 w-10 text-primary" />
+              <Building2 className="h-10 w-10   text-[#309689]" />
               <CardTitle className="mt-4">Company Branding</CardTitle>
               <CardDescription>
                 Showcase your company culture and values to attract the right candidates.
@@ -80,7 +80,7 @@ export default function EmployersPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <Clock className="h-10 w-10 text-primary" />
+              <Clock className="h-10 w-10   text-[#309689]" />
               <CardTitle className="mt-4">Time-Saving Tools</CardTitle>
               <CardDescription>
                 Streamline your recruitment process with automated screening and communication tools.
@@ -89,7 +89,7 @@ export default function EmployersPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <Search className="h-10 w-10 text-primary" />
+              <Search className="h-10 w-10   text-[#309689]" />
               <CardTitle className="mt-4">Resume Database</CardTitle>
               <CardDescription>
                 Search our extensive database of resumes to find passive candidates for your openings.
@@ -100,7 +100,7 @@ export default function EmployersPage() {
       </section>
 
       {/* How It Works */}
-      <section className="bg-slate-50 py-16 md:py-24">
+      <section className="bg-[#eef8f7] py-16 md:py-24">
         <div className="container px-4 md:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold tracking-tight">How It Works</h2>
@@ -198,7 +198,7 @@ export default function EmployersPage() {
       </section>
 
       {/* Plans */}
-      <section className="bg-slate-50 py-16 md:py-24">
+      <section className="bg-[#eef8f7] py-16 md:py-24">
         <div className="container px-4 md:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold tracking-tight">Recruitment Plans</h2>
@@ -320,9 +320,9 @@ export default function EmployersPage() {
               <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
                 <Link href="/pricing">
                   Post a Job <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                </Link>  
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-slate-800">
+               <Button asChild variant="outline" size="lg" className="bg-[#309689] border-[#309689] text-white hover:bg-[#267a6d]">
                 <Link href="/contact">Contact Sales</Link>
               </Button>
             </div>

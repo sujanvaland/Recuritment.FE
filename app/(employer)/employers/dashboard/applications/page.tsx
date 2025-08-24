@@ -30,6 +30,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { format } from "date-fns"
+import Link from "next/link";
 
 type application = {
   id: number
@@ -567,12 +568,12 @@ function ApplicationCard({
               <Eye className="mr-2 h-3 w-3" />
               View Application
             </Button>
-            <a href={application?.resumeUrl} target="_blank" rel="noopener noreferrer">
+            <Link href={application?.resumeUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm">
                 <Download className="mr-2 h-3 w-3" />
                 Download Resume
               </Button>
-            </a>
+            </Link>
           </div>
           <div className="flex gap-2">
             {/* Only show Reject button if status is NOT rejected */}

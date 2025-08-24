@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/auth-context"
 import { getJobApplications } from "@/lib/actions"
+import Link from "next/link";
 
 // Types for job applications
 interface JobApplication {
@@ -209,7 +210,7 @@ export default function ApplicationsPage() {
                 You haven't applied to any jobs yet or all your applications are archived
               </p>
               <Button className="mt-4" asChild>
-                <a href="/jobs">Browse Jobs</a>
+                <Link href="/jobs">Browse Jobs</Link>
               </Button>
             </div>
           )}
