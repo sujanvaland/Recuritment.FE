@@ -176,7 +176,7 @@ export default function SavedJobsPage() {
     const token = localStorage.getItem("token");
     try {
       const response = await DataService.post(
-        "https://www.onemysetu.com/api/settings/UpdateSetting",
+        "https://localhost:65437/api/settings/UpdateSetting",
         settings,
         {
           headers: {

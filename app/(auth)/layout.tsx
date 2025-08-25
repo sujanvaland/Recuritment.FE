@@ -14,7 +14,7 @@ export default function AuthLayout({
           <div className="flex flex-col space-y-2 text-center">
             <Link href="/" className="mx-auto flex items-center justify-center space-x-2">
               <Briefcase className="h-6 w-6" />
-              <span className="font-bold">Sarvha</span>
+              <span className="font-bold">Sarvah</span>
             </Link>
           </div>
           {children}

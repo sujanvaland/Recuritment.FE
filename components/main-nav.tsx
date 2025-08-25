@@ -40,7 +40,7 @@ export function MainNav() {
       <div className="flex items-center min-w-[170px]">
         <Link href="/" className="flex items-center gap-2">
           <Briefcase className="h-7 w-7 text-emerald-500" />
-          <span className="text-2xl font-bold text-white">Sarvha Logo</span>
+          <span className="text-2xl font-bold text-white">Sarvah Logo</span>
         </Link>
       </div>
       {/* Nav Links - Center */}
