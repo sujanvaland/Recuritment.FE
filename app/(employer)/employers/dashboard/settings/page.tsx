@@ -29,7 +29,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/contexts/auth-context"
 import { Badge } from "@/components/ui/badge"
 import { DataService } from "@/services/axiosInstance";
-import fileService from "@/services/fileService"
+import fileService from "@/services/fileService";
+import Link from "next/link";
 
 export default function SettingsPage() {
   const { user } = useAuth()
@@ -1292,9 +1293,9 @@ debugger;
                   <Shield className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
                     Your privacy is important to us. Review our{" "}
-                    <a href="#" className="underline">
+                    <Link href="#" className="underline">
                       Privacy Policy
-                    </a>
+                    </Link>
                     .
                   </span>
                 </div>

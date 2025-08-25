@@ -665,7 +665,7 @@ const handleSubmit = (e: React.FormEvent) => {
           </div>
         </div>
       </div>
-    </section>
+    </section>  
 
       {/* CTA Section */}
       <section className="bg-slate-900 py-16 text-white md:py-24">
@@ -685,7 +685,7 @@ const handleSubmit = (e: React.FormEvent) => {
                   Create an Account <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-slate-800">
+              <Button asChild variant="outline" size="lg" className="bg-[#309689] border-[#309689] text-white hover:bg-[#267a6d]">
                 <Link href="/auth/login">Sign In</Link>
               </Button>
             </div>
