@@ -1309,6 +1309,7 @@ export default function ProfilePage() {
                             // Create download link
                             const link = document.createElement('a')
                             link.href = profile.resumeUrl
+                            link.target = '_blank'
                             link.download = profile.resumeName || 'resume.pdf'
                             document.body.appendChild(link)
                             link.click()
