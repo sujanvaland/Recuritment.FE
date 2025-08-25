@@ -296,7 +296,7 @@ export default function ProfilePage() {
   // Handle resume upload
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user || !e.target.files || e.target.files.length === 0) return
-    
+
     const file = e.target.files[0]
 
     // Validate file type
@@ -337,14 +337,14 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem("token");
-      
+
       // Use your fileService to upload
       //const response = await fileService.uploadfile(file, "resume");
       const formData = new FormData();
-    formData.append("file", file);
-    formData.append("fileType", 'resume');
+      formData.append("file", file);
+      formData.append("fileType", 'resume');
 
- 
+
       const result = await fetch(
         "https://localhost:65437/api/File/UploadFile",
         {
@@ -357,8 +357,8 @@ export default function ProfilePage() {
         }
       );
 
-     
-      const response  = await result.json();
+
+      const response = await result.json();
 
       if (response && response) {
         // Update the profile with the new resume information
@@ -383,7 +383,7 @@ export default function ProfilePage() {
         // Update profile on server with new resume info
         const userdata = JSON.parse(localStorage.getItem("user") || "{}")
         const profileData = prepareProfileForApi(updatedProfile, userdata)
-        
+
         const updateResponse = await DataService.post("/profile/UpdateProfile", profileData, {
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -433,7 +433,7 @@ export default function ProfilePage() {
 
       // Update profile on server
       const profileData = prepareProfileForApi(updatedProfile, userdata)
-      
+
       const response = await DataService.post("/profile/UpdateProfile", profileData, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -672,7 +672,7 @@ export default function ProfilePage() {
             </Button>
             <Button onClick={handleSaveProfile}>
               <Save className="mr-2 h-4 w-4" />
-              Save Changes 121
+              Save Changes
             </Button>
           </div>
         ) : (
@@ -734,7 +734,14 @@ export default function ProfilePage() {
                     <Input
                       id="phone"
                       value={editedProfile?.phone || ""}
-                      onChange={(e) => setEditedProfile((prev) => (prev ? { ...prev, phone: e.target.value } : null))}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Accept only digits, spaces, dashes, parentheses, plus
+                        if (/^[\d\s\-()+]*$/.test(value)) {
+                          setEditedProfile((prev) => (prev ? { ...prev, phone: value } : null));
+                        }
+                      }}
+                      maxLength={10}
                     />
                   </div>
                   <div className="space-y-2">
@@ -1314,7 +1321,7 @@ export default function ProfilePage() {
                             document.body.appendChild(link)
                             link.click()
                             document.body.removeChild(link)
-                            
+
                             toast({
                               title: "Downloading",
                               description: "Your resume download should start shortly",
@@ -1332,7 +1339,7 @@ export default function ProfilePage() {
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </Button>
-                      
+
                       {/* Enhanced View Button */}
                       <Button
                         size="sm"
@@ -1340,7 +1347,7 @@ export default function ProfilePage() {
                           if (profile.resumeUrl) {
                             // Method 1: Direct window.open (most reliable)
                             const newWindow = window.open(profile.resumeUrl, '_blank', 'noopener,noreferrer,width=1200,height=800')
-                            
+
                             // Check if popup was blocked
                             if (!newWindow) {
                               // Fallback: Create a temporary link element
@@ -1351,7 +1358,7 @@ export default function ProfilePage() {
                               document.body.appendChild(link)
                               link.click()
                               document.body.removeChild(link)
-                              
+
                               toast({
                                 title: "Opening resume",
                                 description: "If the resume didn't open, please check your popup blocker settings",
@@ -1375,11 +1382,11 @@ export default function ProfilePage() {
                         <FileText className="mr-2 h-4 w-4" />
                         View Resume
                       </Button>
-                      
+
                       {/* Delete Button */}
-                      <Button 
-                        variant="destructive" 
-                        size="sm" 
+                      <Button
+                        variant="destructive"
+                        size="sm"
                         onClick={() => {
                           if (window.confirm("Are you sure you want to delete your resume? This action cannot be undone.")) {
                             handleDeleteResume()
@@ -1391,13 +1398,13 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   {/* Success message after upload */}
                   <div className="rounded-md bg-green-50 p-3 border border-green-200">
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 bg-green-500 rounded-full flex items-center justify-center">
                         <svg className="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 8 8">
-                          <path d="M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z"/>
+                          <path d="M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z" />
                         </svg>
                       </div>
                       <p className="text-sm text-green-800 font-medium">
@@ -1541,40 +1548,40 @@ export default function ProfilePage() {
       </Tabs>
 
       {showDeleteConfirmation && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
-          <Trash2 className="h-5 w-5 text-red-600" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Delete Resume</h3>
+                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to delete your resume? You'll need to upload a new one if you want employers to see your resume.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteConfirmation(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  handleDeleteResume()
+                  setShowDeleteConfirmation(false)
+                }}
+              >
+                Delete Resume
+              </Button>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold">Delete Resume</h3>
-          <p className="text-sm text-muted-foreground">This action cannot be undone</p>
-        </div>
-      </div>
-      <p className="text-sm text-gray-600 mb-6">
-        Are you sure you want to delete your resume? You'll need to upload a new one if you want employers to see your resume.
-      </p>
-      <div className="flex gap-3 justify-end">
-        <Button 
-          variant="outline" 
-          onClick={() => setShowDeleteConfirmation(false)}
-        >
-          Cancel
-        </Button>
-        <Button 
-          variant="destructive" 
-          onClick={() => {
-            handleDeleteResume()
-            setShowDeleteConfirmation(false)
-          }}
-        >
-          Delete Resume
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </>
   )
 }

@@ -18,7 +18,7 @@ import Link from "next/link";
 
 // Types for our saved job data 
 interface SavedJob {
-  id: string 
+  id: string
   jobTitle: string
   companyName: string
   location: string
@@ -29,8 +29,8 @@ interface SavedJob {
   skills: string[]
   saved: string
   jobId: number
-  createdDate:string
-  savedAt:string
+  createdDate: string
+  savedAt: string
 }
 
 export default function SavedJobsPage() {
@@ -43,7 +43,7 @@ export default function SavedJobsPage() {
   const [totalData, setTotalData] = useState(0);
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
-  
+
   // Add settings state matching the UpdateSetting API payload
   const [settings, setSettings] = useState({
     id: 0,
@@ -109,8 +109,6 @@ export default function SavedJobsPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log('saved jobData', response?.data);
-
       if (response?.status === 200) {
         setSavedJobs(response?.data || []);
         // setAllJobs(response.data.jobs || []); 
@@ -147,11 +145,9 @@ export default function SavedJobsPage() {
       const response = await DataService.get(`/SavedJobs/Delete?jobId=${jobId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-     
-        setSavedJobs(response?.data || []);
-        // setAllJobs(response.data.jobs || []); 
-        setLoading(false);
-      
+      fetchSavedJobs();
+      setLoading(false);
+
     } catch (err) {
       setError("Failed to load jobs");
     } finally {
@@ -209,7 +205,7 @@ export default function SavedJobsPage() {
       </div>
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative max-w-sm">
+        {/* <div className="relative max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
@@ -218,7 +214,7 @@ export default function SavedJobsPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </div>
+        </div> */}
         {/* <div className="text-sm text-muted-foreground">
           {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"} saved
         </div> */}

@@ -81,6 +81,7 @@ const fetchApplicationsFromAPI = async (userId: number) => {
     if (response.status === 200 && response.data) {
       // Filter applications for the current user
       const userApplications = response.data as JobApplication[]
+      console.log("Fetched user applications:", userApplications)
       return userApplications
     } else {
       throw new Error(`API returned status ${response.status}`)

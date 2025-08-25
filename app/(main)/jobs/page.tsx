@@ -98,28 +98,42 @@ export default function JobsPage() {
   const { user } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const pageSize = 12
 
   const jobTypes = ["Full-time", "Part-time", "Contract", "Freelance", "Internship"]
   const experienceLevels = ["Entry Level", "Mid Level", "Senior Level", "Executive"]
 
+  // Remove initial fetchJobs()
+
+  const searchParams = useSearchParams()
+  
   useEffect(() => {
-    fetchJobs()
-  }, [])
+    const rawTitle = searchParams.get('title');
+    const rawLocation = searchParams.get('location');
+    let shouldFetch = false;
+    let search = "";
+    let location = "";
+    if (rawTitle !== null) {
+      setSearchTerm(decodeURIComponent(rawTitle));
+      search = decodeURIComponent(rawTitle);
+      shouldFetch = true;
+    }
+    if (rawLocation !== null) {
+      setLocationTerm(decodeURIComponent(rawLocation));
+      location = decodeURIComponent(rawLocation);
+      shouldFetch = true;
+    }
+    if (shouldFetch) {
+      fetchJobs(1, search, location);
+    }else{
+      fetchJobs(1);
+    }
+  }, [searchParams]);
 
-  useEffect(() => {
-    const rawTitle = searchParams.get('title')
-    const rawLocation = searchParams.get('location')
-
-    if (rawTitle) setSearchTerm(decodeURIComponent(rawTitle))
-    if (rawLocation) setLocationTerm(decodeURIComponent(rawLocation))
-  }, [searchParams])
-
-  const fetchJobs = async (page = 1) => {
+  const fetchJobs = async (page = 1, search = searchTerm, location = locationTerm) => {
     setLoading(true)
     setError(null)
-
+  console.log("Fetching jobs with params:", { page, search, location })
     try {
       const userdetails = JSON.parse(localStorage.getItem("user") || "{}")
       let token = ""
@@ -137,13 +151,13 @@ export default function JobsPage() {
         },
       }
 
-      if (searchTerm) {
-        searchParams.params.search = searchTerm
+      if (search) {
+        searchParams.params.search = search
       }
 
-      if (locationTerm) {
-        searchParams.params.location = locationTerm
-        if (locationTerm.toLowerCase().includes('remote')) {
+      if (location) {
+        searchParams.params.location = location
+        if (location.toLowerCase().includes('remote')) {
           searchParams.params.remote = true
         }
       }
@@ -159,6 +173,7 @@ export default function JobsPage() {
     } catch (err) {
       console.error('Search error:', err)
       setError("Failed to load jobs")
+      setLoading(false)
     } finally {
       setLoading(false)
     }

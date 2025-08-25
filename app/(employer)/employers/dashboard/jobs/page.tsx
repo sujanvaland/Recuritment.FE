@@ -65,48 +65,41 @@ export default function JobsPage() {
     }
 
     try {
-      //  const response = await fetch("/api/jobs", {
-      const token = localStorage.getItem("token")
-      console.log('deletejpbdata', deleteexpjobdata);
-      const response = await DataService.get(`/jobs/Delete?id=${deleteexpjobdata.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          console.log('deletejobresponse', response);
-          if (response.status === 200) {
-            toast({
-              title: "Success!",
-              description: "Job deleted successfully",
-            });
-            //  router.push("/employers/dashboard/jobs")
-            fetchJobs();
-          } else {
-            console.warn("Unexpected status code:", response.status);
-          }
-        })
-        .catch((error) => {
-          console.error("Error creating job:", error);
-        });
+    const token = localStorage.getItem("token");
+    console.log("deleteJobData", deleteexpjobdata);
 
-      //  const result = await response.json()
+    // Use DELETE instead of GET for deletion
+    const response = await DataService.get(`/jobs/Delete?id=${deleteexpjobdata.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-      // toast({
-      //   title: "Success!",
-      //   description: isDraft ? "Job saved as draft" : "Job posted successfully",
-      // })
+    console.log("deleteJobResponse", response);
 
-
-    } catch (error) {
-      console.error("Error posting job:", error)
+    if (response.status === 200) {
+      toast({
+        title: "Success!",
+        description: "Job deleted successfully",
+      });
+      fetchJobs(); // Refresh jobs list
+    } else {
+      console.warn("Unexpected status code:", response.status);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to post job",
+        description: `Unexpected response (${response.status})`,
         variant: "destructive",
-      })
+      });
     }
+  } catch (error: any) {
+    console.error("Error deleting job:", error);
+    toast({
+      title: "Error",
+      description: error?.message || "Failed to delete job",
+      variant: "destructive",
+    });
+  }
 
   }
 
