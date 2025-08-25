@@ -25,12 +25,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
-import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { format } from "date-fns"
-import Link from "next/link";
 
 type application = {
   id: number
@@ -91,9 +88,6 @@ export default function ApplicationsPage() {
   useEffect(() => {
     fetchApplications();
   }, []);
-
-  console.log('filteredApplications', filteredApplications);
-
 
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);

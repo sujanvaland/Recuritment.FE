@@ -5,7 +5,8 @@ import { getItem } from './localStorage';
 
 // eslint-disable-next-line import/no-cycle
 
-const API_ENDPOINT = "https://www.onemysetu.com/api/";
+const API_ENDPOINT = "https://localhost:65437/api/";
+
 const authHeader = () => ({
   Authorization: `Bearer ${getItem('token')}`,
 });

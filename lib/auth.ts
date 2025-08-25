@@ -1,8 +1,8 @@
 import { jwtVerify, SignJWT } from "jose"
 
 // Secret key for JWT signing - in a real app, this would be an environment variable
-const JWT_SECRET = new TextEncoder().encode("Sarvha-secret-key")
-export const API_BASE_URL = "https://www.onemysetu.com/api";
+const JWT_SECRET = new TextEncoder().encode("Sarvah-secret-key")
+export const API_BASE_URL = "https://localhost:65437/api";
 
 export type UserRole = "employer" | "job-seeker"
 

@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
               <Briefcase className="h-7 w-7 text-white" />
-              <span className="font-bold text-lg">Sarvha</span>
+              <span className="font-bold text-lg">Sarvah</span>
             </div>
             <p className="text-base text-gray-300 font-semibold max-w-xs">
               Quis enim pellentesque viverra tellus eget malesuada facilisis. Congue nibh vivamus aliquet nunc mauris d...
@@ -21,9 +21,8 @@ export function Footer() {
             <h3 className="text-lg font-bold mb-4">Company</h3>
             <ul className="space-y-2 text-base">
               <li><Link href="/about" className="hover:underline">About Us</Link></li>
-              <li><Link href="/team" className="hover:underline">Our Team</Link></li>
-              <li><Link href="/partners" className="hover:underline">Partners</Link></li>
-              <li><Link href="/candidates" className="hover:underline">For Candidates</Link></li>
+              <li><Link href="/contact" className="hover:underline">Contact Us</Link></li>
+              <li><Link href="/jobs" className="hover:underline">For Candidates</Link></li>
               <li><Link href="/employers" className="hover:underline">For Employers</Link></li>
             </ul>
           </div>
@@ -58,7 +57,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} Sarvha. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Sarvah. All rights reserved.</p>
         </div>
       </div>
     </footer>

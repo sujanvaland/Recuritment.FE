@@ -389,11 +389,11 @@ const handleSubmit = (e: React.FormEvent) => {
         </div> 
              <div className="left-0 right-0 bottom-0 w-full flex justify-center bg-black" style={{ paddingTop:40, paddingBottom: 40 }}>
     <div className="flex flex-wrap justify-around w-full gap-10 items-center px-8">
-    <img src="/spoty_logo.svg" alt="Spotify" className="h-10" />
-    <img src="/slack_logo.svg" alt="Slack" className="h-10" />
-    <img src="/adobe_logo.svg" alt="Adobe" className="h-10" />
-    <img src="/asana_logo.svg" alt="Asana" className="h-10" />
-    <img src="/linear_logo.svg" alt="Linear" className="h-10" />
+    <img src="/encon.jpeg" alt="Spotify" className="h-10" />
+    <img src="/gandhi.jpeg" alt="Slack" className="h-10" />
+    <img src="/gm.jpeg" alt="Adobe" className="h-10" />
+    <img src="/safari.jpeg" alt="Asana" className="h-10" />
+    <img src="/tema.jpeg" alt="Linear" className="h-10" />
   </div>
 </div>
       </section> 
@@ -402,7 +402,7 @@ const handleSubmit = (e: React.FormEvent) => {
   <div className="flex items-center justify-between mb-2 mt-16 px-4 md:px-0">
     <div>
       <h2 className="text-3xl font-bold">Recent Jobs Available</h2>
-      <p className="text-gray-500 mt-2">At eu lobortis pretium tincidunt amet lacus ut senen aliquet...</p>
+      {/* <p className="text-gray-500 mt-2">At eu lobortis pretium tincidunt amet lacus ut senen aliquet...</p> */}
     </div>
     <Link href="/jobs" className="text-emerald-600 font-semibold hover:underline whitespace-nowrap mt-4 md:mt-0">
       View all

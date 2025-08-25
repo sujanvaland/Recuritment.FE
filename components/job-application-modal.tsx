@@ -65,7 +65,7 @@ export function JobApplicationModal({
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://www.onemysetu.com/api/File/UploadFile', {
+      const response = await fetch('https://localhost:65437/api/File/UploadFile', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

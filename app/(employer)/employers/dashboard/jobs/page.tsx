@@ -698,7 +698,7 @@ function JobCard({
           </div>
           <div className="text-sm text-muted-foreground">
             <Calendar className="mr-1 inline-block h-3 w-3" />
-            Expires in {expires}
+            Expires {expires}
           </div>
         </div>
       </CardContent>

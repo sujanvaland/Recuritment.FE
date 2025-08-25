@@ -11,6 +11,7 @@ import { getJobTimeInfo } from "@/utils/dateComponent"
 import { DataService } from "@/services/axiosInstance";
 import { useSearchParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
+import { getRelativeTime } from "@/components/Uitility/Timeformat"
 
 
 type Job = {
@@ -376,11 +377,11 @@ export default function JobDetailsPage() {
                 <p className="text-sm text-muted-foreground">{job?.salary}</p>
               </div>
               <Separator />
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium">Experience</h3>
                 <p className="text-sm text-muted-foreground">{job?.experience}</p>
               </div>
-              <Separator />
+              <Separator /> */}
               <div>
                 <h3 className="text-sm font-medium">Location</h3>
                 <p className="text-sm text-muted-foreground">{job?.location}</p>
@@ -388,18 +389,18 @@ export default function JobDetailsPage() {
               <Separator />
               <div>
                 <h3 className="text-sm font-medium">Posted</h3>
-                <p className="text-sm text-muted-foreground">{job?.posted}</p>
+                <p className="text-sm text-muted-foreground">{job?.createdAt && new Date(job?.createdAt).toDateString()}</p>
               </div>
               <Separator />
               <div>
                 <h3 className="text-sm font-medium">Application Deadline</h3>
-                <p className="text-sm text-muted-foreground">{job?.deadline}</p>
+                <p className="text-sm text-muted-foreground">{job?.expiresAt && new Date(job?.expiresAt).toDateString()}</p>
               </div>
             </div>
             {/* <ApplyJobButton jobId={job!.id} jobTitle={job?.title ?? ""} companyName={job?.company ?? ""} className="mt-6 w-full" /> */}
           </div>
 
-          <div className="mt-6 rounded-lg border bg-card p-6 shadow-sm" style={{ background: "#EBF5F4" }}>
+          {/* <div className="mt-6 rounded-lg border bg-card p-6 shadow-sm" style={{ background: "#EBF5F4" }}>
             <h2 className="mb-4 text-xl font-semibold">Similar Jobs</h2>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
@@ -412,7 +413,7 @@ export default function JobDetailsPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

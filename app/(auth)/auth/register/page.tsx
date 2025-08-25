@@ -80,7 +80,7 @@ export default function RegisterPage() {
           Create an account
         </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your details to create your Sarvha account
+          Enter your details to create your Sarvah account
         </p>
       </div>
       {(error || formError) && (

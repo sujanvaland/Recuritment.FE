@@ -13,7 +13,7 @@ const fileService = {
 
     try {
       const response = await fetch(
-        "https://www.onemysetu.com/api/File/UploadFile",
+        "https://localhost:65437/api/File/UploadFile",
         {
           method: "POST",
           headers: {
