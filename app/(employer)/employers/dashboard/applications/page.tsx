@@ -568,12 +568,12 @@ function ApplicationCard({
               <Eye className="mr-2 h-3 w-3" />
               View Application
             </Button>
-            <Link href={application?.resumeUrl} target="_blank" rel="noopener noreferrer">
+            <a href={application?.resumeUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm">
                 <Download className="mr-2 h-3 w-3" />
                 Download Resume
               </Button>
-            </Link>
+            </a>
           </div>
           <div className="flex gap-2">
             {/* Only show Reject button if status is NOT rejected */}
