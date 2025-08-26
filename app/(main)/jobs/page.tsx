@@ -2,12 +2,12 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { 
-  Search, 
-  MapPin, 
-  Briefcase, 
-  Clock, 
-  DollarSign, 
+import {
+  Search,
+  MapPin,
+  Briefcase,
+  Clock,
+  DollarSign,
   Filter,
   X,
   ChevronDown,
@@ -36,6 +36,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { useSearchParams } from 'next/navigation'
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 type Job = {
   id: number
@@ -62,9 +64,12 @@ type Job = {
 type FilterState = {
   jobType: string[]
   salaryRange: [number, number]
+  minSalary: number
+  maxSalary: number
   location: string[]
   skills: string[]
   remote: boolean
+  onSite: boolean
 }
 
 export default function JobsPage() {
@@ -79,21 +84,51 @@ export default function JobsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalData, setTotalData] = useState(0)
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
-  
+
   // Apply Modal States
   const [showApplyModal, setShowApplyModal] = useState(false)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
   const [coverLetter, setCoverLetter] = useState("")
+  const [sortBy, setSortBy] = useState("")
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   const [isApplying, setIsApplying] = useState(false)
-  
+  const [filterIsApplying, setFilterIsApplying] = useState(false)
+
   const [filters, setFilters] = useState<FilterState>({
     jobType: [],
-    salaryRange: [0, 300000],
+    salaryRange: [5000, 35000],
+    minSalary: 0,
+    maxSalary: 0,
     location: [],
     skills: [],
-    remote: false
+    remote: false,
+    onSite: false,
   })
+
+  const defaultFilters: FilterState = {
+    jobType: [],
+    salaryRange: [5000, 35000],
+    minSalary: 0,
+    maxSalary: 0,
+    location: [],
+    skills: [],
+    remote: false,
+    onSite: false,
+  }
+
+  const resetFilters = () => {
+    setFilters(defaultFilters);
+    setFilterIsApplying(false);
+    setShowFilters(false);
+    setSortBy("")
+    fetchJobs(1, searchTerm, locationTerm, "", false)
+  }
+
+  const hasFiltersChanged = (filters: FilterState): boolean => {
+    const hasChanged = JSON.stringify(filters) !== JSON.stringify(defaultFilters);
+    setFilterIsApplying(hasChanged);
+    return hasChanged;
+  }
 
   const { user } = useAuth()
   const { toast } = useToast()
@@ -103,10 +138,8 @@ export default function JobsPage() {
   const jobTypes = ["Full-time", "Part-time", "Contract", "Freelance", "Internship"]
   const experienceLevels = ["Entry Level", "Mid Level", "Senior Level", "Executive"]
 
-  // Remove initial fetchJobs()
-
   const searchParams = useSearchParams()
-  
+
   useEffect(() => {
     const rawTitle = searchParams.get('title');
     const rawLocation = searchParams.get('location');
@@ -125,15 +158,18 @@ export default function JobsPage() {
     }
     if (shouldFetch) {
       fetchJobs(1, search, location);
-    }else{
+    } else {
       fetchJobs(1);
     }
   }, [searchParams]);
 
-  const fetchJobs = async (page = 1, search = searchTerm, location = locationTerm) => {
+  useEffect(() => {
+    hasFiltersChanged(filters);
+  }, [filters]);
+
+  const fetchJobs = async (page = 1, search = searchTerm, location = locationTerm, sort = sortBy, isfilter = filterIsApplying) => {
     setLoading(true)
     setError(null)
-  console.log("Fetching jobs with params:", { page, search, location })
     try {
       const userdetails = JSON.parse(localStorage.getItem("user") || "{}")
       let token = ""
@@ -144,6 +180,7 @@ export default function JobsPage() {
       const searchParams: any = {
         headers: { Authorization: `Bearer ${token}` },
         params: {
+          sortBy: sort,
           page: page,
           pageSize: pageSize,
           tag: "",
@@ -153,6 +190,17 @@ export default function JobsPage() {
 
       if (search) {
         searchParams.params.search = search
+      }
+
+      if (isfilter) {
+        searchParams.params.type = filters.jobType
+        console.log("filters.jobType:", filters.jobType)
+        searchParams.params.maxSalary = filters.maxSalary * 100
+        searchParams.params.minSalary = filters.minSalary * 100
+        searchParams.params.location = filters.location
+        searchParams.params.skills = filters.skills
+        searchParams.params.remote = filters.remote
+        searchParams.params.onSite = filters.onSite
       }
 
       if (location) {
@@ -177,6 +225,12 @@ export default function JobsPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value)
+    console.log("Sorting by:", e.target.value);
+    fetchJobs(1, searchTerm, locationTerm, e.target.value)
   }
 
   const handleSearch = (e: React.FormEvent) => {
@@ -207,7 +261,7 @@ export default function JobsPage() {
       router.push('auth/login')
       return
     }
-    
+
     setSelectedJob(job)
     setShowApplyModal(true)
     setCoverLetter("")
@@ -263,14 +317,14 @@ export default function JobsPage() {
 
     try {
       const token = localStorage.getItem("token")
-      
+
       // Create FormData properly
       const formData = new FormData()
       formData.append('file', resumeFile) // This should be the actual File object
       formData.append('fileType', 'resume')
 
       // DO NOT set Content-Type header - let the browser set it automatically for FormData
-     const result = await fetch(
+      const result = await fetch(
         "https://localhost:65437/api/File/UploadFile",
         {
           method: "POST",
@@ -281,7 +335,7 @@ export default function JobsPage() {
           body: formData,
         }
       );
-      const uploadResponse  = await result.json();
+      const uploadResponse = await result.json();
       console.log('Upload response:', uploadResponse) // Debug log
 
       if (uploadResponse == null || !uploadResponse[0]?.actualUrl) {
@@ -335,7 +389,7 @@ export default function JobsPage() {
     const posted = new Date(dateString)
     const diffTime = Math.abs(now.getTime() - posted.getTime())
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
+
     if (diffDays === 1) return "1 day ago"
     if (diffDays < 7) return `${diffDays} days ago`
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
@@ -344,9 +398,9 @@ export default function JobsPage() {
 
   const formatSalary = (min: number, max: number) => {
     if (min && max) {
-      return `$${(min / 1000).toFixed(0)}K - $${(max / 1000).toFixed(0)}K`
+      return `INR ${(min / 100000).toFixed(0)} LPA - INR ${(max / 100000).toFixed(0)} LPA`
     }
-    if (min) return `$${(min / 1000).toFixed(0)}K+`
+    if (min) return `INR ${(min / 100000).toFixed(0)} LPA+`
     return "Competitive"
   }
 
@@ -362,7 +416,7 @@ export default function JobsPage() {
             <p className="text-xl sm:text-2xl mb-12 text-blue-100 max-w-3xl mx-auto">
               Discover thousands of opportunities from top companies around the world
             </p>
-            
+
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
               <div className="bg-white rounded-2xl p-4 shadow-2xl">
@@ -385,8 +439,8 @@ export default function JobsPage() {
                       onChange={(e) => setLocationTerm(e.target.value)}
                     />
                   </div>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     size="lg"
                     className="h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-semibold"
                     disabled={loading}
@@ -435,7 +489,7 @@ export default function JobsPage() {
                 Filters
                 {showFilters ? <X className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
-              
+
               <div className="text-sm text-gray-600">
                 <strong>{filteredJobs.length}</strong> jobs found
                 {(searchTerm || locationTerm) && (
@@ -444,14 +498,25 @@ export default function JobsPage() {
                   </span>
                 )}
               </div>
+              {filterIsApplying && (
+                <Button
+                  variant="outline"
+                  onClick={() => resetFilters()}
+                  className="flex items-center gap-2"
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Clear Filters
+                  <X className="h-4 w-4" />
+                </Button>)}
             </div>
 
             <div className="flex items-center gap-4">
               <select
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => {/* handle sort */}}
+                onChange={handleSortChange}
+                defaultValue={sortBy || ""}
               >
-                <option value="relevance">Most Relevant</option>
+                <option value="">Most Relevant</option>
                 <option value="newest">Newest First</option>
                 <option value="salary">Highest Salary</option>
               </select>
@@ -487,7 +552,7 @@ export default function JobsPage() {
                 </div>
 
                 {/* Experience Level */}
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">Experience</label>
                   <div className="space-y-2">
                     {experienceLevels.map((level) => (
@@ -500,7 +565,7 @@ export default function JobsPage() {
                       </label>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Remote Work */}
                 <div>
@@ -515,12 +580,14 @@ export default function JobsPage() {
                       />
                       <span className="ml-2 text-sm text-gray-700">Remote</span>
                     </label>
-                    <label className="flex items-center">
+                    {/* <label className="flex items-center">
                       <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                       <span className="ml-2 text-sm text-gray-700">Hybrid</span>
-                    </label>
+                    </label> */}
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                      <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        checked={filters.onSite}
+                        onChange={(e) => setFilters(prev => ({ ...prev, onSite: e.target.checked }))} />
                       <span className="ml-2 text-sm text-gray-700">On-site</span>
                     </label>
                   </div>
@@ -530,21 +597,39 @@ export default function JobsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">Salary Range</label>
                   <div className="space-y-3">
-                    <input
-                      type="range"
-                      min="0"
-                      max="300000"
-                      step="10000"
-                      className="w-full"
-                      value={filters.salaryRange[1]}
-                      onChange={(e) => setFilters(prev => ({ 
-                        ...prev, 
-                        salaryRange: [prev.salaryRange[0], parseInt(e.target.value)] 
-                      }))}
+                    {/* Modern dual-handle salary range slider using rc-slider */}
+                    <Slider
+                      range
+                      min={0}
+                      max={70000}
+                      step={1000}
+                      value={filters.salaryRange}
+                      onChange={(vals) => {
+                        const [min, max] = vals as [number, number];
+                        setFilters(prev => ({
+                          ...prev,
+                          salaryRange: [min, max],
+                          minSalary: min,
+                          maxSalary: max,
+                        }));
+                      }}
+                      allowCross={false}
                     />
-                    <div className="text-sm text-gray-600">
-                      $0 - ${(filters.salaryRange[1] / 1000).toFixed(0)}K+
+                    <div className="text-sm text-gray-600 mt-2">
+                      INR {Math.floor(filters.salaryRange[0] / 1000)} LPA - INR {Math.floor(filters.salaryRange[1] / 1000)} LPA
                     </div>
+                  </div>
+
+                  {/* Apply Button for Filters */}
+                  <div className="col-span-4 flex justify-end mt-6">
+                    <Button
+                      variant="default"
+                      onClick={() => {
+                        fetchJobs(1, searchTerm, locationTerm);
+                      }}
+                    >
+                      Apply
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -708,7 +793,7 @@ export default function JobsPage() {
               >
                 Previous
               </Button>
-              
+
               {/* Page numbers */}
               <div className="flex items-center gap-1">
                 {[...Array(Math.min(5, Math.ceil(totalData / pageSize)))].map((_, i) => {
