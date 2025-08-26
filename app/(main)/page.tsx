@@ -387,7 +387,7 @@ const handleSubmit = (e: React.FormEvent) => {
             </div>
           </div>       
         </div> 
-             <div className="left-0 right-0 bottom-0 w-full flex justify-center bg-black" style={{ paddingTop:40, paddingBottom: 40 }}>
+             <div className="left-0 right-0 bottom-0 w-full flex justify-center bg-white" style={{ paddingTop:40, paddingBottom: 40 }}>
     <div className="flex flex-wrap justify-around w-full gap-10 items-center px-8">
     <img src="/encon.jpeg" alt="Spotify" className="h-10" />
     <img src="/gandhi.jpeg" alt="Slack" className="h-10" />

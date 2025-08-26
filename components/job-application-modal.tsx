@@ -23,7 +23,7 @@ import { useToast } from "@/hooks/use-toast"
 import { submitJobApplication } from "@/lib/actions"
 import { getUserProfile } from "@/lib/profile"
 import { useAuth } from "@/contexts/auth-context"
-import { DataService } from "@/services/axiosInstance";
+import { DataService,base_url } from "@/services/axiosInstance";
 
 interface JobApplicationModalProps {
   isOpen: boolean
@@ -64,8 +64,8 @@ export function JobApplicationModal({
     const formData = new FormData();
     formData.append('file', file);
 
-    try {
-      const response = await fetch('https://localhost:65437/api/File/UploadFile', {
+    try {    
+      const response = await fetch(base_url+'/api/File/UploadFile', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

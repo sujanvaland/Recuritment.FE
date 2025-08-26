@@ -31,7 +31,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { DataService } from "@/services/axiosInstance"
+import { DataService,base_url } from "@/services/axiosInstance"
 import { useRouter } from 'next/navigation'
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
@@ -324,8 +324,7 @@ export default function JobsPage() {
       formData.append('fileType', 'resume')
 
       // DO NOT set Content-Type header - let the browser set it automatically for FormData
-      const result = await fetch(
-        "https://localhost:65437/api/File/UploadFile",
+      const result = await fetch(base_url + "/api/File/UploadFile",   
         {
           method: "POST",
           headers: {

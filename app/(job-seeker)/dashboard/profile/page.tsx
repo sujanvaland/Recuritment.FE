@@ -29,7 +29,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import { getUserProfile, updateUserProfile, uploadResume } from "@/lib/profile"
 import { Switch } from "@/components/ui/switch"
-import { DataService } from "@/services/axiosInstance";
+import { DataService, base_url } from "@/services/axiosInstance";
 import fileService from "@/services/fileService"
 
 // Types for our profile data
@@ -342,11 +342,10 @@ export default function ProfilePage() {
       //const response = await fileService.uploadfile(file, "resume");
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("fileType", 'resume');
+      formData.append("fileType", 'resume');  
 
 
-      const result = await fetch(
-        "https://localhost:65437/api/File/UploadFile",
+      const result = await fetch(base_url+"/api/File/UploadFile",
         {
           method: "POST",
           headers: {

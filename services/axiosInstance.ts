@@ -4,8 +4,8 @@ import { getItem } from './localStorage';
 // eslint-disable-next-line import/no-cycle
 
 // eslint-disable-next-line import/no-cycle
-
-const API_ENDPOINT = "https://localhost:65437/api/";
+const base_url = "https://www.onemysetu.com"
+const API_ENDPOINT = base_url+"/api/";  
 
 const authHeader = () => ({
   Authorization: `Bearer ${getItem('token')}`,
@@ -122,4 +122,4 @@ client.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-export { DataService };
+export { DataService,base_url };

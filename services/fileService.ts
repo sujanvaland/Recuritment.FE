@@ -1,4 +1,4 @@
-import { DataService } from "./axiosInstance";
+import { DataService,base_url } from "./axiosInstance";
 
 const fileService = {
   uploadfile: async (file: any, fileType: any) => {
@@ -12,8 +12,7 @@ const fileService = {
     formData.append("fileType", fileType);
 
     try {
-      const response = await fetch(
-        "https://localhost:65437/api/File/UploadFile",
+      const response = await fetch(base_url+"/api/File/UploadFile",     
         {
           method: "POST",
           headers: {

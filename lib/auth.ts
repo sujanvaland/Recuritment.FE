@@ -1,8 +1,9 @@
 import { jwtVerify, SignJWT } from "jose"
+import { DataService,base_url } from "@/services/axiosInstance"
 
 // Secret key for JWT signing - in a real app, this would be an environment variable
 const JWT_SECRET = new TextEncoder().encode("Sarvah-secret-key")
-export const API_BASE_URL = "https://localhost:65437/api";
+export const API_BASE_URL = base_url + "/api";
 
 export type UserRole = "employer" | "job-seeker"
 

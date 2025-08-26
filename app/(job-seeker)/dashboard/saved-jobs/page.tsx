@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/auth-context"
-import { DataService } from "@/services/axiosInstance";
+import { DataService,base_url } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
@@ -170,10 +170,9 @@ export default function SavedJobsPage() {
 
   // Handler for saving settings
   const handleSaveSettings = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");   
     try {
-      const response = await DataService.post(
-        "https://localhost:65437/api/settings/UpdateSetting",
+      const response = await DataService.post(base_url+"/api/settings/UpdateSetting",
         settings,
         {
           headers: {
