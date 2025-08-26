@@ -67,8 +67,9 @@ const validatePassword = () => {
     setPasswordError("All fields are required.");
     return false;
   }
-  if (passwords.newPassword.length < 6) {
-    setPasswordError("New password must be at least 6 characters.");
+  // Strong password validation
+  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(passwords.newPassword)) {
+    setPasswordError("Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
     return false;
   }
   if (passwords.newPassword !== passwords.confirmPassword) {
@@ -457,7 +458,7 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
                 </div>
               </div> */}
 
-              <Separator />
+              {/* <Separator />
 
               <div className="space-y-4">
                 <h3 className="font-medium">Data Export & Deletion</h3>
@@ -471,7 +472,7 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
                     Delete My Account
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </TabsContent>
@@ -503,6 +504,12 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
               value={passwords.newPassword}
               onChange={handlePasswordChange}
             />
+            {/* Password strength validation error */}
+            {passwords.newPassword && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(passwords.newPassword) && (
+              <p className="text-xs text-red-600 mt-1">
+                Password must be at least 8 characters and include uppercase, lowercase, number, and special character.
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm New Password</Label>
