@@ -4,8 +4,8 @@ import { getItem } from './localStorage';
 // eslint-disable-next-line import/no-cycle
 
 // eslint-disable-next-line import/no-cycle
-// const base_url = "https://www.onemysetu.com"
-const base_url = "https://localhost:65437"
+const base_url = "https://www.onemysetu.com"
+// const base_url = "https://localhost:65437"
 
 const API_ENDPOINT = base_url+"/api/";  
 

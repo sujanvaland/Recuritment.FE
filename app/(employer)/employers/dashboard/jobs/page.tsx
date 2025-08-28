@@ -32,10 +32,6 @@ type Job = {
 }
 
 
-
-
-
-
 export default function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("active")
@@ -58,49 +54,44 @@ export default function JobsPage() {
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
 
-
   const fneDeleteJob = async (jobs: any) => {
     const deleteexpjobdata = {
       id: jobs.id ?? null,
     }
 
     try {
-    const token = localStorage.getItem("token");
-    console.log("deleteJobData", deleteexpjobdata);
+      const token = localStorage.getItem("token");
 
-    // Use DELETE instead of GET for deletion
-    const response = await DataService.get(`/jobs/Delete?id=${deleteexpjobdata.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    console.log("deleteJobResponse", response);
-
-    if (response.status === 200) {
-      toast({
-        title: "Success!",
-        description: "Job deleted successfully",
+      // Use DELETE instead of GET for deletion
+      const response = await DataService.get(`/jobs/Delete?id=${deleteexpjobdata.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-      fetchJobs(); // Refresh jobs list
-    } else {
-      console.warn("Unexpected status code:", response.status);
+
+      if (response.status === 200) {
+        toast({
+          title: "Success!",
+          description: "Job deleted successfully",
+        });
+        fetchJobs(); // Refresh jobs list
+      } else {
+        console.warn("Unexpected status code:", response.status);
+        toast({
+          title: "Error",
+          description: `Unexpected response (${response.status})`,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error deleting job:", error);
       toast({
         title: "Error",
-        description: `Unexpected response (${response.status})`,
+        description: error?.message || "Failed to delete job",
         variant: "destructive",
       });
     }
-  } catch (error: any) {
-    console.error("Error deleting job:", error);
-    toast({
-      title: "Error",
-      description: error?.message || "Failed to delete job",
-      variant: "destructive",
-    });
-  }
-
   }
 
 
@@ -120,7 +111,6 @@ export default function JobsPage() {
       remote: jobs.remote ?? false,
       status: "active",
     }
-
 
     try {
       //  const response = await fetch("/api/jobs", {
@@ -255,7 +245,6 @@ export default function JobsPage() {
         // setTotalData(response.data.total);
       }
 
-
       console.log('responsejobs', response);
     } catch (err) {
       setError("Failed to load jobs");
@@ -294,8 +283,6 @@ export default function JobsPage() {
     }
   };
 
-
-
   useEffect(() => {
     if (searchQuery) {
       const filtered = allJobs.filter((job) =>
@@ -306,9 +293,6 @@ export default function JobsPage() {
       setDisplayJobs(allJobs); // Reset to all jobs when search is cleared
     }
   }, [searchQuery, allJobs]);
-
-
-
 
   const fetchJobs = async (page = 1, dynamicPageSize: any = null) => {
     setLoading(true);
@@ -353,7 +337,6 @@ export default function JobsPage() {
     }
   };
 
-
   useEffect(() => {
     if (currentPage === 1) {
       fetchJobs(1, null); // initial full fetch
@@ -376,7 +359,6 @@ export default function JobsPage() {
     }
   };
 
-
   // useEffect(() => {
   //   fetchJobs(currentPage);
   // }, [currentPage]);
@@ -387,8 +369,6 @@ export default function JobsPage() {
   //   }
   // };
 
-
-  console.log('jobs', displayJobs);
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
