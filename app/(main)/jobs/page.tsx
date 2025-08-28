@@ -31,7 +31,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { DataService,base_url } from "@/services/axiosInstance"
+import { DataService, base_url } from "@/services/axiosInstance"
 import { useRouter } from 'next/navigation'
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
@@ -89,7 +89,7 @@ export default function JobsPage() {
   const [showApplyModal, setShowApplyModal] = useState(false)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
   const [coverLetter, setCoverLetter] = useState("")
-  const [sortBy, setSortBy] = useState("")
+  const [sortBy, setSortBy] = useState("newest")
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   const [isApplying, setIsApplying] = useState(false)
   const [filterIsApplying, setFilterIsApplying] = useState(false)
@@ -117,11 +117,13 @@ export default function JobsPage() {
   }
 
   const resetFilters = () => {
-    setFilters(defaultFilters);
-    setFilterIsApplying(false);
-    setShowFilters(false);
-    setSortBy("")
-    fetchJobs(1, searchTerm, locationTerm, "", false)
+    if (filterIsApplying) {
+      setFilters(defaultFilters);
+      setFilterIsApplying(false);
+      setShowFilters(false);
+      setSortBy("newest");
+      fetchJobs(1, searchTerm, locationTerm, "newest", false)
+    }
   }
 
   const hasFiltersChanged = (filters: FilterState): boolean => {
@@ -239,14 +241,45 @@ export default function JobsPage() {
     fetchJobs(1)
   }
 
-  const toggleSaveJob = (jobId: number) => {
+  const toggleSaveJob = async(jobId: number) => {
     const newSavedJobs = new Set(savedJobs)
+    
+    try {
+      //  const response = await fetch("/api/jobs", {
+      const token = localStorage.getItem("token");
+
+      const response = await DataService.post(`/SavedJobs/${jobId}`, jobId, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            console.log('saved', response);
+            toast({
+              title: "Alert!",
+              description: "Job saved successfully",
+            })
+          } else if (response.status === 400) {
+            toast({
+              title: "Alert!",
+              description: `${response?.data}`,
+            })
+          } else {
+            console.warn("Unexpected status code:", response.status);
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating job:", error);
+        });
+    } catch (error) {
+      console.error("Error posting job:", error)
+    }
     if (newSavedJobs.has(jobId)) {
       newSavedJobs.delete(jobId)
-      toast({ title: "Job removed from saved jobs" })
     } else {
       newSavedJobs.add(jobId)
-      toast({ title: "Job saved successfully" })
     }
     setSavedJobs(newSavedJobs)
   }
@@ -324,7 +357,7 @@ export default function JobsPage() {
       formData.append('fileType', 'resume')
 
       // DO NOT set Content-Type header - let the browser set it automatically for FormData
-      const result = await fetch(base_url + "/api/File/UploadFile",   
+      const result = await fetch(base_url + "/api/File/UploadFile",
         {
           method: "POST",
           headers: {
@@ -513,7 +546,7 @@ export default function JobsPage() {
               <select
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500"
                 onChange={handleSortChange}
-                defaultValue={sortBy || ""}
+                defaultValue={sortBy || "newest"}
               >
                 <option value="">Most Relevant</option>
                 <option value="newest">Newest First</option>

@@ -125,7 +125,7 @@ export default function ApplicationsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Applications</h1>
           <p className="text-muted-foreground">Manage and review candidate applications</p>
         </div>
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <Button variant="outline">
             <Filter className="mr-2 h-4 w-4" />
             Filter
@@ -134,7 +134,7 @@ export default function ApplicationsPage() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-4 md:flex-row">
