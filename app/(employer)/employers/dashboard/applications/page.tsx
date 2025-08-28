@@ -28,6 +28,7 @@ import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useAuth } from "@/contexts/auth-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { useParams, useSearchParams } from "next/navigation"
 
 type application = {
   id: number
@@ -58,53 +59,97 @@ type application = {
 }
 
 
+type Job = {
+  id: number
+  title: string
+  location: string
+  type: string
+  applicants?: number
+  status?: string
+  createdAt?: string
+  expiresAt?: string,
+  modifiedDate?: string,
+  posted?: string
+  expires?: string
+}
+
+
 
 export default function ApplicationsPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedTab, setSelectedTab] = useState("all")
+  const [selectedTab, setSelectedTab] = useState("")
   const [applicationData, setApplicationData] = useState<application[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   const { toast } = useToast()
   const [totalData, setTotalData] = useState(0);
+  const [PageNo, setPageNo] = useState(1);
+  const [JobId, setJobId] = useState(0);
+  const [activeJob, setActivejob] = useState<Job[]>([]);
   const [openInterviewModal, setOpenInterviewModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<application | null>(null);
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
   const [interviewNote, setInterviewNote] = useState("");
 
-  // Filter applications based on selected tab
-  const filteredApplications = applicationData.filter((app) => {
-    if (selectedTab === "all") return true
-    if (selectedTab === "review" && app?.status === "review") return true
-    if (selectedTab === "interview" && app.status === "interview") return true
-    if (selectedTab === "offer" && app.status === "offer") return true
-    if (selectedTab === "rejected" && app.status === "rejected") return true
-    return false
-  })
-
-
-  useEffect(() => {
-    fetchApplications();
-  }, []);
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setPageNo(page);
+    }
+  };
 
   const pageSize = 5;
   const totalPages = Math.ceil(totalData / pageSize);
 
-  const fetchApplications = async () => {
+  useEffect(() => {
+    fetchApplications(searchQuery, JobId, selectedTab, PageNo);
+  }, [searchQuery, selectedTab, PageNo, JobId]);
+
+  const searchParams = useSearchParams()
+
+  const fetchJobs = async () => {
     setLoading(true);
-    console.log('call applicaiton api');
     try {
       const token = localStorage.getItem("token");
-      const response = await DataService.get("/applications", {
+
+      // Step 1: Fetch first page (20 jobs max)
+      const firstResponse = await DataService.get("/jobs", {
         headers: { Authorization: `Bearer ${token}` },
+        params: {
+          search: "",
+          remote: null,
+          tag: "",
+          status: "active",
+          page: 1,
+          pageSize: 20,
+        },
       });
 
-      if (response?.status === 200) {
-        console.log('applications response');
-        let applicationData = response?.data;
-        setApplicationData(applicationData);
+      if (firstResponse?.status === 200) {
+        const total = firstResponse.data.total || 0;
+        let jobsdata = firstResponse.data.jobs || [];
+
+        if (total > 20) {
+          // Step 2: Fetch everything in one go
+          const fullResponse = await DataService.get("/jobs", {
+            headers: { Authorization: `Bearer ${token}` },
+            params: {
+              search: "",
+              remote: null,
+              tag: "",
+              status: "active",
+              page: 1,
+              pageSize: total, // fetch ALL jobs
+            },
+          });
+
+          if (fullResponse?.status === 200) {
+            jobsdata = fullResponse.data.jobs || [];
+          }
+        }
+        setActivejob(jobsdata);
+        console.log('interviewNote:', jobsdata);
 
       }
     } catch (err) {
@@ -114,9 +159,49 @@ export default function ApplicationsPage() {
     }
   };
 
+  useEffect(() => {
+    fetchJobs();
+    const rawId = searchParams.get('id');
+    if (rawId !== null) {
+      const rawid = Number(decodeURIComponent(rawId));
+      fetchApplications(searchQuery, rawid, selectedTab, PageNo);
+      setJobId(rawid);
+    }
+  }, [searchParams]);
 
+  const fetchApplications = async (Search = searchQuery, Jobid = JobId, SortBy = selectedTab, Page = PageNo) => {
+    setLoading(true);
 
+    try {
+      const token = localStorage.getItem("token");
 
+      const searchParams: any = {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          jobId: Jobid,
+          search: Search,
+          page: Page,
+          pageSize: pageSize,
+          sortBy: SortBy
+        },
+      }
+
+      const response = await DataService.get("/applications", searchParams)
+
+      if (response?.status === 200) {
+        console.log('applications response');
+        let applicationData = Array.isArray(response?.data?.items) ? response?.data?.items : [];
+        setApplicationData(applicationData);
+        setTotalData(response?.data?.totalRecords ?? 0);
+      }
+    } catch (err) {
+      setError("Failed to load jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log("selectedTab", selectedTab)
 
   return (
     <div className="space-y-6">
@@ -151,16 +236,23 @@ export default function ApplicationsPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Select defaultValue="all-jobs">
+          <Select
+            value={JobId === 0 ? "all-jobs" : JobId.toString()}
+            onValueChange={value => {
+              setJobId(value === "all-jobs" ? 0 : Number(value));
+              setPageNo(1);
+            }}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by job" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all-jobs">All Jobs</SelectItem>
-              <SelectItem value="frontend">Frontend Developer</SelectItem>
-              <SelectItem value="ux">UX/UI Designer</SelectItem>
-              <SelectItem value="devops">DevOps Engineer</SelectItem>
-              <SelectItem value="product">Product Manager</SelectItem>
+              {(Array.isArray(activeJob) ? activeJob : []).map(job => (
+                <SelectItem key={job.id} value={job.id.toString()}>
+                  {job.title}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Button variant="outline" size="icon">
@@ -169,40 +261,24 @@ export default function ApplicationsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="all" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
+      <Tabs defaultValue="" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="all" className="relative">
+          <TabsTrigger value="" className="relative">
             All
-            <Badge className="ml-2 bg-primary/10 text-primary">{applicationData?.length}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="review" className="relative">
-            Review
-            <Badge className="ml-2 bg-amber-100 text-amber-700">
-              {applicationData.filter((app) => app.status === "review").length}
-            </Badge>
           </TabsTrigger>
           <TabsTrigger value="interview" className="relative">
             Interview
-            <Badge className="ml-2 bg-blue-100 text-blue-700">
-              {applicationData.filter((app) => app.status === "interview").length}
-            </Badge>
           </TabsTrigger>
-          <TabsTrigger value="offer" className="relative">
-            Offer
-            <Badge className="ml-2 bg-green-100 text-green-700">
-              {applicationData.filter((app) => app.status === "offer").length}
-            </Badge>
+          <TabsTrigger value="applied" className="relative">
+            Applied
           </TabsTrigger>
           <TabsTrigger value="rejected" className="relative">
             Rejected
-            <Badge className="ml-2 bg-red-100 text-red-700">
-              {applicationData.filter((app) => app.status === "rejected").length}
-            </Badge>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="space-y-4">
-          {filteredApplications.map((application) => {
+        <TabsContent value={selectedTab} className="space-y-4">
+          {applicationData.map((application) => {
             const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
             return (
               <ApplicationCard
@@ -215,71 +291,40 @@ export default function ApplicationsPage() {
               />
             );
           })}
+
+          <div className="flex justify-center mt-6 space-x-2">
+            <button
+              onClick={() => handlePageChange(PageNo - 1)}
+              disabled={PageNo === 1}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i + 1)}
+                className={`px-3 py-1 rounded ${PageNo === i + 1
+                  ? "bg-black text-white"
+                  : "bg-gray-200"
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => handlePageChange(PageNo + 1)}
+              disabled={PageNo === totalPages}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+
         </TabsContent>
 
-        <TabsContent value="review" className="space-y-4">
-          {filteredApplications.map((application) => {
-            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            return (
-              <ApplicationCard
-                key={application.id}
-                application={application}
-                applied={posted}
-                changeStatus={fetchApplications}
-                setSelectedApplication={setSelectedApplication}
-                setOpenInterviewModal={setOpenInterviewModal}
-              />
-            );
-          })}
-        </TabsContent>
-
-        <TabsContent value="interview" className="space-y-4">
-          {filteredApplications.map((application) => {
-            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            return (
-              <ApplicationCard
-                key={application.id}
-                application={application}
-                applied={posted}
-                changeStatus={fetchApplications}
-                setSelectedApplication={setSelectedApplication}
-                setOpenInterviewModal={setOpenInterviewModal}
-              />
-            );
-          })}
-        </TabsContent>
-
-        <TabsContent value="offer" className="space-y-4">
-          {filteredApplications.map((application) => {
-            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            return (
-              <ApplicationCard
-                key={application.id}
-                application={application}
-                applied={posted}
-                changeStatus={fetchApplications}
-                setSelectedApplication={setSelectedApplication}
-                setOpenInterviewModal={setOpenInterviewModal}
-              />
-            );
-          })}
-        </TabsContent>
-
-        <TabsContent value="rejected" className="space-y-4">
-          {filteredApplications.map((application) => {
-            const { posted } = getJobTimeInfo(application?.appliedDate ?? "", application?.expiresAt ?? "");
-            return (
-              <ApplicationCard
-                key={application.id}
-                application={application}
-                applied={posted}
-                changeStatus={fetchApplications}
-                setSelectedApplication={setSelectedApplication}
-                setOpenInterviewModal={setOpenInterviewModal}
-              />
-            );
-          })}
-        </TabsContent>
       </Tabs>
 
       <Dialog open={openInterviewModal} onOpenChange={setOpenInterviewModal}>
@@ -318,7 +363,7 @@ export default function ApplicationsPage() {
               onClick={async () => {
                 const token = localStorage.getItem("token");
                 if (!selectedApplication) return;
-debugger;
+                debugger;
                 // Combine date and time into ISO string
                 const scheduledTime = new Date(
                   `${interviewDate}T${interviewTime}:00.000Z`

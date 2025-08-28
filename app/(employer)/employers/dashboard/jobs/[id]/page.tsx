@@ -42,7 +42,7 @@ export default function JobDetailsPage() {
   const jobid = params?.id
   const [job, setJob] = useState<Job | null>(null);
 
-  console.log('jobid', jobid);
+  console.log('jobid', jobid, job);
 
   // const job = {
   //   id: "",
@@ -125,17 +125,6 @@ export default function JobDetailsPage() {
     fetchJobs();
   }, [jobid]);
 
-  let posted = "";
-  let expires = "";
-
-  if (job && job.createdAt && job.expiresAt) {
-    const timeInfo = getJobTimeInfo(job.createdAt, job.expiresAt);
-    posted = timeInfo.posted;
-    expires = timeInfo.expires;
-  }
-
-
-
   return (
     <div className="container px-4 py-8 md:px-6 md:py-0">
       <div className="mb-6">
@@ -175,7 +164,7 @@ export default function JobDetailsPage() {
                 </div>
                 <div className="flex items-center">
                   <Calendar className="mr-1 h-4 w-4" />
-                  Posted {posted}
+                  Posted {job?.createdAt && new Date(job?.createdAt).toDateString()}
                 </div>
               </div>
             </div>
@@ -248,11 +237,11 @@ export default function JobDetailsPage() {
                 <p className="text-sm text-muted-foreground">{job?.salary}</p>
               </div>
               <Separator />
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium">Experience</h3>
                 <p className="text-sm text-muted-foreground">{job?.experience}</p>
               </div>
-              <Separator />
+              <Separator /> */}
               <div>
                 <h3 className="text-sm font-medium">Location</h3>
                 <p className="text-sm text-muted-foreground">{job?.location}</p>
@@ -260,12 +249,12 @@ export default function JobDetailsPage() {
               <Separator />
               <div>
                 <h3 className="text-sm font-medium">Posted</h3>
-                <p className="text-sm text-muted-foreground"> {posted}</p>
+                <p className="text-sm text-muted-foreground"> {job?.createdAt && new Date(job?.createdAt).toDateString()}</p>
               </div>
               <Separator />
               <div>
                 <h3 className="text-sm font-medium">Application Deadline</h3>
-                <p className="text-sm text-muted-foreground">{job?.deadline}</p>
+                <p className="text-sm text-muted-foreground">{job?.expiresAt && new Date(job?.expiresAt).toDateString()}</p>
               </div>
             </div>
             {/* <ApplyJobButton jobId={job?.id} jobTitle={job?.title} companyName={job?.company} className="mt-6 w-full" /> */}

@@ -14,6 +14,7 @@ import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/auth-context"
+import { Console } from "console"
 
 
 
@@ -224,13 +225,13 @@ export default function JobsPage() {
 
   }
 
-  const fetchDrafJobs = async () => {
+  const fetchDrafJobs = async (Search = searchQuery) => {
     try {
       const token = localStorage.getItem("token");
       const response = await DataService.get("/jobs", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          search: "",
+          search: Search,
           remote: true,
           tag: "",
           status: "draft",
@@ -284,24 +285,17 @@ export default function JobsPage() {
   };
 
   useEffect(() => {
-    if (searchQuery) {
-      const filtered = allJobs.filter((job) =>
-        job.title?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setDisplayJobs(filtered);
-    } else {
-      setDisplayJobs(allJobs); // Reset to all jobs when search is cleared
-    }
+    fetchJobs(searchQuery);
   }, [searchQuery, allJobs]);
 
-  const fetchJobs = async (page = 1, dynamicPageSize: any = null) => {
+  const fetchJobs = async (Search = searchQuery, page = 1, dynamicPageSize: any = null) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await DataService.get("/jobs", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          search: "",
+          search: Search,
           remote: null,
           tag: "",
           status: "active",
@@ -312,23 +306,11 @@ export default function JobsPage() {
 
       if (response?.status === 200) {
         setJobs(response.data.jobs || []);
-        // setAllJobs(response.data.jobs || []);
         setTotalData(response.data.total);
+        setDisplayJobs(response.data.jobs || []);
         const jobsdata = response.data.jobs || [];
-
-
-        if (dynamicPageSize == null && page === 1) {
-          //  setDraftjob(jobsdata.filter((job: any) => job.status === "draft"));
-          const activeJobs = jobsdata?.filter((job: any) => job.status === 'active');
-          console.log('draftJobs', draftJobs);
-          //setDraftjob(draftJobs);
-          setActivejob(activeJobs);
-          setDisplayJobs(jobsdata.slice(0, pageSize));
-          setAllJobs(jobsdata.slice(0, pageSize));
-        } else {
-          setDisplayJobs(jobsdata); // Direct API result when paginated
-        }
-
+        const activeJobs = jobsdata?.filter((job: any) => job.status === 'active');
+        setActivejob(activeJobs);
       }
     } catch (err) {
       setError("Failed to load jobs");
@@ -339,9 +321,9 @@ export default function JobsPage() {
 
   useEffect(() => {
     if (currentPage === 1) {
-      fetchJobs(1, null); // initial full fetch
+      fetchJobs(searchQuery, 1, null); // initial full fetch
     } else {
-      fetchJobs(currentPage, pageSize); // paginated fetch after page 1
+      fetchJobs(searchQuery, currentPage, pageSize); // paginated fetch after page 1
     }
   }, [currentPage]);
 
@@ -354,10 +336,23 @@ export default function JobsPage() {
         setDisplayJobs(jobs.slice(0, pageSize));
       } else if (page !== 1) {
         // Fetch new page
-        fetchJobs(page, pageSize);
+        fetchJobs(searchQuery, page, pageSize);
       }
     }
   };
+
+  const handleViewApplicant = (Id: number) => {
+    // Validation: Require at least one field to be filled
+    console.log('Viewing applicant with ID:', Id);
+    if (!Id) {
+      alert('Please enter a job title or select a location.');
+      return;
+    }
+    const params = new URLSearchParams();
+    if (Id) params.append('id', Id.toString());
+    router.push(`/employers/dashboard/applications?${params.toString()}`);
+  };
+
 
   // useEffect(() => {
   //   fetchJobs(currentPage);
@@ -418,7 +413,7 @@ export default function JobsPage() {
 
             <Tabs defaultValue="active" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
 
-              <TabsList>
+              {/* <TabsList>
                 <TabsTrigger value="active" className="relative">
                   Active
                   <Badge className="ml-2 bg-primary/10 text-primary">{activejob.length}</Badge>
@@ -431,7 +426,7 @@ export default function JobsPage() {
                   Expired
                   <Badge className="ml-2 bg-destructive/10 text-destructive">{expiredJobs.length}</Badge>
                 </TabsTrigger>
-              </TabsList>
+              </TabsList> */}
 
 
               <TabsContent value="active" className="space-y-4">
@@ -447,6 +442,7 @@ export default function JobsPage() {
                     job={job}
                     posted={posted}
                     expires={expires}
+                    handleViewApplicants={handleViewApplicant}
                     fnexpiredJob={fnexpiredJob}
                     fneDeleteJob={fneDeleteJob}
                   />
@@ -593,7 +589,7 @@ export default function JobsPage() {
                     </CardContent>
                     <CardFooter className="border-t pt-4">
                       <div className="flex w-full justify-between">
-                        <Button variant="outline" size="sm" className="bg-[#309689]">
+                        <Button variant="outline" size="sm" className="bg-[#309689]" onClick={() => handleViewApplicant(job.id)}>
                           View Applicants
                         </Button>
                         <Button size="sm" onClick={() => fnpublishedJob(job)}>Repost Job</Button>
@@ -617,13 +613,15 @@ function JobCard({
   fnexpiredJob,
   fneDeleteJob,
   posted,
-  expires
+  expires,
+  handleViewApplicants
 }: {
   job: Job;
   posted: string;
   expires: string;
   fnexpiredJob: (job: Job) => void;
   fneDeleteJob: (job: Job) => void;
+  handleViewApplicants: (id: number) => void;
 }) {
   console.log('posted', posted, 'expires', expires);
 
@@ -650,7 +648,7 @@ function JobCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/edit?id=${job.id}`)}>Edit Job</DropdownMenuItem>
-              <DropdownMenuItem>View Applicants</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleViewApplicants(job.id)}>View Applicants</DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/post?id=${job.id}`)}>Duplicate</DropdownMenuItem>
               <DropdownMenuItem className="text-destructive" onClick={() => fnexpiredJob(job)}>Mark as Expired</DropdownMenuItem>
               <DropdownMenuItem className="text-destructive" onClick={() => fneDeleteJob(job)}>Delete Job</DropdownMenuItem>
@@ -680,7 +678,7 @@ function JobCard({
           <Button variant="outline" size="sm" onClick={() => router.push(`/employers/dashboard/jobs/${job.id}`)}>
             View Details
           </Button>
-          <Button variant="outline" size="sm" className="bg-[#309689] text-white">
+          <Button variant="outline" size="sm" className="bg-[#309689] text-white" onClick={() => handleViewApplicants(job.id)}>
             View Applicants
           </Button>
         </div>
