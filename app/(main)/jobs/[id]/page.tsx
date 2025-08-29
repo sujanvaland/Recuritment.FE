@@ -9,7 +9,6 @@ import { ApplyJobButton } from "@/components/apply-job-button"
 import { useParams } from 'next/navigation'
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { DataService } from "@/services/axiosInstance";
-import { useSearchParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
 import { getRelativeTime } from "@/components/Uitility/Timeformat"
 

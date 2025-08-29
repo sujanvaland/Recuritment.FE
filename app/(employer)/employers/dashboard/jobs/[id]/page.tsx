@@ -10,7 +10,6 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ApplyJobButton } from "@/components/apply-job-button"
 import { DataService } from "@/services/axiosInstance";
-import { useSearchParams } from 'next/navigation';
 import { useParams } from 'next/navigation'
 import { getJobTimeInfo } from "@/utils/dateComponent"
 
