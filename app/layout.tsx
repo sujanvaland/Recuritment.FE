@@ -9,13 +9,14 @@ import { Toaster } from "sonner"; // or your toast library's provider
 
 
 import "./globals.css"
+import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Sarvah - Find Your Dream Job",
   description: "Connect with top employers and discover opportunities that match your skills and aspirations.",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -27,12 +28,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light">
-          <AuthProvider>
-            <LoadingProvider>
-              {children}
-              <Toaster position="top-center" richColors /> {/* Sonner example */}
-            </LoadingProvider>
-          </AuthProvider>
+          <Suspense fallback={<div>Loading...</div>}>
+            <AuthProvider>
+              <LoadingProvider>
+                {children}
+                <Toaster position="top-center" richColors /> {/* Sonner example */}
+              </LoadingProvider>
+            </AuthProvider>
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>
