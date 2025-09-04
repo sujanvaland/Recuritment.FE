@@ -852,13 +852,13 @@ debugger;
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                {false &&<div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="two-factor">Two-Factor Authentication</Label>
                     <Switch id="two-factor" />
                   </div>
                   <p className="text-xs text-muted-foreground">Add an extra layer of security to your account</p>
-                </div>
+                </div> }
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
                 <Button variant="outline">Cancel</Button>

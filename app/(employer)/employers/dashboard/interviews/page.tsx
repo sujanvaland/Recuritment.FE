@@ -72,7 +72,7 @@ export default function InterviewsPage() {
   const weekDates = generateWeekDates(weekStart);
 
   // Interview data from API
-  const [interviews, setInterviews] = useState([]);
+  const [interviews, setInterviews] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -149,7 +149,7 @@ export default function InterviewsPage() {
       if (dateRangeFilter !== "all") {
         const interviewDate = new Date(interview.scheduledTime);
         const today = new Date();
-        const daysDiff = Math.ceil((interviewDate - today) / (1000 * 60 * 60 * 24));
+  const daysDiff = Math.ceil((interviewDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
         switch (dateRangeFilter) {
           case "today":
@@ -468,6 +468,20 @@ export default function InterviewsPage() {
                             <div className="font-medium">{interview.time}</div>
                             <div>{interview.candidate.name}</div>
                             <div className="text-muted-foreground">{interview.type}</div>
+                            {interview.meetingLink && (interview.meetingLink.startsWith('http') || interview.meetingLink.startsWith('https')) && (
+                              <div className="mt-1">
+                                <a
+                                  href={interview.meetingLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-primary inline-flex items-center gap-1"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Video className="h-3 w-3" />
+                                  Join
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))}
                     </div>
@@ -483,9 +497,7 @@ export default function InterviewsPage() {
                 ))}
               </div>
               <div className="grid h-[calc(100vh-24rem)] grid-cols-7 overflow-auto">
-                {Array(35)
-                  .fill()
-                  .map((_, index) => {
+                {Array.from({ length: 35 }).map((_, index) => {
                     const currentDate = new Date();
                     const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
                     const cellDate = new Date(monthStart);
@@ -509,6 +521,14 @@ export default function InterviewsPage() {
                           <div key={idx} className="mt-1 rounded-sm bg-primary/20 p-1 text-xs">
                             <div>{interview.time}</div>
                             <div className="font-medium">{interview.candidate.name}</div>
+                            {interview.meetingLink && (interview.meetingLink.startsWith('http') || interview.meetingLink.startsWith('https')) && (
+                              <div className="mt-1">
+                                <a href={interview.meetingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-primary inline-flex items-center gap-1">
+                                  <Video className="h-3 w-3" />
+                                  Join
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -523,18 +543,18 @@ export default function InterviewsPage() {
   )
 }
 
-function InterviewCard({ interview, onRefresh }) {
-  const [cancelModalOpen, setCancelModalOpen] = useState(false);
-  const [selectedInterviewForCancel, setSelectedInterviewForCancel] = useState(null);
+function InterviewCard({ interview, onRefresh }: { interview: any; onRefresh: () => void }) {
+  const [cancelModalOpen, setCancelModalOpen] = useState<boolean>(false);
+  const [selectedInterviewForCancel, setSelectedInterviewForCancel] = useState<any | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   
   // Add reschedule modal state
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
-  const [selectedInterviewForReschedule, setSelectedInterviewForReschedule] = useState(null);
-  const [rescheduleDate, setRescheduleDate] = useState("");
-  const [rescheduleTime, setRescheduleTime] = useState("");
-  const [meetingLink, setMeetingLink] = useState("");
-  const [rescheduleNotes, setRescheduleNotes] = useState("");
+  const [selectedInterviewForReschedule, setSelectedInterviewForReschedule] = useState<any | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState<string>("");
+  const [rescheduleTime, setRescheduleTime] = useState<string>("");
+  const [meetingLink, setMeetingLink] = useState<string>("");
+  const [rescheduleNotes, setRescheduleNotes] = useState<string>("");
 
   const handleCancelInterview = async () => {
     if (!selectedInterviewForCancel || !cancelReason.trim()) {
@@ -633,7 +653,7 @@ function InterviewCard({ interview, onRefresh }) {
               <AvatarFallback>
                 {interview.candidate.name
                   .split(" ")
-                  .map((n) => n[0])
+                  .map((n: string) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>

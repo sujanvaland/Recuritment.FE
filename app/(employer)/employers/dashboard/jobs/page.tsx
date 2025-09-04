@@ -232,7 +232,7 @@ export default function JobsPage() {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: Search,
-          remote: true,
+          remote: null,
           tag: "",
           status: "draft",
           page: 1,
@@ -261,7 +261,7 @@ export default function JobsPage() {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: "",
-          remote: true,
+          remote: null,
           tag: "",
           status: "expired",
           page: 1,
@@ -285,7 +285,10 @@ export default function JobsPage() {
   };
 
   useEffect(() => {
-    fetchJobs(searchQuery);
+  fetchJobs(searchQuery);
+  // Also fetch counts for drafts and expired jobs on initial mount so badges show immediately
+  fetchDrafJobs();
+  fetchExpiredJobs();
   }, [searchQuery, allJobs]);
 
   const fetchJobs = async (Search = searchQuery, page = 1, dynamicPageSize: any = null) => {
@@ -413,7 +416,7 @@ export default function JobsPage() {
 
             <Tabs defaultValue="active" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
 
-              {/* <TabsList>
+             <TabsList>
                 <TabsTrigger value="active" className="relative">
                   Active
                   <Badge className="ml-2 bg-primary/10 text-primary">{activejob.length}</Badge>
@@ -426,7 +429,7 @@ export default function JobsPage() {
                   Expired
                   <Badge className="ml-2 bg-destructive/10 text-destructive">{expiredJobs.length}</Badge>
                 </TabsTrigger>
-              </TabsList> */}
+              </TabsList> 
 
 
               <TabsContent value="active" className="space-y-4">

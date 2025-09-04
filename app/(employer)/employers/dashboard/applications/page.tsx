@@ -91,6 +91,7 @@ export default function ApplicationsPage() {
   const [selectedApplication, setSelectedApplication] = useState<application | null>(null);
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
   const [interviewNote, setInterviewNote] = useState("");
 
   const handlePageChange = (page: number) => {
@@ -161,8 +162,8 @@ export default function ApplicationsPage() {
 
   useEffect(() => {
     fetchJobs();
-    const rawId = searchParams.get('id');
-    if (rawId !== null) {
+    const rawId = searchParams?.get('id');
+    if (rawId) {
       const rawid = Number(decodeURIComponent(rawId));
       fetchApplications(searchQuery, rawid, selectedTab, PageNo);
       setJobId(rawid);
@@ -357,6 +358,15 @@ export default function ApplicationsPage() {
                 onChange={e => setInterviewNote(e.target.value)}
               />
             </div>
+            <div>
+              <Label>Meeting Link (optional)</Label>
+              <Input
+                type="url"
+                placeholder="https://zoom.us/j/123..."
+                value={meetingLink}
+                onChange={e => setMeetingLink(e.target.value)}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button
@@ -380,6 +390,7 @@ export default function ApplicationsPage() {
                       type: "",
                       location: "",
                       notes: interviewNote,
+                      meetingLink: meetingLink,
                     },
                     {
                       headers: { Authorization: `Bearer ${token}` },
@@ -393,6 +404,7 @@ export default function ApplicationsPage() {
                     setOpenInterviewModal(false);
                     setInterviewDate("");
                     setInterviewTime("");
+                    setMeetingLink("");
                     setInterviewNote("");
                     setSelectedApplication(null);
                     fetchApplications();
