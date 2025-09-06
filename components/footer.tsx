@@ -38,7 +38,7 @@ export function Footer() {
             </ul>
           </div>
           {/* Newsletter */}
-          <div>
+         {false && <div>
             <h3 className="text-lg font-bold mb-4">Newsletter</h3>
             <p className="text-gray-300 mb-4 text-base">Eu nunc pretium vitae platea. Non netus elementum vulputate</p>
             <form className="flex flex-col gap-4">
@@ -55,6 +55,7 @@ export function Footer() {
               </button>
             </form>
           </div>
+        }
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-gray-500">
           <p>&copy; {new Date().getFullYear()} Sarvah. All rights reserved.</p>

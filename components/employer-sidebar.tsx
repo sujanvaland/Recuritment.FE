@@ -63,7 +63,7 @@ export function EmployerSidebar() {
             <FileText className="mr-3 h-5 w-5" />
             Applications
           </Link>
-          <Link
+          {/* <Link
             href="/employers/dashboard/candidates"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${pathname === "/employers/dashboard/candidates"
               ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
@@ -72,7 +72,7 @@ export function EmployerSidebar() {
           >
             <Users className="mr-3 h-5 w-5" />
             Candidates
-          </Link>
+          </Link> */}
           <Link
             href="/employers/dashboard/interviews"
             className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${pathname === "/employers/dashboard/interviews"

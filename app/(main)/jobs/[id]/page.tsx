@@ -9,7 +9,6 @@ import { ApplyJobButton } from "@/components/apply-job-button"
 import { useParams } from 'next/navigation'
 import { getJobTimeInfo } from "@/utils/dateComponent"
 import { DataService } from "@/services/axiosInstance";
-import { useSearchParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast"
 import { getRelativeTime } from "@/components/Uitility/Timeformat"
 
@@ -336,14 +335,14 @@ export default function JobDetailsPage() {
                   <p className="text-muted-foreground">{job?.description}</p>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                {/* <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <h3 className="text-sm font-medium">Website</h3>
-                    {/* <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       <a href={job?.website} className="hover:underline">
                         {job?.website}
                       </a>
-                    </p> */}
+                    </p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium">Industry</h3>
@@ -357,7 +356,7 @@ export default function JobDetailsPage() {
                     <h3 className="text-sm font-medium">Founded</h3>
                     <p className="text-sm text-muted-foreground">{job?.founded}</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </TabsContent>
           </Tabs>

@@ -115,7 +115,7 @@ export default function JobSeekerDashboardPage() {
           </CardContent>
         </Card>
         
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
@@ -124,7 +124,7 @@ export default function JobSeekerDashboardPage() {
             <div className="text-2xl font-bold">--</div>
             <p className="text-xs text-muted-foreground">Coming soon</p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <div className="mt-8">
@@ -135,7 +135,7 @@ export default function JobSeekerDashboardPage() {
             <div className="col-span-1">Company</div>
             <div className="col-span-1">Date Applied</div>
             <div className="col-span-1">Status</div>
-            <div className="col-span-1 text-right">Actions</div>
+            {/* <div className="col-span-1 text-right">Actions</div> */}
           </div>
           <div className="divide-y">
             {jobs?.jobsApplied && jobs.jobsApplied.length > 0 ? (
@@ -159,11 +159,11 @@ export default function JobSeekerDashboardPage() {
                       {job.applicationStatus || 'Pending'}
                     </span>
                   </div>
-                  <div className="col-span-1 flex justify-end">
+                  {/* <div className="col-span-1 flex justify-end">
                     <Button variant="ghost" size="sm">
                       View
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               ))
             ) : (
