@@ -172,6 +172,20 @@ export default function JobDetailsPage() {
 
 
           <Tabs defaultValue="description">
+            <TabsList className="mb-4 w-full bg-gray-100">
+              <TabsTrigger 
+                value="description" 
+                className="flex-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              >
+                Description
+              </TabsTrigger>
+              <TabsTrigger 
+                value="company" 
+                className="flex-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              >
+                Company
+              </TabsTrigger>
+            </TabsList>
             <TabsContent value="description" className="space-y-6">
               <div>
                 <h2 className="mb-4 text-xl font-semibold">Job Description</h2>
@@ -223,7 +237,7 @@ export default function JobDetailsPage() {
         </div>
 
         <div>
-          <div className="rounded-lg border bg-[#EBF5F4] p-6 shadow-sm">
+          <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 p-6 shadow-sm">
             <h2 className="mb-4 text-xl font-semibold">Job Summary</h2>
             <div className="space-y-4">
               <div>
@@ -272,8 +286,7 @@ export default function JobDetailsPage() {
                 </div>
               ))} */}
             </div>
-          </div>
-}
+          </div>}
         </div>
       </div>
     </div>

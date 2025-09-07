@@ -4,8 +4,11 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ArrowRight, Leaf, Package, ShoppingBag, HardHat,  GraduationCap, Coins, Bus, Briefcase, Building, Search, Users,MapPin } from "lucide-react"
+import { ArrowRight, Leaf, Package, ShoppingBag, HardHat,  GraduationCap, Coins, Bus, Briefcase, Building, Search, Users, MapPin, Calendar, DollarSign, Bookmark, BookmarkCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DataService } from "@/services/axiosInstance";
 import { getJobTimeInfo } from "@/utils/dateComponent"; 
 import { useRouter } from 'next/navigation';
@@ -37,42 +40,42 @@ type Job = {
 
 const categories = [
   {
-    icon: <Leaf className="h-12 w-12 text-[#309689]" />,
+    icon: <Leaf className="h-12 w-12 text-[#e1bd00]" />,
     title: "Agriculture",
     jobs: "1254 jobs",
   },
   {
-    icon: <Package className="h-12 w-12 text-[#309689]" />,
+    icon: <Package className="h-12 w-12 text-[#e1bd00]" />,
     title: "Metal Production",
     jobs: "816 jobs",
   },
   {
-    icon: <ShoppingBag className="h-12 w-12 text-[#309689]" />,
+    icon: <ShoppingBag className="h-12 w-12 text-[#e1bd00]" />,
     title: "Commerce",
     jobs: "2082 jobs",
   },
   {
-    icon: <HardHat className="h-12 w-12 text-[#309689]" />,
+    icon: <HardHat className="h-12 w-12 text-[#e1bd00]" />,
     title: "Construction",
     jobs: "1520 jobs",
   },
   {
-    icon: <Briefcase className="h-12 w-12 text-[#309689]" />,
+    icon: <Briefcase className="h-12 w-12 text-[#e1bd00]" />,
     title: "Hotels & Tourism",
     jobs: "1022 jobs",
   },
   {
-    icon: <GraduationCap className="h-12 w-12 text-[#309689]" />,
+    icon: <GraduationCap className="h-12 w-12 text-[#e1bd00]" />,
     title: "Education",
     jobs: "1496 jobs",
   },
   {
-    icon: <Coins className="h-12 w-12 text-[#309689]" />,
+    icon: <Coins className="h-12 w-12 text-[#e1bd00]" />,
     title: "Financial Services",
     jobs: "1529 jobs",
   },
   {
-    icon: <Bus className="h-12 w-12 text-[#309689]" />,
+    icon: <Bus className="h-12 w-12 text-[#e1bd00]" />,
     title: "Transport",
     jobs: "1244 jobs",
   },
@@ -286,172 +289,246 @@ const handleSubmit = (e: React.FormEvent) => {
   return (
     <div className="flex min-h-screen flex-col ">
       {/* Hero Section */}
-     <section className="relative flex flex-col items-center justify-center min-h-[70vh] w-full bg-black text-white">
-  <div className="container flex flex-col items-center justify-center pt-24 pb-34">
-    <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-center leading-tight">
-            Find Your Dream Job Today!
-          </h1>
-          <p className="mb-8 text-lg md:text-xl text-center text-gray-200 max-w-2xl">
-            Connecting Talent with Opportunity: Your Gateway to Career Success
-          </p>
-          {/* Search Bar */}
-         <form 
-          onSubmit={handleSubmit}
-         className="flex flex-col md:flex-row gap-4 w-full max-w-3xl mb-12 bg-white rounded-[10px] shadow-lg relative">
-          <div className="relative w-full">
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Job Title or Company"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onFocus={() => setShowDropdown(true)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-              className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none md:rounded-l-[10px] text-black outline-none"
-              style={{ minHeight: 60 }}
-            />
-            {showDropdown && filteredJobs.length > 0 && (
-              <div className="absolute left-0 right-0 z-10 bg-white border rounded shadow w-full mt-1 max-h-60 overflow-y-auto">
-                {filteredJobs.slice(0, 8).map((job, idx) => (
-                  <div
-                    key={job.id || idx}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onMouseDown={() => {
-                      setTitle(job.title);
-                      setShowDropdown(false);
-                      inputRef.current?.blur();
-                    }}
-                  >
-                    <div className="font-semibold text-black">{job.title}</div>
-                    <div className="text-sm text-gray-500 text-black">{job.company}</div>
-                    <div className="text-xs text-emerald-700">{job.location}</div>
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+              Find Your <span className="text-yellow-300">Dream Job</span> Today!
+            </h1>
+            <p className="text-xl sm:text-2xl mb-12 text-blue-100 max-w-3xl mx-auto">
+              Connecting Talent with Opportunity: Your Gateway to Career Success
+            </p>
+            {/* Search Bar */}
+            <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+              <div className="bg-white rounded-2xl p-4 shadow-2xl">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      placeholder="Job title, keywords, or company"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      onFocus={() => setShowDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                      className="w-full pl-12 h-14 border-0 focus:ring-2 focus:ring-blue-500 text-gray-900 text-lg rounded-lg"
+                    />
+                    {showDropdown && filteredJobs.length > 0 && (
+                      <div className="absolute left-0 right-0 z-10 bg-white border rounded shadow w-full mt-1 max-h-60 overflow-y-auto">
+                        {filteredJobs.slice(0, 8).map((job, idx) => (
+                          <div
+                            key={job.id || idx}
+                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            onMouseDown={() => {
+                              setTitle(job.title);
+                              setShowDropdown(false);
+                              inputRef.current?.blur();
+                            }}
+                          >
+                            <div className="font-semibold text-black">{job.title}</div>
+                            <div className="text-sm text-gray-500 text-black">{job.company}</div>
+                            <div className="text-xs text-emerald-700">{job.location}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <select
-            className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
-            style={{ minHeight: 60 }}
-            onChange={(e) => setSearchLocation(e.target.value)}
-          >
-              <option value="">Select Location</option>
-                {locations.map(loc => (
-                  <option key={loc.value} value={loc.value}>
-                    {loc.label}
-                  </option>
-                ))}
-          </select>
-          {/* <select
-            className="flex-1 px-4 py-3 rounded-[8px] md:rounded-none text-black outline-none"
-            style={{ minHeight: 60 }}
-          >
-            <option>Select Category</option>
-          </select> */}
-          <button
-            type="submit"
-            className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 py-3 rounded-[8px] md:rounded-none md:rounded-r-[10px] transition whitespace-nowrap"
-            style={{ minWidth: 160, minHeight: 60 }}
-          >
-            Search Job
-          </button>
-        </form>
-          {/* Stats */}
-        <div className="flex flex-wrap justify-center gap-12 mb-12 mt-12">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
-                <Briefcase className="h-7 w-7 text-white" />
-              </span>
-              <div>
-                <span className="text-2xl font-bold text-emerald-400 block leading-tight">25,850</span>
-                <span className="text-gray-200 text-base">Jobs</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
-                <Users className="h-7 w-7 text-white" />
-              </span>
-              <div>
-                <span className="text-2xl font-bold text-emerald-400 block leading-tight">10,250</span>
-                <span className="text-gray-200 text-base">Candidates</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500">
-                <Building className="h-7 w-7 text-white" />
-              </span>
-              <div>
-                <span className="text-2xl font-bold text-emerald-400 block leading-tight">18,400</span>
-                <span className="text-gray-200 text-base">Companies</span>
-              </div>
-            </div>
-          </div>       
-        </div> 
-             <div className="left-0 right-0 bottom-0 w-full flex justify-center bg-white" style={{ paddingTop:40, paddingBottom: 40 }}>
-    <div className="flex flex-wrap justify-around w-full gap-10 items-center px-8">
-    <img src="/encon.jpeg" alt="Spotify" className="h-10" />
-    <img src="/gandhi.jpeg" alt="Slack" className="h-10" />
-    <img src="/gm.jpeg" alt="Adobe" className="h-10" />
-    <img src="/safari.jpeg" alt="Asana" className="h-10" />
-    <img src="/tema.jpeg" alt="Linear" className="h-10" />
-  </div>
-</div>
-      </section> 
- 
-<section className="w-full" style={{ maxWidth: 1400, margin: "0 auto" }}>
-  <div className="flex items-center justify-between mb-2 mt-16 px-4 md:px-0">
-    <div>
-      <h2 className="text-3xl font-bold">Recent Jobs Available</h2>
-      {/* <p className="text-gray-500 mt-2">At eu lobortis pretium tincidunt amet lacus ut senen aliquet...</p> */}
-    </div>
-    <Link href="/jobs" className="text-emerald-600 font-semibold hover:underline whitespace-nowrap mt-4 md:mt-0">
-      View all
-    </Link>
-  </div>
-  <div className="flex flex-col gap-6 mt-6 px-4 md:px-0">
-     
-    {/* Job Card 2 */}
-       {jobs.map((job) => {
-                  const { createdAt, expiresAt } = job;
-                  const { posted, expires } = createdAt && expiresAt
-                    ? getJobTimeInfo(createdAt, expiresAt)
-                    : { posted: "N/A", expires: "N/A" };
- 
-                  return (
-    <div  key={job.id} className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border border-gray-100">
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-3">
-                <span className="bg-emerald-50" >
-                  <span className="text-emerald-600 text-xs px-3 py-1 rounded-full font-medium">
-                    {posted}
-                  </span>
-                </span>
-                <button className="ml-auto" onClick={() => savejobs(job?.id)}>
-                  <svg width="20" height="20" fill="none" stroke="#B0B0B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
-                </button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <img src="/icon_job.png" alt="Company Logo" className="h-8 w-8 rounded-full" />
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{job?.title}</h3>
-                  <p className="text-gray-500 text-sm">{job?.company}</p>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <select
+                      className="w-full pl-12 h-14 border-0 focus:ring-2 focus:ring-blue-500 text-gray-900 text-lg rounded-lg appearance-none bg-white"
+                      onChange={(e) => setSearchLocation(e.target.value)}
+                    >
+                      <option value="">Location or remote</option>
+                      {locations.map(loc => (
+                        <option key={loc.value} value={loc.value}>
+                          {loc.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-semibold"
+                    disabled={loading}
+                  >
+                    {loading ? "Searching..." : "Search Jobs"}
+                  </Button>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-gray-500 text-sm items-center"> 
-                <div className="flex items-center gap-1"><Users className="h-4 w-4" color={iconGreen} /> {job?.type}</div>
-                <div className="flex items-center gap-1"><span>{job?.salary}</span></div>
-                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" color={iconGreen} /> {job?.location}</div>
+            </form>
+            {/* Quick Stats */}
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div className="flex flex-col items-center">
+                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-yellow-300 mb-3">
+                  <Briefcase className="h-7 w-7 text-black" />
+                </span>
+                <div className="text-3xl font-bold text-yellow-300">25,850</div>
+                <div className="text-blue-100">Jobs</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-yellow-300 mb-3">
+                  <Users className="h-7 w-7 text-black" />
+                </span>
+                <div className="text-3xl font-bold text-yellow-300">10,250</div>
+                <div className="text-blue-100">Candidates</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-yellow-300 mb-3">
+                  <Building className="h-7 w-7 text-black" />
+                </span>
+                <div className="text-3xl font-bold text-yellow-300">18,400</div>
+                <div className="text-blue-100">Companies</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-yellow-300 mb-3">
+                  <ArrowRight className="h-7 w-7 text-black" />
+                </span>
+                <div className="text-3xl font-bold text-yellow-300">95%</div>
+                <div className="text-blue-100">Success Rate</div>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-2 mt-4 md:mt-0"> 
-              <Link  href={`/jobs/${job.id}`} className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Job Details</Link>
-            </div>
           </div>
-                  )
-       })}
+        </div>
+        
+        {/* Company Logos */}
+        <div className="left-0 right-0 bottom-0 w-full flex justify-center bg-white" style={{ paddingTop:40, paddingBottom: 40 }}>
+          <div className="flex flex-wrap justify-around w-full gap-10 items-center px-8">
+            <img src="/encon.jpeg" alt="Encon" className="h-10" />
+            <img src="/gandhi.jpeg" alt="Gandhi" className="h-10" />
+            <img src="/gm.jpeg" alt="GM" className="h-10" />
+            <img src="/safari.jpeg" alt="Safari" className="h-10" />
+            <img src="/tema.jpeg" alt="Tema" className="h-10" />
+          </div>
+        </div>
+      </div> 
  
-  </div>
-</section>
+      {/* Recent Jobs Section */}
+      <div className="w-full max-w-[1400px] mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-bold">Recent Jobs Available</h2>
+              <p className="text-gray-500 mt-2">Discover the latest job opportunities</p>
+            </div>
+            <Link href="/jobs" className="text-blue-600 font-semibold hover:underline">
+              View all
+            </Link>
+          </div>
+        </div>
+
+        {/* Job Grid - Two Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {jobs.map((job) => {
+            const { createdAt, expiresAt } = job;
+            const { posted, expires } = createdAt && expiresAt
+              ? getJobTimeInfo(createdAt, expiresAt)
+              : { posted: "N/A", expires: "N/A" };
+
+            return (
+              <Card key={job.id} className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-md hover:-translate-y-2 bg-white">
+                <CardContent className="p-0">
+                  {/* Card Header */}
+                  <div className="p-6 pb-4 min-h-[275px]">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={job.logo || "/icon_job.png"} alt={job.company} />
+                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white font-semibold">
+                            {job.company.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="text-sm text-gray-500 font-medium">{job.company}</div>
+                          <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Calendar className="h-3 w-3" />
+                            {posted}
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => savejobs(job?.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Bookmark className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      {job.title}
+                    </h3>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin className="h-4 w-4" />
+                        <span className="text-sm">{job.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <DollarSign className="h-4 w-4" />
+                        <span className="text-sm font-medium">{job.salary}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Briefcase className="h-4 w-4" />
+                        <span className="text-sm">{job.type}</span>
+                      </div>
+                    </div>
+
+                    {/* Skills Tags */}
+                    {job.tags && job.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {job.tags.slice(0, 3).map((tag, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {job.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{job.tags.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Applicants count */}
+                    {job.applicants && (
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
+                        <Users className="h-3 w-3" />
+                        <span>{job.applicants} applicants</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Footer */}
+                  <div className="px-6 py-4 bg-gray-50 border-t">
+                    <div className="flex items-center justify-between">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/jobs/${job.id}`)}
+                        className="group-hover:bg-blue-50 group-hover:border-blue-200"
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => router.push(`/jobs/${job.id}`)}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                      >
+                        Apply Now
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
       {/* Featured Jobs */}
       {/* <section className="container px-4 py-16 md:px-6 md:py-24">
         <div className="mb-10 text-center">
@@ -493,9 +570,9 @@ const handleSubmit = (e: React.FormEvent) => {
         </div>
       </section>*/}
 
-     <section className="w-full bg-[#eef8f7] py-16 mt-[60px]">
+     <section className="w-full bg-gradient-to-br from-[#dae3ff] via-[#f0f4ff] to-[#e6f0ff] py-16 mt-[60px]">
       <div className="max-w-[1400px] mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4">Browse by Category</h2>
+        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4 text-gray-800">Browse by Category</h2>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
           At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum id scel...
         </p>
@@ -503,11 +580,11 @@ const handleSubmit = (e: React.FormEvent) => {
           {categories.map((cat) => (
             <div
               key={cat.title}
-              className="bg-white rounded-2xl flex flex-col items-center justify-center py-12 px-4 shadow-sm"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center py-12 px-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20"
             >
               {cat.icon}
-              <div className="mt-6 mb-3 text-xl md:text-2xl font-bold text-center">{cat.title}</div>
-              <span className="bg-[#e6f6f4] text-[#309689] text-base font-semibold rounded-lg px-4 py-1 text-sm">
+              <div className="mt-6 mb-3 text-xl md:text-2xl font-bold text-center text-gray-800">{cat.title}</div>
+              <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-base font-semibold rounded-lg px-4 py-1 text-sm shadow-md">
                 {cat.jobs}
               </span>
             </div>
@@ -538,13 +615,13 @@ const handleSubmit = (e: React.FormEvent) => {
           <div className="flex gap-6">
             <Link
               href="/jobs"
-              className="bg-[#309689] hover:bg-emerald-700 text-white font-semibold px-7 py-3 rounded-lg transition"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-7 py-3 rounded-lg transition"
             >
               Search Job
             </Link>
             <Link
               href="/about"
-              className="text-[#309689] font-semibold px-2 py-3 hover:underline"
+              className="text-blue-600 font-semibold px-2 py-3 hover:underline"
             >
               Learn more
             </Link>
@@ -554,21 +631,21 @@ const handleSubmit = (e: React.FormEvent) => {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-16">
         <div>
-          <div className="text-3xl md:text-4xl font-extrabold text-[#309689] mb-2">12k+</div>
+          <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">12k+</div>
           <div className="text-xl font-bold mb-2">Clients worldwide</div>
           <div className="text-gray-600">
             At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum...
           </div>
         </div>
         <div>
-          <div className="text-3xl md:text-4xl font-extrabold text-[#309689] mb-2">20k+</div>
+          <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">20k+</div>
           <div className="text-xl font-bold mb-2">Active resume</div>
           <div className="text-gray-600">
             At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum...
           </div>
         </div>
         <div>
-          <div className="text-3xl md:text-4xl font-extrabold text-[#309689] mb-2">18k+</div>
+          <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">18k+</div>
           <div className="text-xl font-bold mb-2">Compnies</div>
           <div className="text-gray-600">
             At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum...
@@ -578,87 +655,87 @@ const handleSubmit = (e: React.FormEvent) => {
     </section>
 
 
-     <section className="w-full bg-[#eef8f7] py-16">
+     <section className="w-full bg-gradient-to-br from-[#dae3ff] via-[#f0f4ff] to-[#e6f0ff] py-16">
       <div className="max-w-[1400px] mx-auto px-4">
-        <h2 className="text-5xl font-extrabold text-center mb-4">Testimonials from Our Customers</h2>
+        <h2 className="text-5xl font-extrabold text-center mb-4 text-gray-800">Testimonials from Our Customers</h2>
         <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
           At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit a massa elementum id...
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Testimonial 1 */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm flex flex-col h-full">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full border border-white/20">
             <div className="flex gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
-                <svg key={i} className="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg key={i} className="h-6 w-6 text-[#e1bd00]" fill="currentColor" viewBox="0 0 20 20">
                   <polygon points="10,1 12.59,7.36 19.51,7.36 13.96,11.64 16.55,18 10,13.72 3.45,18 6.04,11.64 0.49,7.36 7.41,7.36" />
                 </svg>
               ))}
             </div>
-            <h3 className="text-2xl font-bold mb-3">Amazing services</h3>
-            <p className="italic text-gray-800 mb-8">
+            <h3 className="text-2xl font-bold mb-3 text-gray-800">Amazing services</h3>
+            <p className="italic text-gray-700 mb-8">
               Metus faucibus sed turpis lectus feugiat tincidunt. Rhoncus sed tristique in dolor. Mus etiam et vestibulum venenatis
             </p>
             <div className="flex items-end justify-between mt-auto">
               <div className="flex items-center gap-3">
                 <img src="/icon_job.png" alt="Marco Kihn" width={48} height={48} className="rounded-full" />
                 <div>
-                  <div className="font-bold">Marco Kihn</div>
-                  <div className="text-gray-400 text-sm">Happy Client</div>
+                  <div className="font-bold text-gray-800">Marco Kihn</div>
+                  <div className="text-gray-500 text-sm">Happy Client</div>
                 </div>
               </div>
-              <svg className="h-8 w-8 text-[#309689]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="M9 17c0-4.418 3.582-8 8-8V7a5 5 0 00-5-5H7a5 5 0 00-5 5v2c4.418 0 8 3.582 8 8z" />
               </svg>
             </div>
           </div>
           {/* Testimonial 2 */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm flex flex-col h-full">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full border border-white/20">
             <div className="flex gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
-                <svg key={i} className="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg key={i} className="h-6 w-6 text-[#e1bd00]" fill="currentColor" viewBox="0 0 20 20">
                   <polygon points="10,1 12.59,7.36 19.51,7.36 13.96,11.64 16.55,18 10,13.72 3.45,18 6.04,11.64 0.49,7.36 7.41,7.36" />
                 </svg>
               ))}
             </div>
-            <h3 className="text-2xl font-bold mb-3">Everything simple</h3>
-            <p className="italic text-gray-800 mb-8">
+            <h3 className="text-2xl font-bold mb-3 text-gray-800">Everything simple</h3>
+            <p className="italic text-gray-700 mb-8">
               Mus etiam et vestibulum venenatis viverra ut. Elit morbi bibendum ullamcorper augue faucibus
             </p>
             <div className="flex items-end justify-between mt-auto">
               <div className="flex items-center gap-3">
                 <img src="/icon_job.png" alt="Kristin Hester" width={48} height={48} className="rounded-full" />
                 <div>
-                  <div className="font-bold">Kristin Hester</div>
-                  <div className="text-gray-400 text-sm">Happy Client</div>
+                  <div className="font-bold text-gray-800">Kristin Hester</div>
+                  <div className="text-gray-500 text-sm">Happy Client</div>
                 </div>
               </div>
-              <svg className="h-8 w-8 text-[#309689]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="M9 17c0-4.418 3.582-8 8-8V7a5 5 0 00-5-5H7a5 5 0 00-5 5v2c4.418 0 8 3.582 8 8z" />
               </svg>
             </div>
           </div>
           {/* Testimonial 3 */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm flex flex-col h-full">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full border border-white/20">
             <div className="flex gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
-                <svg key={i} className="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg key={i} className="h-6 w-6 text-[#e1bd00]" fill="currentColor" viewBox="0 0 20 20">
                   <polygon points="10,1 12.59,7.36 19.51,7.36 13.96,11.64 16.55,18 10,13.72 3.45,18 6.04,11.64 0.49,7.36 7.41,7.36" />
                 </svg>
               ))}
             </div>
-            <h3 className="text-2xl font-bold mb-3">Awesome, thank you!</h3>
-            <p className="italic text-gray-800 mb-8">
+            <h3 className="text-2xl font-bold mb-3 text-gray-800">Awesome, thank you!</h3>
+            <p className="italic text-gray-700 mb-8">
               Rhoncus sed tristique in dolor. Mus etiam et vestibulum venenatis viverra ut. Elit morbi bibendum ullamcorper augue faucibus. Nulla et tempor montes
             </p>
             <div className="flex items-end justify-between mt-auto">
               <div className="flex items-center gap-3">
                 <img src="/icon_job.png" alt="Zion Cisneros" width={48} height={48} className="rounded-full" />
                 <div>
-                  <div className="font-bold">Zion Cisneros</div>
-                  <div className="text-gray-400 text-sm">Happy Client</div>
+                  <div className="font-bold text-gray-800">Zion Cisneros</div>
+                  <div className="text-gray-500 text-sm">Happy Client</div>
                 </div>
               </div>
-              <svg className="h-8 w-8 text-[#309689]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="M9 17c0-4.418 3.582-8 8-8V7a5 5 0 00-5-5H7a5 5 0 00-5 5v2c4.418 0 8 3.582 8 8z" />
               </svg>
             </div>
@@ -669,8 +746,8 @@ const handleSubmit = (e: React.FormEvent) => {
 
       {/* CTA Section */}
       <section className="bg-slate-900 py-16 text-white md:py-24">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center space-y-4 text-center">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 Ready to Take the Next Step in Your Career?
@@ -685,7 +762,7 @@ const handleSubmit = (e: React.FormEvent) => {
                   Create an Account <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="bg-[#309689] border-[#309689] text-white hover:bg-[#267a6d]">
+              <Button asChild variant="outline" size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 border-blue-600 text-white hover:from-blue-700 hover:to-purple-700">
                 <Link href="/auth/login">Sign In</Link>
               </Button>
             </div>

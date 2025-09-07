@@ -646,7 +646,7 @@ export default function ProfilePage() {
         </div>
         <h3 className="mt-4 text-lg font-semibold">Profile not found</h3>
         <p className="mt-2 text-sm text-muted-foreground">There was an error loading your profile</p>
-        <Button className="mt-4">Retry</Button>
+        <Button className="mt-4 bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white" variant="ghost">Retry</Button>
       </div>
     )
   }
@@ -655,7 +655,7 @@ export default function ProfilePage() {
     <>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+          <h1 className="text-2xl font-bold tracking-tight">My Profile</h1>
           <p className="text-muted-foreground">Manage your professional profile and resume</p>
         </div>
         {editMode ? (
@@ -669,13 +669,13 @@ export default function ProfilePage() {
             >
               Cancel
             </Button>
-            <Button onClick={handleSaveProfile}>
+            <Button onClick={handleSaveProfile} className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white" variant="ghost">
               <Save className="mr-2 h-4 w-4" />
               Save Changes
             </Button>
           </div>
         ) : (
-          <Button onClick={() => setEditMode(true)}>
+          <Button onClick={() => setEditMode(true)} className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white" variant="ghost">
             <Edit className="mr-2 h-4 w-4" />
             Edit Profile
           </Button>
@@ -683,17 +683,17 @@ export default function ProfilePage() {
       </div>
 
       <Tabs defaultValue="profile">
-        <TabsList className="mb-6">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="resume">Resume</TabsTrigger>
+        <TabsList className="mb-6 bg-white shadow-lg border-0">
+          <TabsTrigger value="profile" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Profile</TabsTrigger>
+          <TabsTrigger value="resume" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Resume</TabsTrigger>
           {/* <TabsTrigger value="settings">Settings</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
           {/* Basic Information */}
-          <Card>
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Basic Information</CardTitle>
               <CardDescription>Your personal and contact information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -832,7 +832,7 @@ export default function ProfilePage() {
           {/* Skills */}
           <Card>
             <CardHeader>
-              <CardTitle>Skills</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Skills</CardTitle>
               <CardDescription>Highlight your technical and professional skills</CardDescription>
             </CardHeader>
             <CardContent>
@@ -866,11 +866,11 @@ export default function ProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Work Experience</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Work Experience</CardTitle>
                 <CardDescription>Your professional work history</CardDescription>
               </div>
               {editMode && (
-                <Button size="sm" onClick={handleAddExperience}>
+                <Button size="sm" onClick={handleAddExperience} className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white" variant="ghost">
                   <Plus className="mr-2 h-4 w-4" />
                   Add Experience
                 </Button>
@@ -1075,11 +1075,11 @@ export default function ProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Education</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Education</CardTitle>
                 <CardDescription>Your academic background</CardDescription>
               </div>
               {editMode && (
-                <Button size="sm" onClick={handleAddEducation}>
+                <Button size="sm" onClick={handleAddEducation} className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white" variant="ghost">
                   <Plus className="mr-2 h-4 w-4" />
                   Add Education
                 </Button>
@@ -1284,7 +1284,7 @@ export default function ProfilePage() {
         <TabsContent value="resume" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Resume</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Resume</CardTitle>
               <CardDescription>Upload and manage your resume</CardDescription>
             </CardHeader>
             <CardContent>
@@ -1416,15 +1416,15 @@ export default function ProfilePage() {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-[200px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
-                    <Upload className="h-6 w-6 text-slate-500" />
+                <div className="flex h-[220px] flex-col items-center justify-center rounded-md p-8 text-center border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/80 shadow">
+                    <Upload className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="mt-2 text-sm font-medium">No resume uploaded</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <h3 className="mt-3 text-sm font-semibold text-gray-800">No resume uploaded</h3>
+                  <p className="mt-1 text-xs text-gray-600">
                     Upload your resume in PDF, DOC, or DOCX format (Max 10MB)
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="mt-1 text-xs text-gray-600">
                     <span className="font-medium">Supported formats:</span> PDF (.pdf), Microsoft Word (.doc, .docx)
                   </p>
                   <div className="mt-4">
@@ -1438,7 +1438,8 @@ export default function ProfilePage() {
                     />
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
+                      className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white"
                       onClick={() => document.getElementById("resume-upload")?.click()}
                       disabled={isUploadingResume}
                     >
@@ -1464,7 +1465,7 @@ export default function ProfilePage() {
         {/* <TabsContent value="settings" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Settingsttings</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Profile Settings</CardTitle>
               <CardDescription>Manage your profile visibility and preferences</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1504,7 +1505,7 @@ export default function ProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Account Settings</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Account Settings</CardTitle>
               <CardDescription>Manage your account security and preferences</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1526,7 +1527,7 @@ export default function ProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Danger Zone</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Danger Zone</CardTitle>
               <CardDescription>Irreversible account actions</CardDescription>
             </CardHeader>
             <CardContent>

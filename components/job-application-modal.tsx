@@ -220,26 +220,26 @@ export function JobApplicationModal({
         variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); 
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
         <DialogHeader>
-          <DialogTitle>Apply for {jobTitle}</DialogTitle>
-          <DialogDescription>Complete the form below to apply for this position at {companyName}.</DialogDescription>
+          <DialogTitle className="text-2xl font-bold text-gray-800">Apply for {jobTitle}</DialogTitle>
+          <DialogDescription className="text-gray-600">Complete the form below to apply for this position at {companyName}.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="space-y-4">
-            <Label>Resume/CV</Label>
+            <Label className="text-gray-700 font-medium">Resume/CV</Label>
 
             {isLoadingProfile ? (
               <div className="flex items-center space-x-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm text-muted-foreground">Loading your profile...</span>
+                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                <span className="text-sm text-gray-600">Loading your profile...</span>
               </div>
             ) : (
               <RadioGroup
@@ -249,22 +249,22 @@ export function JobApplicationModal({
               >
                 {userProfile?.resumeUrl && (
                   <div
-                    className={`flex items-start space-x-2 rounded-md border p-4 ${resumeOption === "existing" ? "border-primary bg-primary/5" : ""}`}
+                    className={`flex items-start space-x-2 rounded-md border p-4 ${resumeOption === "existing" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white"}`}
                   >
-                    <RadioGroupItem value="existing" id="existing-resume" />
+                    <RadioGroupItem value="existing" id="existing-resume" className="text-blue-600" />
                     <div className="flex-1">
-                      <Label htmlFor="existing-resume" className="flex cursor-pointer items-center gap-2 font-medium">
-                        <FileText className="h-5 w-5 text-muted-foreground" />
+                      <Label htmlFor="existing-resume" className="flex cursor-pointer items-center gap-2 font-medium text-gray-700">
+                        <FileText className="h-5 w-5 text-blue-600" />
                         Use my existing resume
                       </Label>
-                      <div className="mt-2 text-sm text-muted-foreground">
+                      <div className="mt-2 text-sm text-gray-600">
                         <span className="block">Filename: {userProfile.resumeName || "My Resume.pdf"}</span>
                         <span className="block">Last updated: {userProfile.resumeUpdated || "2 weeks ago"}</span>
                       </div>
                       <Button
                         type="button"
                         variant="link"
-                        className="mt-1 h-auto p-0 text-xs"
+                        className="mt-1 h-auto p-0 text-xs text-blue-600 hover:text-blue-700"
                         onClick={() => window.open(userProfile.resumeUrl, "_blank")}
                       >
                         Preview resume
@@ -274,11 +274,11 @@ export function JobApplicationModal({
                 )}
 
                 <div
-                  className={`flex items-start space-x-2 rounded-md border p-4 ${resumeOption === "new" ? "border-primary bg-primary/5" : ""}`}
+                  className={`flex items-start space-x-2 rounded-md border p-4 ${resumeOption === "new" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white"}`}
                 >
-                  <RadioGroupItem value="new" id="new-resume" />
+                  <RadioGroupItem value="new" id="new-resume" className="text-blue-600" />
                   <div className="flex-1">
-                    <Label htmlFor="new-resume" className="cursor-pointer font-medium">
+                    <Label htmlFor="new-resume" className="cursor-pointer font-medium text-gray-700">
                       Upload a new resume
                     </Label>
                     {resumeOption === "new" && (
@@ -289,9 +289,9 @@ export function JobApplicationModal({
                           accept=".pdf,.doc,.docx"
                           onChange={handleFileChange}
                           required={resumeOption === "new"}
-                          className="flex-1"
+                          className="flex-1 border-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-1 text-xs text-gray-600">
                           Upload your resume (PDF, DOC, or DOCX format)
                         </p>
                         {isUploadingResume && (
@@ -314,7 +314,7 @@ export function JobApplicationModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="coverLetter">Cover Letter</Label>
+            <Label htmlFor="coverLetter" className="text-gray-700 font-medium">Cover Letter</Label>
             <Textarea
               id="coverLetter"
               placeholder="Tell us why you're a good fit for this position..."
@@ -322,17 +322,29 @@ export function JobApplicationModal({
               onChange={(e) => setCoverLetter(e.target.value)}
               rows={6}
               required
+              className="border-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               Explain why you're interested in this position and what makes you a good candidate.
             </p>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onClose} 
+              disabled={isSubmitting}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || isLoadingProfile || isUploadingResume}>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting || isLoadingProfile || isUploadingResume}
+              className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white"
+              variant="ghost"
+            >
               {isUploadingResume ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

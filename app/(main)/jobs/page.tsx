@@ -691,7 +691,7 @@ export default function JobsPage() {
               <Card key={job.id} className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-md hover:-translate-y-2 bg-white">
                 <CardContent className="p-0">
                   {/* Card Header */}
-                  <div className="p-6 pb-4">
+                  <div className="p-6 pb-4 min-h-[275px]">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
@@ -853,14 +853,14 @@ export default function JobsPage() {
               </Button>
             </div>
           </div>
-        )}
+        )} 
       </div>
 
       {/* Apply Job Modal */}
       <Dialog open={showApplyModal} onOpenChange={setShowApplyModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Apply for {selectedJob?.title}</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-800">Apply for {selectedJob?.title}</DialogTitle>
             <DialogDescription className="text-gray-600">
               {selectedJob?.company} • {selectedJob?.location}
             </DialogDescription>
@@ -878,9 +878,9 @@ export default function JobsPage() {
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={6}
-                className="resize-none"
+                className="resize-none border-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-600">
                 {coverLetter.length}/500 characters
               </p>
             </div>
@@ -890,35 +890,36 @@ export default function JobsPage() {
               <label htmlFor="resume" className="text-sm font-medium text-gray-700">
                 Resume <span className="text-red-500">*</span>
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+              <div className="border-2 border-dashed border-blue-200 rounded-lg p-6 text-center hover:border-blue-400 transition-colors bg-white">
                 {resumeFile ? (
                   <div className="space-y-2">
-                    <FileText className="mx-auto h-8 w-8 text-blue-500" />
+                    <FileText className="mx-auto h-8 w-8 text-blue-600" />
                     <p className="text-sm font-medium text-gray-900">{resumeFile.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-600">
                       {(resumeFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setResumeFile(null)}
+                      className="border-red-200 text-red-600 hover:bg-red-50"
                     >
                       Remove
                     </Button>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                    <Upload className="mx-auto h-8 w-8 text-blue-500" />
                     <div>
                       <label
                         htmlFor="resume-upload"
-                        className="cursor-pointer text-blue-600 hover:text-blue-500 font-medium"
+                        className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium"
                       >
                         Click to upload
                       </label>
                       <span className="text-gray-600"> or drag and drop</span>
                     </div>
-                    <p className="text-xs text-gray-500">PDF, DOC, DOCX (max 10MB)</p>
+                    <p className="text-xs text-gray-600">PDF, DOC, DOCX (max 10MB)</p>
                     <input
                       id="resume-upload"
                       type="file"
@@ -937,13 +938,15 @@ export default function JobsPage() {
               variant="outline"
               onClick={() => setShowApplyModal(false)}
               disabled={isApplying}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </Button>
             <Button
               onClick={submitApplication}
               disabled={isApplying || !coverLetter.trim() || !resumeFile}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white"
+              variant="ghost"
             >
               {isApplying ? (
                 <>

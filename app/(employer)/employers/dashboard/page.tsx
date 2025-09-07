@@ -313,7 +313,7 @@ export default function EmployerDashboardPage() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard..</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard..</h1>
         <p className="text-muted-foreground">
           Welcome back, {user?.firstName}! Here's an overview of your recruitment activities.
         </p>
@@ -336,52 +336,60 @@ export default function EmployerDashboardPage() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
-              <BriefcaseBusiness className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Active Jobs</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <BriefcaseBusiness className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {loading ? "..." : dashboardData.totalJobs}
               </div>
               <p className="text-xs text-muted-foreground">Currently active positions</p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Total Applications</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {loading ? "..." : dashboardData.totalApplications}
               </div>
               <p className="text-xs text-muted-foreground">Applications received</p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Interviews</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Total Interviews</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {loading ? "..." : dashboardData.totalInterviews}
               </div>
               <p className="text-xs text-muted-foreground">Interviews scheduled</p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Hires</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Total Hires</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <Users className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {loading ? "..." : dashboardData.totalHires}
               </div>
               <p className="text-xs text-muted-foreground">Successful hires</p>
@@ -392,10 +400,10 @@ export default function EmployerDashboardPage() {
       </form>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
           <CardHeader>
-            <CardTitle>Job Performance</CardTitle>
-            <CardDescription>Overview of your job listings performance</CardDescription>
+            <CardTitle className="text-base md:text-lg font-bold text-gray-800">Job Performance</CardTitle>
+            <CardDescription className="text-sm">Overview of your job listings performance</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -407,12 +415,12 @@ export default function EmployerDashboardPage() {
                   <div key={jobTitle} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{jobTitle}</span>
+                        <span className="text-sm font-medium">{jobTitle}</span>
                         <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
                           Active
                         </span>
                       </div>
-                      <span className="text-sm text-muted-foreground">{applications} applicants</span>
+                      <span className="text-xs text-muted-foreground">{applications} applicants</span>
                     </div>
                     <Progress 
                       value={Math.min((applications / Math.max(...Object.values(dashboardData.applicationsByJob))) * 100, 100)} 
@@ -423,7 +431,7 @@ export default function EmployerDashboardPage() {
               )}
             </div>
             <div className="mt-4 flex justify-end">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                 <Link href="/employers/dashboard/jobs" className="flex items-center">
                   View All Jobs
                   <ChevronRight className="ml-1 h-4 w-4" />
@@ -433,10 +441,10 @@ export default function EmployerDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
           <CardHeader>
-            <CardTitle>Recent Applications</CardTitle>
-            <CardDescription>Latest candidates who applied to your jobs</CardDescription>
+            <CardTitle className="text-base md:text-lg font-bold text-gray-800">Recent Applications</CardTitle>
+            <CardDescription className="text-sm">Latest candidates who applied to your jobs</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -445,22 +453,22 @@ export default function EmployerDashboardPage() {
               ) : recentApplications.length > 0 ? (
                 recentApplications.map((application) => (
                   <div key={application.id} className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
-                      <span className="text-sm font-medium">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <span className="text-sm font-medium text-white">
                         {application.user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
                         {application.user?.lastName?.charAt(0)?.toUpperCase() || ''}
                       </span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">
+                        <h4 className="text-sm font-medium">
                           {application.user?.firstName} {application.user?.lastName}
                         </h4>
                         <span className="text-xs text-muted-foreground">
                           {getTimeAgo(application.appliedDate)}
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Applied for {application.job?.title}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
@@ -489,7 +497,7 @@ export default function EmployerDashboardPage() {
               )}
             </div>
             <div className="mt-4 flex justify-end">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                 <Link href="/employers/dashboard/applications" className="flex items-center">
                   View All Applications
                   <ChevronRight className="ml-1 h-4 w-4" />
@@ -501,18 +509,18 @@ export default function EmployerDashboardPage() {
       </div>
 
       <div className="mt-8">
-        <Card>
+        <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Recruitment Activity</CardTitle>
-                <CardDescription>Track your hiring pipeline and candidate progress</CardDescription>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Recruitment Activity</CardTitle>
+                <CardDescription className="text-sm">Track your hiring pipeline and candidate progress</CardDescription>
               </div>
               <Tabs defaultValue="week">
-                <TabsList>
-                  <TabsTrigger value="week">Week</TabsTrigger>
-                  <TabsTrigger value="month">Month</TabsTrigger>
-                  <TabsTrigger value="year">Year</TabsTrigger>
+                <TabsList className="bg-white shadow-lg border-0">
+                  <TabsTrigger value="week" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Week</TabsTrigger>
+                  <TabsTrigger value="month" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Month</TabsTrigger>
+                  <TabsTrigger value="year" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Year</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -523,7 +531,7 @@ export default function EmployerDashboardPage() {
                 <BarChart3 className="h-16 w-16 text-muted-foreground/50" />
                 <div className="ml-4 text-center">
                   <p className="text-sm font-medium">Analytics Chart Placeholder</p>
-                  <p className="text-sm text-muted-foreground">Visualize your recruitment metrics here</p>
+                  <p className="text-xs text-muted-foreground">Visualize your recruitment metrics here</p>
                 </div>
               </div>
             </div>
@@ -533,7 +541,7 @@ export default function EmployerDashboardPage() {
 
       <div className="mt-8 flex items-center justify-between">
         <h2 className="text-xl font-bold">Upcoming Interviews</h2>
-        <Button>
+        <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
           <Link href="/employers/dashboard/interviews" className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
             View All Interviews
@@ -648,7 +656,7 @@ export default function EmployerDashboardPage() {
                 <p className="text-sm text-muted-foreground mt-1">
                   Schedule interviews with candidates to see them here
                 </p>
-                <Button className="mt-4" size="sm">
+                <Button variant="ghost" className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" size="sm">
                   <Link href="/employers/dashboard/applications">
                     View Applications
                   </Link>

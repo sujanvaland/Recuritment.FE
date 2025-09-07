@@ -82,7 +82,7 @@ export function ApplyJobButton({
     }
   }, [user, jobId, isLoading])
 
-  const handleClick = async () => {
+  const handleClick = async () => { 
     if (isLoading) {
       return
     }

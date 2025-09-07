@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, Clock, Link, MapPin, MoreHorizontal, Plus, Search, SlidersHorizontal, Users } from "lucide-react"
+import { Briefcase, Calendar, Clock, Link, MapPin, MoreHorizontal, Plus, Search, SlidersHorizontal, Users } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -416,16 +416,16 @@ export default function JobsPage() {
 
             <Tabs defaultValue="active" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
 
-             <TabsList>
-                <TabsTrigger value="active" className="relative">
+             <TabsList className="bg-white shadow-lg border-0">
+                <TabsTrigger value="active" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
                   Active
-                  <Badge className="ml-2 bg-primary/10 text-primary">{activejob.length}</Badge>
+                  <Badge className="ml-2 bg-primary/10 text-white">{activejob.length}</Badge>
                 </TabsTrigger>
-                <TabsTrigger value="drafts" className="relative" onClick={() => fetchDrafJobs()}>
+                <TabsTrigger value="drafts" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" onClick={() => fetchDrafJobs()}>
                   Drafts
                   <Badge className="ml-2 bg-muted text-muted-foreground">{draftJobs.length}</Badge>
                 </TabsTrigger>
-                <TabsTrigger value="expired" className="relative" onClick={() => fetchExpiredJobs()}>
+                <TabsTrigger value="expired" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" onClick={() => fetchExpiredJobs()}>
                   Expired
                   <Badge className="ml-2 bg-destructive/10 text-destructive">{expiredJobs.length}</Badge>
                 </TabsTrigger>
@@ -604,8 +604,23 @@ export default function JobsPage() {
             </Tabs>
           </>
         ) : (
-
-          <div>No Job Found</div>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-purple-50">
+            <CardContent className="flex flex-col items-center justify-center p-16 text-center">
+              <div className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-2xl">
+                <Plus className="h-12 w-12 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">No Jobs Posted</h3>
+              <p className="text-gray-600 mb-8 max-w-md">
+                Ready to find the perfect candidates? Start by posting your first job and attract top talent!
+              </p>
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" asChild>
+                <a href="/employers/dashboard/jobs/post">
+                  Post Your First Job
+                  <Plus className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
         )}
     </div>
   )
@@ -632,60 +647,87 @@ function JobCard({
 
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle>{job.title}</CardTitle>
-            <CardDescription className="flex items-center mt-1">
-              <MapPin className="mr-1 h-3 w-3" />
-              {job.location}
-            </CardDescription>
+    <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-md hover:-translate-y-2 bg-white">
+      <CardContent className="p-0">
+        {/* Card Header */}
+        <div className="p-6 pb-4 min-h-[180px]">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white font-semibold text-lg">
+                  {job.title.charAt(0)}
+                </span>
+              </div>
+              <div>
+                <div className="text-sm text-gray-500 font-medium">Your Company</div>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <Calendar className="h-3 w-3" />
+                  {posted}
+                </div>
+              </div>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/edit?id=${job.id}`)}>Edit Job</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleViewApplicants(job.id)}>View Applicants</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/post?id=${job.id}`)}>Duplicate</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive" onClick={() => fnexpiredJob(job)}>Mark as Expired</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive" onClick={() => fneDeleteJob(job)}>Delete Job</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/edit?id=${job.id}`)}>Edit Job</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewApplicants(job.id)}>View Applicants</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/employers/dashboard/jobs/post?id=${job.id}`)}>Duplicate</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive" onClick={() => fnexpiredJob(job)}>Mark as Expired</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive" onClick={() => fneDeleteJob(job)}>Delete Job</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+            {job.title}
+          </h3>
+
+          <div className="flex flex-wrap items-center gap-4 mb-4">
+            <div className="flex items-center gap-2 text-gray-600">
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm">{job.location}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Briefcase className="h-4 w-4" />
+              <span className="text-sm">{job.type}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Users className="h-4 w-4" />
+              <span className="text-sm font-medium">{job.applicants} applicants</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Calendar className="h-4 w-4" />
+              <span className="text-sm">Expires {expires}</span>
+            </div>
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-wrap items-center gap-4">
-          <Badge variant="outline">{job.type}</Badge>
-          <div className="text-sm text-muted-foreground">
-            <Users className="mr-1 inline-block h-3 w-3" />
-            {job.applicants} applicants
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <Clock className="mr-1 inline-block h-3 w-3" />
-            Posted {posted}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <Calendar className="mr-1 inline-block h-3 w-3" />
-            Expires {expires}
+
+        {/* Card Footer */}
+        <div className="px-6 py-4 bg-gray-50 border-t">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/employers/dashboard/jobs/${job.id}`)}
+              className="group-hover:bg-blue-50 group-hover:border-blue-200"
+            >
+              View Details
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => handleViewApplicants(job.id)}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              View Applicants
+            </Button>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="border-t pt-4">
-        <div className="flex w-full justify-between">
-          <Button variant="outline" size="sm" onClick={() => router.push(`/employers/dashboard/jobs/${job.id}`)}>
-            View Details
-          </Button>
-          <Button variant="outline" size="sm" className="bg-[#309689] text-white" onClick={() => handleViewApplicants(job.id)}>
-            View Applicants
-          </Button>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

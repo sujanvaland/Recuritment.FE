@@ -205,7 +205,7 @@ export default function InterviewsPage() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Interviews</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Interviews</h1>
           <p className="text-muted-foreground">Schedule and manage candidate interviews</p>
         </div>
         {/* <Button>
@@ -254,8 +254,8 @@ export default function InterviewsPage() {
             <DropdownMenuContent align="end" className="w-80">
               <div className="p-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium">Filters</h4>
-                  <Button variant="ghost" size="sm" onClick={resetFilters}>
+                  <h4 className="font-bold">Filters</h4>
+                  <Button variant="outline" size="sm" className="border-2 hover:border-blue-500 hover:bg-blue-50" onClick={resetFilters}>
                     Reset
                   </Button>
                 </div>
@@ -312,7 +312,7 @@ export default function InterviewsPage() {
 
                 {/* Apply/Clear Actions */}
                 <div className="flex gap-2 pt-2">
-                  <Button size="sm" onClick={() => setFilterOpen(false)}>
+                  <Button variant="ghost" size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" onClick={() => setFilterOpen(false)}>
                     Apply Filters
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => {
@@ -393,10 +393,10 @@ export default function InterviewsPage() {
         <Separator />
         <CardContent className="p-0">
           <Tabs defaultValue="day" value={selectedTab} onValueChange={setSelectedTab}>
-            <TabsList className="mb-4 ml-4">
-              <TabsTrigger value="day">Day</TabsTrigger>
-              <TabsTrigger value="week">Week</TabsTrigger>
-              <TabsTrigger value="month">Month</TabsTrigger>
+            <TabsList className="mb-4 ml-4 mt-6 bg-white shadow-lg border-0">
+              <TabsTrigger value="day" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Day</TabsTrigger>
+              <TabsTrigger value="week" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Week</TabsTrigger>
+              <TabsTrigger value="month" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Month</TabsTrigger>
             </TabsList>
 
             <TabsContent value="day" className="m-0">
@@ -405,12 +405,16 @@ export default function InterviewsPage() {
                   {weekDates.map((date, index) => (
                     <Button
                       key={index}
-                      variant={selectedDate.toDateString() === date.date.toDateString() ? "default" : "ghost"}
-                      className="flex flex-col items-center rounded-full px-4 py-2"
+                      variant="ghost"
+                      className={`flex flex-col items-center rounded-full px-3 py-2 min-w-[60px] h-16 ${
+                        selectedDate.toDateString() === date.date.toDateString() 
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg" 
+                          : "hover:bg-gray-100"
+                      }`}
                       onClick={() => setSelectedDate(date.date)}
                     >
-                      <div className="text-xs font-medium">{date.day}</div>
-                      <div className="text-lg">{date.dateNum}</div>
+                      <div className="text-xs font-medium leading-tight">{date.day}</div>
+                      <div className="text-lg font-semibold leading-tight">{date.dateNum}</div>
                     </Button>
                   ))}
                 </div>
@@ -775,7 +779,9 @@ function InterviewCard({ interview, onRefresh }: { interview: any; onRefresh: ()
               </Button>
             )}
             <Button 
+              variant="ghost"
               size="sm"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
               onClick={() => {
                 setSelectedInterviewForReschedule(interview);
                 setRescheduleModalOpen(true);
@@ -880,6 +886,8 @@ function InterviewCard({ interview, onRefresh }: { interview: any; onRefresh: ()
               Cancel
             </Button>
             <Button 
+              variant="ghost"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
               onClick={handleRescheduleInterview}
               disabled={!rescheduleDate.trim() || !rescheduleTime.trim()}
             >

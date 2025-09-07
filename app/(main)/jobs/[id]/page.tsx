@@ -199,9 +199,9 @@ export default function JobDetailsPage() {
 
   return (
     <div className="w-full">
-       <div className="bg-black w-full flex flex-col justify-center">
+       <div className="bg-gradient-to-r from-[#afbdeb] via-purple-600 to-[#afbdeb] w-full flex flex-col justify-center">
       <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center py-16 md:py-24">
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white text-center mb-0">Jobs Details</h1>
+        <h1 className="text-5xl md:text-6xl font-extrabold text-white text-center mb-0">Job Details</h1>
       </div>
     </div>
      <div className="w-full bg-white px-4 py-8 md:px-6 md:py-12 flex justify-center">
@@ -256,9 +256,15 @@ export default function JobDetailsPage() {
                 jobTitle={job.title ?? ""}
                 companyName={job.company ?? ""}
                 size="lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
               />
             )}
-            <Button variant="outline" size="icon" onClick={() => savedjobs()}>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => savedjobs()}
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700"
+            >
               <Bookmark className="h-5 w-5" />
               <span className="sr-only">Save job</span>
             </Button>
@@ -269,11 +275,17 @@ export default function JobDetailsPage() {
           </div>
 
           <Tabs defaultValue="description">
-            <TabsList className="mb-4 w-full">
-              <TabsTrigger value="description" className="flex-1">
+            <TabsList className="mb-4 w-full bg-gray-100">
+              <TabsTrigger 
+                value="description" 
+                className="flex-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              >
                 Description
               </TabsTrigger>
-              <TabsTrigger value="company" className="flex-1">
+              <TabsTrigger 
+                value="company" 
+                className="flex-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              >
                 Company
               </TabsTrigger>
             </TabsList>
@@ -320,7 +332,7 @@ export default function JobDetailsPage() {
                   {job?.tags.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-sm font-medium"
+                      className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-200 px-2.5 py-1 text-sm font-medium text-blue-800"
                     >
                       {skill}
                     </span>
@@ -363,37 +375,37 @@ export default function JobDetailsPage() {
         </div>
 
        <div >
-          <div className="rounded-lg border bg-card p-6 shadow-sm" style={{ background: "#EBF5F4" }}>
-            <h2 className="mb-4 text-xl font-semibold">Job Summary</h2>
+          <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-purple-50 p-6 shadow-lg border-blue-200">
+            <h2 className="mb-4 text-xl font-semibold text-gray-800">Job Summary</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium">Job Type</h3>
-                <p className="text-sm text-muted-foreground">{job?.type}</p>
+                <h3 className="text-sm font-medium text-gray-700">Job Type</h3>
+                <p className="text-sm text-gray-600">{job?.type}</p>
               </div>
-              <Separator />
+              <Separator className="bg-blue-200" />
               <div>
-                <h3 className="text-sm font-medium">Salary Range</h3>
-                <p className="text-sm text-muted-foreground">{job?.salary}</p>
+                <h3 className="text-sm font-medium text-gray-700">Salary Range</h3>
+                <p className="text-sm text-gray-600">{job?.salary}</p>
               </div>
-              <Separator />
+              <Separator className="bg-blue-200" />
               {/* <div>
-                <h3 className="text-sm font-medium">Experience</h3>
-                <p className="text-sm text-muted-foreground">{job?.experience}</p>
+                <h3 className="text-sm font-medium text-gray-700">Experience</h3>
+                <p className="text-sm text-gray-600">{job?.experience}</p>
               </div>
-              <Separator /> */}
+              <Separator className="bg-blue-200" /> */}
               <div>
-                <h3 className="text-sm font-medium">Location</h3>
-                <p className="text-sm text-muted-foreground">{job?.location}</p>
+                <h3 className="text-sm font-medium text-gray-700">Location</h3>
+                <p className="text-sm text-gray-600">{job?.location}</p>
               </div>
-              <Separator />
+              <Separator className="bg-blue-200" />
               <div>
-                <h3 className="text-sm font-medium">Posted</h3>
-                <p className="text-sm text-muted-foreground">{job?.createdAt && new Date(job?.createdAt).toDateString()}</p>
+                <h3 className="text-sm font-medium text-gray-700">Posted</h3>
+                <p className="text-sm text-gray-600">{job?.createdAt && new Date(job?.createdAt).toDateString()}</p>
               </div>
-              <Separator />
+              <Separator className="bg-blue-200" />
               <div>
-                <h3 className="text-sm font-medium">Application Deadline</h3>
-                <p className="text-sm text-muted-foreground">{job?.expiresAt && new Date(job?.expiresAt).toDateString()}</p>
+                <h3 className="text-sm font-medium text-gray-700">Application Deadline</h3>
+                <p className="text-sm text-gray-600">{job?.expiresAt && new Date(job?.expiresAt).toDateString()}</p>
               </div>
             </div>
             {/* <ApplyJobButton jobId={job!.id} jobTitle={job?.title ?? ""} companyName={job?.company ?? ""} className="mt-6 w-full" /> */}

@@ -245,7 +245,7 @@ export default function PostJobPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Post New Job</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Post New Job</h1>
           <p className="text-muted-foreground">Create a new job posting to attract top talent</p>
         </div>
       </div>
@@ -256,7 +256,7 @@ export default function PostJobPage() {
             {/* Basic Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Basic Information</CardTitle>
                 <CardDescription>Essential details about the job position</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -339,7 +339,7 @@ export default function PostJobPage() {
             {/* Job Details */}
             <Card>
               <CardHeader>
-                <CardTitle>Job Details</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Job Details</CardTitle>
                 <CardDescription>Detailed description and requirements</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -372,7 +372,7 @@ export default function PostJobPage() {
             {/* Benefits and Tags */}
             <Card>
               <CardHeader>
-                <CardTitle>Benefits & Skills</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Benefits & Skills</CardTitle>
                 <CardDescription>Add benefits and relevant skills/tags</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -439,9 +439,9 @@ export default function PostJobPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <Card>
+            <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Publishing Options</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Publishing Options</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -458,7 +458,7 @@ export default function PostJobPage() {
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <Button type="submit" className="w-full bg-[#309689]" disabled={isSubmitting} >
+                  <Button type="submit" variant="ghost" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" disabled={isSubmitting} >
                     {isSubmitting ? "Publishing..." : "Publish Job"}
                   </Button>
                   <Button
@@ -479,7 +479,7 @@ export default function PostJobPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Tips for Success</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Tips for Success</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <div>

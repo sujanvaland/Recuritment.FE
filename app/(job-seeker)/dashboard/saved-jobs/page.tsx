@@ -83,7 +83,7 @@ export default function SavedJobsPage() {
       guId: "string",
       userId: "string",
       profileVisible: true,
-      showContactInfo: true,
+      showContactInfo: true, 
       allowMessaging: true,
       shareJobActivity: true,
       shareApplicationHistory: true
@@ -199,7 +199,7 @@ export default function SavedJobsPage() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Saved Jobs</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Saved Jobs</h1>
         <p className="text-muted-foreground">Jobs you've bookmarked for later</p>
       </div>
 
@@ -243,10 +243,10 @@ export default function SavedJobsPage() {
       ) : savedJobs.length > 0 ? (
         <div className="space-y-4">
           {savedJobs.map((job) => (
-            <Card key={job.id} className="overflow-hidden transition-all hover:shadow-md">
-              <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4">
+            <Card key={job.id} className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 bg-white overflow-hidden">
+              <CardHeader className="flex flex-row items-start justify-between space-y-0 p-6 pb-4 bg-gradient-to-r from-slate-50 to-blue-50">
                 <div className="flex items-start space-x-4">
-                  <div className="h-12 w-12 overflow-hidden rounded-md bg-slate-100">
+                  <div className="h-12 w-12 overflow-hidden rounded-md bg-white ring-1 ring-blue-100 shadow-sm">
                     <img
                       src={job.logo || "/placeholder.svg"}
                       alt={`${job.companyName} logo`}
@@ -254,8 +254,8 @@ export default function SavedJobsPage() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{job?.jobTitle}</h3>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">{job?.jobTitle}</h3>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600">
                       <div className="flex items-center">
                         <Building className="mr-1 h-3 w-3" />
                         {job?.companyName}
@@ -281,7 +281,7 @@ export default function SavedJobsPage() {
                   <span className="sr-only">Remove saved job</span>
                 </Button>
               </CardHeader>
-              <CardContent className="p-4 pt-0">
+              <CardContent className="p-6 pt-4">
                 {/* <div className="flex flex-wrap gap-1">
                   {job.skills.map((skill) => (
                     <span
@@ -292,9 +292,9 @@ export default function SavedJobsPage() {
                     </span>
                   ))}
                 </div> */}
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-2 flex items-center justify-between">
                   <div>
-                    <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
                       {job.type}
                     </span>
                     <span className="ml-2 text-sm font-medium">{job.salary}</span>
@@ -306,8 +306,8 @@ export default function SavedJobsPage() {
                 </div>
               </CardContent>
               <Separator />
-              <CardFooter className="flex justify-between p-4">
-                <Button asChild variant="outline" size="sm">
+              <CardFooter className="flex justify-between p-6 pt-4">
+                <Button asChild variant="outline" size="sm" className="group-hover:bg-blue-50 group-hover:border-blue-200">
                   <Link href={`/jobs/${job?.jobId}`}>
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Details
@@ -318,30 +318,33 @@ export default function SavedJobsPage() {
                   jobTitle={job?.jobTitle}
                   companyName={job?.companyName}
                   size="sm"
+                  className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white font-semibold"
                 />
               </CardFooter>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="flex h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
-            <Bookmark className="h-10 w-10 text-slate-400" />
-          </div>
-          <h3 className="mt-4 text-lg font-semibold">No saved jobs found</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {searchQuery ? "Try adjusting your search query" : "You haven't saved any jobs yet"}
-          </p>
-          {searchQuery ? (
-            <Button variant="outline" className="mt-4" onClick={() => setSearchQuery("")}>
-              Clear search
-            </Button>
-          ) : (
-            <Button className="mt-4" asChild>
-              <Link href="/jobs">Browse Jobs</Link>
-            </Button>
-          )}
-        </div>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-purple-50">
+          <CardContent className="flex flex-col items-center justify-center p-16 text-center">
+            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-2xl">
+              <Bookmark className="h-12 w-12 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Saved Jobs</h3>
+            <p className="text-gray-600 mb-8 max-w-md">
+              {searchQuery ? "Try adjusting your search query to find saved roles." : "You haven't saved any jobs yet. Browse and save roles to view them here."}
+            </p>
+            {searchQuery ? (
+              <Button variant="outline" className="bg-white hover:bg-gray-50 shadow-lg border-0" onClick={() => setSearchQuery("")}> 
+                Clear search
+              </Button>
+            ) : (
+              <Button className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white" asChild>
+                <Link href="/jobs">Explore Jobs</Link>
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       {/* Example usage in JSX (add this where you want the switch to appear): */}

@@ -9,7 +9,7 @@ import {
   Lock,
   Mail,
   Save,
-  Shield,
+  Shield, 
   User,
   Users,
   Plus,
@@ -415,39 +415,39 @@ debugger;
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">Manage your account and company settings</p>
       </div>
 
       <Tabs defaultValue="company" className="space-y-8">
-        <TabsList className="w-full sm:w-auto">
+        <TabsList className="w-full sm:w-auto bg-white shadow-lg border-0">
           {tabVisibility.company && (
-            <TabsTrigger value="company" className="flex items-center gap-2">
+            <TabsTrigger value="company" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
               <Building className="h-4 w-4" />
               <span className="hidden sm:inline-block">Company</span>
             </TabsTrigger>
           )}
           {tabVisibility.account && (
-            <TabsTrigger value="account" className="flex items-center gap-2">
+            <TabsTrigger value="account" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline-block">Account</span>
             </TabsTrigger>
           )}
           {/* Team tab is hidden if tabVisibility.team is false */}
           {tabVisibility.team && (
-            <TabsTrigger value="team" className="flex items-center gap-2">
+            <TabsTrigger value="team" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline-block">Team</span>
             </TabsTrigger>
           )}
           {tabVisibility.billing && (
-            <TabsTrigger value="billing" className="flex items-center gap-2">
+            <TabsTrigger value="billing" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
               <CreditCard className="h-4 w-4" />
               <span className="hidden sm:inline-block">Billing</span>
             </TabsTrigger>
           )}
           {tabVisibility.notifications && (
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <TabsTrigger value="notifications" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
               <Bell className="h-4 w-4" />
               <span className="hidden sm:inline-block">Notifications</span>
             </TabsTrigger>
@@ -457,9 +457,9 @@ debugger;
         {/* Optionally, hide Team tab content as well */}
         {tabVisibility.company && (
           <TabsContent value="company" className="space-y-6">
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Company Profile</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Company Profile</CardTitle>
                 <CardDescription>Manage your company information and branding</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -476,6 +476,7 @@ debugger;
                           <Button
                             size="sm"
                             variant="outline"
+                            className="border-2 hover:border-blue-500 hover:bg-blue-50"
                             onClick={() => document.getElementById("company-logo-upload")?.click()}
                           >
                             Change Logo
@@ -506,6 +507,7 @@ debugger;
                           <Button
                             size="sm"
                             variant="outline"
+                            className="border-2 hover:border-blue-500 hover:bg-blue-50"
                             onClick={() => document.getElementById("company-banner-upload")?.click()}
                           >
                             Change Banner
@@ -655,17 +657,17 @@ debugger;
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">Cancel</Button>
-                <Button onClick={updateCompany}>
+                <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50">Cancel</Button>
+                <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" onClick={updateCompany}>
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
               </CardFooter>
             </Card>
 
-            {false && (<Card>
+            {false && (<Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Career Page</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Career Page</CardTitle>
                 <CardDescription>Customize your company's career page</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -704,8 +706,8 @@ debugger;
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">Preview</Button>
-                <Button>Save Changes</Button>
+                <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50">Preview</Button>
+                <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Save Changes</Button>
               </CardFooter>
             </Card>
             )}
@@ -713,9 +715,9 @@ debugger;
         )}
         {tabVisibility.account && (
           <TabsContent value="account" className="space-y-6">
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Account Information</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Account Information</CardTitle>
                 <CardDescription>Manage your personal account details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -734,6 +736,7 @@ debugger;
                         <Button
                           size="sm"
                           variant="outline"
+                          className="border-2 hover:border-blue-500 hover:bg-blue-50"
                           onClick={() => document.getElementById("profile-picture-upload")?.click()}
                         >
                           Change Picture
@@ -807,17 +810,17 @@ debugger;
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">Cancel</Button>
-                <Button onClick={handleUpdateAccount}>
+                <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50">Cancel</Button>
+                <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" onClick={handleUpdateAccount}>
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
               </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Security</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Security</CardTitle>
                 <CardDescription>Manage your account security and password</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -861,8 +864,8 @@ debugger;
                 </div> }
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">Cancel</Button>
-                <Button onClick={handleUpdatePassword}>
+                <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50">Cancel</Button>
+                <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" onClick={handleUpdatePassword}>
                   <Lock className="mr-2 h-4 w-4" />
                   Update Password
                 </Button>
@@ -872,16 +875,16 @@ debugger;
         )}
         {tabVisibility.team && (
           <TabsContent value="team" className="space-y-6">
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Team Members</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Team Members</CardTitle>
                 <CardDescription>Manage your team and their permissions</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">Current Team Members (5)</div>
-                    <Button size="sm">
+                    <Button variant="ghost" size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                       <Plus className="mr-2 h-4 w-4" />
                       Add Team Member
                     </Button>
@@ -900,7 +903,7 @@ debugger;
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge>Admin</Badge>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="outline" size="icon" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </div>
@@ -920,7 +923,7 @@ debugger;
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge>Recruiter</Badge>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="outline" size="icon" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </div>
@@ -940,7 +943,7 @@ debugger;
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge>Hiring Manager</Badge>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="outline" size="icon" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </div>
@@ -950,9 +953,9 @@ debugger;
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Roles & Permissions</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Roles & Permissions</CardTitle>
                 <CardDescription>Configure team roles and access levels</CardDescription>
               </CardHeader>
               <CardContent>
@@ -963,7 +966,7 @@ debugger;
                         <div className="font-medium">Admin</div>
                         <div className="text-sm text-muted-foreground">Full access to all features</div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                         Edit
                       </Button>
                     </div>
@@ -975,7 +978,7 @@ debugger;
                         <div className="font-medium">Recruiter</div>
                         <div className="text-sm text-muted-foreground">Can manage jobs and candidates</div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                         Edit
                       </Button>
                     </div>
@@ -987,13 +990,13 @@ debugger;
                         <div className="font-medium">Hiring Manager</div>
                         <div className="text-sm text-muted-foreground">Can review candidates and conduct interviews</div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                         Edit
                       </Button>
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full">
+                  <Button variant="ghost" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                     <Plus className="mr-2 h-4 w-4" />
                     Create Custom Role
                   </Button>
@@ -1004,9 +1007,9 @@ debugger;
         )}
         {tabVisibility.billing && (
           <TabsContent value="billing" className="space-y-6">
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Subscription Plan</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Subscription Plan</CardTitle>
                 <CardDescription>Manage your subscription and billing details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1041,8 +1044,8 @@ debugger;
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <Button variant="outline">Change Plan</Button>
-                    <Button variant="outline" className="text-red-500 hover:text-red-600">
+                    <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50">Change Plan</Button>
+                    <Button variant="outline" className="border-2 text-red-500 hover:text-red-600 hover:border-red-500 hover:bg-red-50">
                       Cancel Subscription
                     </Button>
                   </div>
@@ -1061,7 +1064,7 @@ debugger;
                           <div className="text-sm text-muted-foreground">Expires 12/2025</div>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-blue-500 hover:bg-blue-50">
                         Change
                       </Button>
                     </div>
@@ -1077,7 +1080,7 @@ debugger;
                       <div className="text-sm">San Francisco, CA 94103</div>
                       <div className="text-sm">United States</div>
                     </div>
-                    <Button variant="ghost" size="sm" className="mt-2">
+                    <Button variant="outline" size="sm" className="mt-2 border-2 hover:border-blue-500 hover:bg-blue-50">
                       Edit
                     </Button>
                   </div>
@@ -1085,9 +1088,9 @@ debugger;
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Billing History</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Billing History</CardTitle>
                 <CardDescription>View your past invoices and payment history</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1100,7 +1103,7 @@ debugger;
                     <div className="flex items-center gap-4">
                       <div className="text-sm font-medium">$99.00</div>
                       <Badge className="bg-green-100 text-green-800">Paid</Badge>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-green-500 hover:bg-green-50 text-green-700">
                         Download
                       </Button>
                     </div>
@@ -1116,7 +1119,7 @@ debugger;
                     <div className="flex items-center gap-4">
                       <div className="text-sm font-medium">$99.00</div>
                       <Badge className="bg-green-100 text-green-800">Paid</Badge>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-green-500 hover:bg-green-50 text-green-700">
                         Download
                       </Button>
                     </div>
@@ -1132,7 +1135,7 @@ debugger;
                     <div className="flex items-center gap-4">
                       <div className="text-sm font-medium">$99.00</div>
                       <Badge className="bg-green-100 text-green-800">Paid</Badge>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="outline" size="sm" className="border-2 hover:border-green-500 hover:bg-green-50 text-green-700">
                         Download
                       </Button>
                     </div>
@@ -1144,9 +1147,9 @@ debugger;
         )}
         {tabVisibility.notifications && (
           <TabsContent value="notifications" className="space-y-6">
-            <Card>
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Notification Preferences</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Notification Preferences</CardTitle>
                 <CardDescription>Manage how and when you receive notifications</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1256,10 +1259,10 @@ debugger;
                 )}
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline" onClick={resetNotificationsToDefault}>
+                <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50" onClick={resetNotificationsToDefault}>
                   Reset to Default
                 </Button>
-                <Button onClick={handleUpdateNotifications}>
+                <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" onClick={handleUpdateNotifications}>
                   <Save className="mr-2 h-4 w-4" />
                   Save Preferences
                 </Button>
@@ -1267,9 +1270,9 @@ debugger;
             </Card>
 
         {/* Hide Privacy Settings */}
-             {false && (<Card>
+             {false && (<Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardHeader>
-                <CardTitle>Privacy Settings</CardTitle>
+                <CardTitle className="text-base md:text-lg font-bold text-gray-800">Privacy Settings</CardTitle>
                 <CardDescription>Manage your data privacy preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -1301,8 +1304,8 @@ debugger;
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>Save Settings</Button>
+                <Button variant="outline" className="border-2 hover:border-blue-500 hover:bg-blue-50">Cancel</Button>
+                <Button variant="ghost" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Save Settings</Button>
               </CardFooter>
             </Card>
              )}

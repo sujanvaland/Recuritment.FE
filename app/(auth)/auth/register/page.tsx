@@ -74,126 +74,145 @@ export default function RegisterPage() {
   };
 
   return (
-    <>
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Create an account
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your details to create your Sarvah account
-        </p>
-      </div>
-      {(error || formError) && (
-        <Alert variant="destructive">
-          <AlertDescription>{formError || error}</AlertDescription>
-        </Alert>
-      )}
-      <div className="grid gap-6">
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label>I am a</Label>
-              <RadioGroup
-                defaultValue="job-seeker"
-                className="flex"
-                value={formData.role}
-                onValueChange={handleRoleChange}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="job-seeker" id="job-seeker" />
-                  <Label htmlFor="job-seeker" className="font-normal">
-                    Job Seeker
-                  </Label>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
+          <div className="p-8">
+            <div className="flex flex-col space-y-3 text-center mb-8">
+              <h1 className="text-3xl font-bold tracking-tight text-gray-800">
+                Create an account
+              </h1>
+              <p className="text-gray-600">
+                Enter your details to create your Sarvaha account
+              </p>
+            </div>
+            
+            {(error || formError) && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>{formError || error}</AlertDescription>
+              </Alert>
+            )}
+            <div className="space-y-6">
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label className="text-gray-700 font-medium">I am a</Label>
+                    <RadioGroup
+                      defaultValue="job-seeker"
+                      className="flex"
+                      value={formData.role}
+                      onValueChange={handleRoleChange}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="job-seeker" id="job-seeker" />
+                        <Label htmlFor="job-seeker" className="font-normal text-gray-700">
+                          Job Seeker
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="employer" id="employer" />
+                        <Label htmlFor="employer" className="font-normal text-gray-700">
+                          Employer
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-gray-700 font-medium">First name</Label>
+                      <Input
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                        className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="text-gray-700 font-medium">Last name</Label>
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                        className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      placeholder="name@example.com"
+                      type="email"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      autoCorrect="off"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                      className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-base"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="employer" id="employer" />
-                  <Label htmlFor="employer" className="font-normal">
-                    Employer
-                  </Label>
-                </div>
-              </RadioGroup>
+              </form>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="firstName">First name</Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="lastName">Last name</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <p className="text-center text-sm text-gray-600">
+                <span>Already have an account? </span>
+                <Link
+                  href="/auth/login"
+                  className="text-blue-600 hover:text-blue-700 underline underline-offset-4 font-medium"
+                >
+                  Sign in
+                </Link>
+              </p>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                placeholder="name@example.com"
-                type="email"
-                autoCapitalize="none"
-                autoComplete="email"
-                autoCorrect="off"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
           </div>
-        </form>
+        </div>
       </div>
-      <p className="px-8 text-center text-sm text-muted-foreground">
-        <span>Already have an account? </span>
-        <Link
-          href="/auth/login"
-          className="underline underline-offset-4 hover:text-primary"
-        >
-          Sign in
-        </Link>
-      </p>
-    </>
+    </div>
   );
 }

@@ -67,56 +67,120 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Reset Password</h1>
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      {message && (
-        <Alert variant="default" className="mb-4">
-          <AlertDescription>{message}</AlertDescription>
-        </Alert>
-      )}
-
-      {step === 1 && (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" value={email} onChange={e => setEmail(e.target.value)} />
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
+        <div className="p-8">
+          <div className="flex flex-col space-y-3 text-center mb-8">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-800">Reset Password</h1>
+            <p className="text-gray-600">Enter your email to reset your password</p>
           </div>
-          <Button onClick={requestOtp} disabled={!email}>Send OTP</Button>
+          
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {message && (
+            <Alert variant="default" className="mb-6">
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          )}
+
+          {step === 1 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                <Input 
+                  id="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  required
+                  className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <Button 
+                onClick={requestOtp} 
+                disabled={!email}
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-base"
+              >
+                Send OTP
+              </Button>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="otp" className="text-gray-700 font-medium">OTP</Label>
+                <Input 
+                  id="otp" 
+                  value={otp} 
+                  onChange={e => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  required
+                  className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={verifyOtp} 
+                  disabled={!otp}
+                  className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-base"
+                >
+                  Verify OTP
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setStep(1)}
+                  className="h-12"
+                >
+                  Back
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-700 font-medium">New Password</Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  required
+                  className="h-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={resetPassword} 
+                  disabled={!password}
+                  className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-base"
+                >
+                  Reset Password
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setStep(2)}
+                  className="h-12"
+                >
+                  Back
+                </Button>
+              </div>
+            </div>
+          )}
+          </div>
         </div>
-      )}
-
-      {step === 2 && (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="otp">OTP</Label>
-            <Input id="otp" value={otp} onChange={e => setOtp(e.target.value)} />
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={verifyOtp} disabled={!otp}>Verify OTP</Button>
-            <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="password">New Password</Label>
-            <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={resetPassword} disabled={!password}>Reset Password</Button>
-            <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
-          </div>
-        </div>
-      )}
-
-      
+      </div>
     </div>
   )
 }

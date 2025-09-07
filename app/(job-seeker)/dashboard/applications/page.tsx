@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui/progress" 
 import { useAuth } from "@/contexts/auth-context"
 import { DataService } from "@/services/axiosInstance"
 
@@ -332,9 +332,13 @@ export default function ApplicationsPage() {
   const activeApplications = applications.filter(app => app.applicationStatus === "applied" || app.applicationStatus === "interview").length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+    <div className="min-h-screen bg-gradient-to-br">
+      <div className="max-w-7xl mx-auto  ">
+        {/* Page Title */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
+          <p className="text-muted-foreground">Track and manage your job applications</p>
+        </div>
 
         {/* Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -479,10 +483,10 @@ export default function ApplicationsPage() {
                           {/* Actions */}
                           <div className="flex gap-2">
                             <Button 
-                              variant="outline" 
+                              variant="ghost" 
                               size="sm" 
                               onClick={() => handleViewDetails(application)}
-                              className="flex-1 group-hover:bg-blue-50 group-hover:border-blue-200"
+                              className="flex-1 bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white"
                             >
                               <Eye className="mr-2 h-4 w-4" />
                               View Details
@@ -490,10 +494,10 @@ export default function ApplicationsPage() {
                             
                             {application.resumeUrl && (
                               <Button 
-                                variant="ghost" 
+                                variant="outline" 
                                 size="sm"
                                 onClick={() => window.open(application.resumeUrl, '_blank', 'noopener,noreferrer')}
-                                className="hover:bg-green-50 hover:text-green-600"
+                                className="hover:bg-green-50 hover:border-green-200 text-green-700"
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
@@ -598,9 +602,9 @@ export default function ApplicationsPage() {
                 })}
               </div>
             ) : (
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-gray-50 to-gray-100">
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-purple-50">
                 <CardContent className="flex flex-col items-center justify-center p-16 text-center">
-                  <div className="mx-auto w-24 h-24 bg-gray-400 rounded-full flex items-center justify-center mb-6">
+                  <div className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-2xl">
                     <Archive className="h-12 w-12 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">No Archived Applications</h3>
@@ -618,10 +622,10 @@ export default function ApplicationsPage() {
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
         <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto border-0 shadow-2xl">
           <DialogHeader className="border-b pb-6">
-            <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Application Details
             </DialogTitle>
-            <DialogDescription className="text-lg text-gray-600">
+            <DialogDescription className="text-md text-gray-600">
               Complete overview of your job application and progress
             </DialogDescription>
           </DialogHeader>
@@ -635,7 +639,7 @@ export default function ApplicationsPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
                       {/* Enhanced Job Information */}
-                      <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30">
+                      <Card className="border-blue-200 shadow-xl bg-gradient-to-br from-blue-50 to-purple-50">
                         <CardHeader className="pb-4">
                           <div className="flex items-start gap-6">
                             {/* <Avatar className="h-20 w-20 ring-4 ring-white shadow-xl">
@@ -645,7 +649,7 @@ export default function ApplicationsPage() {
                               </AvatarFallback>
                             </Avatar> */}
                             <div className="flex-1">
-                              <CardTitle className="text-2xl mb-2">{selectedApplication.title}</CardTitle>
+                              <CardTitle className="text-xl md:text-1xl font-bold mb-2">{selectedApplication.title}</CardTitle>
                               <p className="text-xl text-gray-600 font-semibold mb-4">{selectedApplication.company}</p>
                               
                               <div className="grid grid-cols-2 gap-4">
@@ -670,8 +674,8 @@ export default function ApplicationsPage() {
                         
                         <CardContent className="space-y-6">
                           <div>
-                            <h4 className="text-lg font-semibold text-gray-900 mb-3">About This Role</h4>
-                            <p className="text-gray-700 leading-relaxed">{selectedApplication.description}</p>
+                            <h4 className="text-base md:text-lg font-bold text-gray-900 mb-2">About This Role</h4>
+                            <p className="text-gray-700 text-sm md:text-base leading-relaxed">{selectedApplication.description}</p>
                           </div>
                           
                           {/* {selectedApplication.requirements.length > 0 && (
@@ -707,14 +711,14 @@ export default function ApplicationsPage() {
                       {/* Enhanced Cover Letter */}
                       <Card className="border-0 shadow-xl">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
+                          <CardTitle className="flex items-center gap-2 text-base md:text-lg font-bold text-gray-800">
                             <FileText className="h-5 w-5" />
                             Cover Letter
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl p-6 border">
-                            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed text-lg">
+                          <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl p-5 border">
+                            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed text-sm md:text-base">
                               {selectedApplication.coverLetter || "No cover letter provided"}
                             </p>
                           </div>
@@ -727,7 +731,7 @@ export default function ApplicationsPage() {
                       {/* Application Status */}
                       <Card className="border-0 shadow-xl">
                         <CardHeader>
-                          <CardTitle className="text-lg">Application Status</CardTitle>
+                          <CardTitle className="text-base md:text-lg font-bold text-gray-800">Application Status</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
                           <div className="flex justify-center">
@@ -775,18 +779,18 @@ export default function ApplicationsPage() {
                       {/* Enhanced Actions */}
                       <Card className="border-0 shadow-xl">
                         <CardHeader>
-                          <CardTitle className="text-lg">Quick Actions</CardTitle>
+                          <CardTitle className="text-base md:text-lg font-bold text-gray-800">Quick Actions</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
                           {selectedApplication.resumeUrl && (
                             <Button
                               variant="outline"
-                              className="w-full justify-start hover:bg-green-50 hover:border-green-200"
+                              className="w-full justify-start hover:bg-blue-50 hover:border-blue-200 text-blue-700"
                               onClick={() => {
                                 window.open(selectedApplication.resumeUrl, '_blank', 'noopener,noreferrer')
                               }}
                             >
-                              <Download className="mr-3 h-4 w-4" />
+                              <Download className="mr-3 h-4 w-4 text-blue-600" />
                               View Resume
                               <ExternalLink className="ml-auto h-4 w-4" />
                             </Button>

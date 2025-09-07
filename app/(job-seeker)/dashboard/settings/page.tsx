@@ -224,19 +224,19 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
   return ( 
     <>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Account Settings</h1>
         <p className="text-muted-foreground">Manage your account preferences and settings</p>
       </div>
 
       <Tabs defaultValue="notifications" className="space-y-6">
         <div className="flex justify-between items-center">
-          <TabsList>
+          <TabsList className="bg-white shadow-lg border-0">
             {/* <TabsTrigger value="general">General</TabsTrigger> */}
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="privacy">Privacy</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
+            <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Notifications</TabsTrigger>
+            <TabsTrigger value="privacy" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Privacy</TabsTrigger>
+            <TabsTrigger value="security" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">Security</TabsTrigger>
           </TabsList>
-          <Button onClick={handleSaveSettings} disabled={isSaving}>
+          <Button onClick={handleSaveSettings} disabled={isSaving} variant="ghost" className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white">
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
@@ -244,9 +244,9 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
        
 
         <TabsContent value="notifications">
-          <Card>
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader>
-              <CardTitle>Notification Settings</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Notification Settings</CardTitle>
               <CardDescription>Control how and when you receive notifications</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -322,7 +322,7 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
                         onCheckedChange={handleNotificationChange("interviewReminders")}
                       />
                   </div>
-                </div>
+                </div> 
               </div>
 
               <Separator />
@@ -378,9 +378,9 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
         </TabsContent>
 
         <TabsContent value="privacy">
-          <Card>
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
             <CardHeader>
-              <CardTitle>Privacy Settings</CardTitle>
+              <CardTitle className="text-base md:text-lg font-bold text-gray-800">Privacy Settings</CardTitle>
               <CardDescription>Control your privacy and visibility preferences</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -478,9 +478,9 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
         </TabsContent>
 
        <TabsContent value="security">
-  <Card>
+  <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
     <CardHeader>
-      <CardTitle>Security Settings</CardTitle>
+      <CardTitle className="text-base md:text-lg font-bold text-gray-800">Security Settings</CardTitle>
       <CardDescription>Manage your account security and login options</CardDescription>
     </CardHeader>
     <CardContent className="space-y-6">
@@ -523,7 +523,7 @@ const handlePrivacyChange = (field: keyof UserSettings["privacy"]) => (value: bo
           {passwordError && (
             <p className="text-sm text-red-500">{passwordError}</p>
           )}
-          <Button onClick={handleUpdatePassword} disabled={isPasswordSaving}>
+          <Button onClick={handleUpdatePassword} disabled={isPasswordSaving} variant="ghost" className="bg-gradient-to-r text-white from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:text-white">
             {isPasswordSaving ? "Updating..." : "Update Password"}
           </Button>
         </div>

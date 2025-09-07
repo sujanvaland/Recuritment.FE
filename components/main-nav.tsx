@@ -39,7 +39,7 @@ export function MainNav() {
       {/* Logo - Left */}
       <div className="flex items-center min-w-[170px]">
         <Link href="/" className="flex items-center gap-2">
-          <Briefcase className="h-7 w-7 text-emerald-500" />
+          <Briefcase className="h-7 w-7 text-[#e1bd00]" />
           <span className="text-2xl font-bold text-white">Sarvah Logo</span>
         </Link>
       </div>
@@ -48,8 +48,8 @@ export function MainNav() {
         <Link
           href="/"
           className={cn(
-            "font-medium hover:text-emerald-400 text-white transition-colors",
-            pathname === "/" && "text-emerald-400"
+            "font-medium hover:text-[#e1bd00] text-white transition-colors",
+            pathname === "/" && "text-[#e1bd00]"
           )}
         >
           Home
@@ -59,8 +59,8 @@ export function MainNav() {
             key={route.href}
             href={route.href}
             className={cn(
-              "font-medium hover:text-emerald-400 text-white transition-colors",
-              route.active && "text-emerald-400"
+              "font-medium hover:text-[#e1bd00] text-white transition-colors",
+              route.active && "text-[#e1bd00]"
             )}
           >
             {route.label}
@@ -69,8 +69,8 @@ export function MainNav() {
         <Link
           href="/about"
           className={cn(
-            "font-medium hover:text-emerald-400 text-white transition-colors",
-            pathname === "/about" && "text-emerald-400"
+            "font-medium hover:text-[#e1bd00] text-white transition-colors",
+            pathname === "/about" && "text-[#e1bd00]"
           )}
         >
           About Us
@@ -78,8 +78,8 @@ export function MainNav() {
         <Link
           href="/contact"
           className={cn(
-            "font-medium hover:text-emerald-400 text-white transition-colors",
-            pathname === "/contact" && "text-emerald-400"
+            "font-medium hover:text-[#e1bd00] text-white transition-colors",
+            pathname === "/contact" && "text-[#e1bd00]"
           )}
         >
           Contact Us
@@ -107,7 +107,7 @@ export function MainNav() {
                 Login
               </Link>
               <Link href="/auth/register">
-                <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded transition">
+                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-5 py-2 rounded transition">
                   Register
                 </button>
               </Link>
@@ -126,8 +126,8 @@ export function MainNav() {
             <Link
               href="/"
               className={cn(
-                "text-base font-medium hover:text-emerald-400 text-white transition-colors",
-                pathname === "/" && "text-emerald-400"
+                "text-base font-medium hover:text-[#e1bd00] text-white transition-colors",
+                pathname === "/" && "text-[#e1bd00]"
               )}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -138,8 +138,8 @@ export function MainNav() {
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "text-base font-medium hover:text-emerald-400 text-white transition-colors",
-                  route.active && "text-emerald-400"
+                  "text-base font-medium hover:text-[#e1bd00] text-white transition-colors",
+                  route.active && "text-[#e1bd00]"
                 )}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -149,8 +149,8 @@ export function MainNav() {
             <Link
               href="/about"
               className={cn(
-                "text-base font-medium hover:text-emerald-400 text-white transition-colors",
-                pathname === "/about" && "text-emerald-400"
+                "text-base font-medium hover:text-[#e1bd00] text-white transition-colors",
+                pathname === "/about" && "text-[#e1bd00]"
               )}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -159,8 +159,8 @@ export function MainNav() {
             <Link
               href="/contact"
               className={cn(
-                "text-base font-medium hover:text-emerald-400 text-white transition-colors",
-                pathname === "/contact" && "text-emerald-400"
+                "text-base font-medium hover:text-[#e1bd00] text-white transition-colors",
+                pathname === "/contact" && "text-[#e1bd00]"
               )}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -196,7 +196,7 @@ export function MainNav() {
                     Login
                   </Link>
                   <Link href="/auth/register" onClick={() => setIsMenuOpen(false)}>
-                    <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded transition w-full">
+                    <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-5 py-2 rounded transition w-full">
                       Register
                     </button>
                   </Link>

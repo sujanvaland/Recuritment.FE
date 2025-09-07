@@ -9,8 +9,8 @@ import { DataService } from "@/services/axiosInstance"
 import { getRelativeTime } from "@/components/Uitility/Timeformat"
 
 // Define interfaces for better type safety
-interface JobApplication {
-  appliedId: string | number
+interface JobApplication {  
+  appliedId: string | number 
   jobId: string | number
   title: string
   company: string
@@ -78,40 +78,55 @@ export default function JobSeekerDashboardPage() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
           Welcome back{user?.firstName ? `, ${user.firstName}` : ''}! Here's an overview of your job search.
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Applied Jobs</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base md:text-lg font-bold text-gray-800">Applied Jobs</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center shadow-md">
+              <Briefcase className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{jobs.totalAppliedJobs ?? 0}</div>
+            <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+              {jobs.totalAppliedJobs ?? 0}
+            </div>
+            <p className="text-xs text-gray-600 mt-1">Total applications submitted</p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Saved Jobs</CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base md:text-lg font-bold text-gray-800">Saved Jobs</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center shadow-md">
+              <Heart className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{jobs.totalSavedJobs ?? 0}</div>
+            <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+              {jobs.totalSavedJobs ?? 0}
+            </div>
+            <p className="text-xs text-gray-600 mt-1">Jobs you’ve saved for later</p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Interviews</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base md:text-lg font-bold text-gray-800">Interviews</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center shadow-md">
+              <Clock className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{jobs.totalInterviews ?? 0}</div>
+            <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+              {jobs.totalInterviews ?? 0}
+            </div>
+            <p className="text-xs text-gray-600 mt-1">Upcoming and completed interviews</p>
           </CardContent>
         </Card>
         

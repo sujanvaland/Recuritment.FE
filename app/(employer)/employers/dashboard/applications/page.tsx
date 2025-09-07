@@ -208,7 +208,7 @@ export default function ApplicationsPage() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Applications</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
           <p className="text-muted-foreground">Manage and review candidate applications</p>
         </div>
         {/* <div className="flex gap-2">
@@ -263,17 +263,17 @@ export default function ApplicationsPage() {
       </div>
 
       <Tabs defaultValue="" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="" className="relative">
+        <TabsList className="bg-white shadow-lg border-0">
+          <TabsTrigger value="" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
             All
           </TabsTrigger>
-          <TabsTrigger value="interview" className="relative">
+          <TabsTrigger value="interview" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
             Interview
           </TabsTrigger>
-          <TabsTrigger value="applied" className="relative">
+          <TabsTrigger value="applied" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
             Applied
           </TabsTrigger>
-          <TabsTrigger value="rejected" className="relative">
+          <TabsTrigger value="rejected" className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
             Rejected
           </TabsTrigger>
         </TabsList>
@@ -518,7 +518,7 @@ function ApplicationCard({
 
 
   return (
-    <Card>
+    <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-md hover:-translate-y-2 bg-white">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
@@ -615,12 +615,12 @@ function ApplicationCard({
       <CardFooter className="border-t pt-4">
         <div className="flex w-full flex-wrap justify-between gap-2">
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="group-hover:bg-blue-50 group-hover:border-blue-200">
               <Eye className="mr-2 h-3 w-3" />
               View Application
             </Button>
             <a href={application?.resumeUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="hover:bg-green-50 hover:border-green-200 text-green-700">
                 <Download className="mr-2 h-3 w-3" />
                 Download Resume
               </Button>
@@ -644,7 +644,9 @@ function ApplicationCard({
             {/* Only show Move to Interview if status is NOT interview */}
             {application?.status !== "interview" && (
               <Button
+                variant="ghost"
                 size="sm"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                 onClick={() => {
                   handleChangeStatus(application?.id, "interview");
                 }}
