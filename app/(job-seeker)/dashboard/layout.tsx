@@ -14,7 +14,7 @@ import { JobSeekerSidebar } from "@/components/job-seeker-sidebar"
 // Helper function to get user role safely (handles both 'role' and 'roles' properties)
 const getUserRole = (user: any): string | null => {
   return user?.role || user?.roles || null;
-};
+}; 
 
 export default function JobSeekerDashboardLayout({
   children,
